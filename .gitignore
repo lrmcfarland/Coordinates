@@ -1,0 +1,24 @@
+# Ignore these files 
+
+*.gignore
+
+# emacs backups
+*~
+
+# build output
+*.[oa]
+
+# dylib
+*.dylib
+
+# mac stuff
+.DS_Store
+
+# python cruft
+*.pyc
+
+# executables
+libCoords/angles_unittest
+libCoords/cartesian_unittest
+libCoords/spherical_unittest
+
