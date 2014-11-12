@@ -490,10 +490,10 @@ namespace {
 
   TEST(XRotationTest, Positive90AboutZ) {
 
-    double angle(Coords::angle::deg2rad(90));
+    Coords::angle an_angle(90);
     Coords::rotator about_z(Coords::Cartesian::Uz);
 
-    Coords::Cartesian s(about_z.rotate(Coords::Cartesian::Ux, angle));
+    Coords::Cartesian s(about_z.rotate(Coords::Cartesian::Ux, an_angle));
 
     EXPECT_NEAR(Coords::Cartesian::Uy.x(), s.x(), Coords::epsilon);
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Uy.y(), s.y());
@@ -503,10 +503,10 @@ namespace {
 
   TEST(XRotationTest, Negative90AboutY) {
 
-    double angle(Coords::angle::deg2rad(-90));
+    Coords::angle an_angle(-90);
     Coords::rotator about_y(Coords::Cartesian::Uy);
 
-    Coords::Cartesian s(about_y.rotate(Coords::Cartesian::Ux, angle));
+    Coords::Cartesian s(about_y.rotate(Coords::Cartesian::Ux, an_angle));
 
     EXPECT_NEAR(Coords::Cartesian::Uz.x(), s.x(), Coords::epsilon);
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Uz.y(), s.y());
@@ -520,10 +520,10 @@ namespace {
 
   TEST(YRotationTest, Positive90AboutX) {
 
-    double angle(Coords::angle::deg2rad(90));
+    Coords::angle an_angle(90);
     Coords::rotator about_x(Coords::Cartesian::Ux);
 
-    Coords::Cartesian s(about_x.rotate(Coords::Cartesian::Uy, angle));
+    Coords::Cartesian s(about_x.rotate(Coords::Cartesian::Uy, an_angle));
 
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Uz.x(), s.x());
     EXPECT_NEAR(Coords::Cartesian::Uz.y(), s.y(), Coords::epsilon);
@@ -533,10 +533,10 @@ namespace {
 
   TEST(YRotationTest, Negative90AboutZ) {
 
-    double angle(Coords::angle::deg2rad(-90));
+    Coords::angle an_angle(-90);
     Coords::rotator about_z(Coords::Cartesian::Uz);
 
-    Coords::Cartesian s(about_z.rotate(Coords::Cartesian::Uy, angle));
+    Coords::Cartesian s(about_z.rotate(Coords::Cartesian::Uy, an_angle));
 
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Ux.x(), s.x());
     EXPECT_NEAR(Coords::Cartesian::Ux.y(), s.y(), Coords::epsilon);
@@ -550,10 +550,10 @@ namespace {
 
   TEST(ZRotationTest, Positive90AboutY) {
 
-    double angle(Coords::angle::deg2rad(90));
+    Coords::angle an_angle(90);
     Coords::rotator about_y(Coords::Cartesian::Uy);
 
-    Coords::Cartesian s(about_y.rotate(Coords::Cartesian::Uz, angle));
+    Coords::Cartesian s(about_y.rotate(Coords::Cartesian::Uz, an_angle));
 
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Ux.x(), s.x());
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Ux.y(), s.y());
@@ -563,10 +563,10 @@ namespace {
 
   TEST(ZRotationTest, Negative90AboutX) {
 
-    double angle(Coords::angle::deg2rad(-90));
+    Coords::angle an_angle(-90);
     Coords::rotator about_x(Coords::Cartesian::Ux);
 
-    Coords::Cartesian s(about_x.rotate(Coords::Cartesian::Uz, angle));
+    Coords::Cartesian s(about_x.rotate(Coords::Cartesian::Uz, an_angle));
 
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Uy.x(), s.x());
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Uy.y(), s.y());

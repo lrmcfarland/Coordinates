@@ -155,25 +155,25 @@ namespace Coords {
   class rotator {
   public:
 
-    rotator(const Cartesian& a_axis); // ctor, no default
+    rotator(const Cartesian& an_axis); // ctor, no default
     ~rotator() {}; // dtor
 
-    rotator(const rotator& a); // copy ctor
-    rotator& operator=(const rotator& rhs); // assignment ctor
-
     const Cartesian& axis() const              {return m_axis;}
-    void         axis(const Cartesian& a_axis);
+    void         axis(const Cartesian& an_axis);
 
-    Cartesian rotate(const Cartesian& a_heading, const double& a_radians); // TODO use angle
+    Cartesian rotate(const Cartesian& a_heading, const angle& an_angle);
 
   private:
 
-    Cartesian                              m_axis;
+    rotator(const rotator& a); // do not implement
+    rotator& operator=(const rotator& rhs); // do not implement
+
+    Cartesian                          m_axis;
     std::vector< std::vector<double> > m_rotation_matrix;
 
     // for optimization
-    bool                               m_is_new_axis;
-    double                             m_old_radians;
+    bool  m_is_new_axis;
+    angle m_current_angle;
 
   };
 

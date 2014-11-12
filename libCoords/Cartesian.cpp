@@ -213,73 +213,56 @@ Coords::Cartesian Coords::cross(const Coords::Cartesian& a,
 // -------------------------
 
 Coords::rotator::rotator(const Coords::Cartesian& a_axis) :
-  m_axis(a_axis),
+  m_axis(Coords::Cartesian::Uo),
   m_rotation_matrix(3, std::vector<double>(3, 0)),
   m_is_new_axis(true),
-  m_old_radians(0.0)
-{}
-
-
-Coords::rotator::rotator(const Coords::rotator& rhs) :
-  m_axis(rhs.axis()),
-  m_rotation_matrix(rhs.m_rotation_matrix),
-  m_is_new_axis(rhs.m_is_new_axis)
-{} // TBD test this
-
-Coords::rotator&
-Coords::rotator::operator=(const Coords::rotator& rhs) {
-  if (this == &rhs) return *this;
-  axis(rhs.axis());
-  m_rotation_matrix = rhs.m_rotation_matrix;
-  m_is_new_axis = rhs.m_is_new_axis;
-  return *this;
-} // TBD test this
-
+  m_current_angle(0.0) {
+  axis(a_axis);
+}
 
 
 void Coords::rotator::axis(const Coords::Cartesian& a_axis) {
   if (a_axis != m_axis) {
-    m_axis = a_axis;
+    m_axis = a_axis.normalized();
     m_is_new_axis = true;
   }
 }
 
 Coords::Cartesian Coords::rotator::rotate(const Coords::Cartesian& a_heading,
-					  const double& a_radians) {
+					  const Coords::angle& an_angle) {
 
-  if (m_is_new_axis || m_old_radians != a_radians) {
+  // Quaternion-derived rotation matrix
+  if (m_is_new_axis || m_current_angle != an_angle) {
 
-    double c(cos(a_radians));
-    double s(sin(a_radians));
-
-    Coords::Cartesian normal(axis().normalized());
+    double c(cos(an_angle.radians()));
+    double s(sin(an_angle.radians()));
 
     double t(1-c);
 
-    m_rotation_matrix[0][0] = c + normal.x()*normal.x()*t;
-    m_rotation_matrix[1][1] = c + normal.y()*normal.y()*t;
-    m_rotation_matrix[2][2] = c + normal.z()*normal.z()*t;
+    m_rotation_matrix[0][0] = c + axis().x()*axis().x()*t;
+    m_rotation_matrix[1][1] = c + axis().y()*axis().y()*t;
+    m_rotation_matrix[2][2] = c + axis().z()*axis().z()*t;
 
-    double t1(normal.x()*normal.y()*t);
-    double t2(normal.z()*s);
+    double t1(axis().x()*axis().y()*t);
+    double t2(axis().z()*s);
 
     m_rotation_matrix[1][0] = t1 + t2;
     m_rotation_matrix[0][1] = t1 - t2;
 
-    t1 = normal.x()*normal.z()*t;
-    t2 = normal.y()*s;
+    t1 = axis().x()*axis().z()*t;
+    t2 = axis().y()*s;
 
     m_rotation_matrix[2][0] = t1 - t2;
     m_rotation_matrix[0][2] = t1 + t2;
 
-    t1 = normal.y()*normal.z()*t;
-    t2 = normal.x()*s;
+    t1 = axis().y()*axis().z()*t;
+    t2 = axis().x()*s;
 
     m_rotation_matrix[2][1] = t1 + t2;
     m_rotation_matrix[1][2] = t1 - t2;
 
     m_is_new_axis = false;
-    m_old_radians = a_radians;
+    m_current_angle = an_angle;
 
   }
 
