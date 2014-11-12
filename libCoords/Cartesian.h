@@ -59,7 +59,7 @@ namespace Coords {
 		       const std::string& c="0");
 
     explicit Cartesian(const spherical& a);
-    
+
     ~Cartesian() {};
 
     Cartesian(const Cartesian& a);
