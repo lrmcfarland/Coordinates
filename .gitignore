@@ -18,7 +18,7 @@
 *.pyc
 
 # executables
-libCoords/angles_unittest
+libCoords/angle_unittest
 libCoords/cartesian_unittest
 libCoords/spherical_unittest
 
