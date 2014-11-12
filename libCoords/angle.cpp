@@ -7,12 +7,12 @@
 // Created:     2014 June 19
 // Language:    C++
 //
-//  Angle is free software: you can redistribute it and/or modify it
+//  angle is free software: you can redistribute it and/or modify it
 //  under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
 //
-//  Angle is distributed in the hope that it will be useful, but
+//  angle is distributed in the hope that it will be useful, but
 //  WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 //  General Public License for more details.
@@ -27,21 +27,21 @@
 #include <utils.h>
 
 // =================
-// ===== Angle =====
+// ===== angle =====
 // =================
 
 // ----- constructors -----
 
-Coords::Angle::Angle(const double& a_deg_or_hr,
+Coords::angle::angle(const double& a_deg_or_hr,
 		     const double& a_min,
 		     const double& a_sec) {
   value(degrees2seconds(a_deg_or_hr, a_min, a_sec)/3600.0);
 }
 
-Coords::Angle::Angle(const std::string& a_deg_or_hr,
+Coords::angle::angle(const std::string& a_deg_or_hr,
 		     const std::string& a_min,
 		     const std::string& a_sec) {
-  value(Angle(Coords::stod(a_deg_or_hr),
+  value(angle(Coords::stod(a_deg_or_hr),
 	      Coords::stod(a_min),
 	      Coords::stod(a_sec)).value());
   // TODO bad string exception with C++11 stod
@@ -50,12 +50,12 @@ Coords::Angle::Angle(const std::string& a_deg_or_hr,
 
 
 // copy constructor
-Coords::Angle::Angle(const Coords::Angle& a) {
+Coords::angle::angle(const Coords::angle& a) {
   m_value = a.value();
 }
 
 // copy assignment
-Coords::Angle& Coords::Angle::operator=(const Coords::Angle& rhs) {
+Coords::angle& Coords::angle::operator=(const Coords::angle& rhs) {
   if (this == &rhs) return *this;
   m_value = rhs.value();
   return *this;
@@ -63,48 +63,48 @@ Coords::Angle& Coords::Angle::operator=(const Coords::Angle& rhs) {
 
 // ----- bool operators -----
 
-bool Coords::Angle::operator== (const Coords::Angle& rhs) const {
+bool Coords::angle::operator== (const Coords::angle& rhs) const {
   return m_value == rhs.value();
 }
 
-bool Coords::Angle::operator!= (const Coords::Angle& rhs) const {
+bool Coords::angle::operator!= (const Coords::angle& rhs) const {
   return !operator==(rhs);
 }
 
-bool Coords::Angle::operator< (const Coords::Angle& rhs) const {
+bool Coords::angle::operator< (const Coords::angle& rhs) const {
   return m_value < rhs.value();
 }
 
-bool Coords::Angle::operator<= (const Coords::Angle& rhs) const {
+bool Coords::angle::operator<= (const Coords::angle& rhs) const {
   return m_value <= rhs.value();
 }
 
-bool Coords::Angle::operator> (const Coords::Angle& rhs) const {
+bool Coords::angle::operator> (const Coords::angle& rhs) const {
   return m_value > rhs.value();
 }
 
-bool Coords::Angle::operator>= (const Coords::Angle& rhs) const {
+bool Coords::angle::operator>= (const Coords::angle& rhs) const {
   return m_value >= rhs.value();
 }
 
 // ----- in-place operators -----
 
-Coords::Angle& Coords::Angle::operator+=(const Coords::Angle& rhs) {
+Coords::angle& Coords::angle::operator+=(const Coords::angle& rhs) {
   m_value += rhs.value();
   return *this;
 }
 
-Coords::Angle& Coords::Angle::operator-=(const Coords::Angle& rhs) {
+Coords::angle& Coords::angle::operator-=(const Coords::angle& rhs) {
   m_value -= rhs.value();
   return *this;
 }
 
-Coords::Angle& Coords::Angle::operator*=(const Coords::Angle& rhs) {
+Coords::angle& Coords::angle::operator*=(const Coords::angle& rhs) {
   m_value *= rhs.value();
   return *this;
 }
 
-Coords::Angle& Coords::Angle::operator/=(const Coords::Angle& rhs) throw (DivideByZeroError) {
+Coords::angle& Coords::angle::operator/=(const Coords::angle& rhs) throw (DivideByZeroError) {
   if (rhs.value() == 0)
     throw DivideByZeroError();
   m_value /= rhs.value();
@@ -115,27 +115,27 @@ Coords::Angle& Coords::Angle::operator/=(const Coords::Angle& rhs) throw (Divide
 // ----- operators -----
 // ---------------------
 
-Coords::Angle Coords::operator+(const Coords::Angle& lhs, const Coords::Angle& rhs) {
-  return Coords::Angle(lhs.value() + rhs.value());
+Coords::angle Coords::operator+(const Coords::angle& lhs, const Coords::angle& rhs) {
+  return Coords::angle(lhs.value() + rhs.value());
 }
 
-Coords::Angle Coords::operator-(const Coords::Angle& lhs, const Coords::Angle& rhs) {
-  return Coords::Angle(lhs.value() - rhs.value());
+Coords::angle Coords::operator-(const Coords::angle& lhs, const Coords::angle& rhs) {
+  return Coords::angle(lhs.value() - rhs.value());
 }
 
-Coords::Angle Coords::operator-(const Coords::Angle& rhs) {
-  return Coords::Angle(-rhs.value());
+Coords::angle Coords::operator-(const Coords::angle& rhs) {
+  return Coords::angle(-rhs.value());
 }
 
-Coords::Angle Coords::operator*(const Coords::Angle& lhs, const Coords::Angle& rhs) {
-  return Coords::Angle(lhs.value() * rhs.value());
+Coords::angle Coords::operator*(const Coords::angle& lhs, const Coords::angle& rhs) {
+  return Coords::angle(lhs.value() * rhs.value());
 }
 
-Coords::Angle Coords::operator/(const Coords::Angle& lhs, const Coords::Angle& rhs)
+Coords::angle Coords::operator/(const Coords::angle& lhs, const Coords::angle& rhs)
   throw (DivideByZeroError) {
   if (rhs.value() == 0)
     throw DivideByZeroError();
-  return Coords::Angle(lhs.value() / rhs.value());
+  return Coords::angle(lhs.value() / rhs.value());
 }
 
 // -------------------------
@@ -156,13 +156,13 @@ Coords::Angle Coords::operator/(const Coords::Angle& lhs, const Coords::Angle& r
 // -45.00000000000001
 // >>> rad2deg(math.asin(math.sin(deg2rad(45+360*4))))
 // 44.99999999999999
-// TODO fix this Angle(45 * 10).normalize() != 180
+// TODO fix this angle(45 * 10).normalize() != 180
 // >>> rad2deg(math.acos(math.cos(deg2rad(45+360*4))))
 // 45.00000000000001
 // >>> rad2deg(math.acos(math.cos(deg2rad(45+360*5))))
 // 314.99999999999983
 
-void Coords::Angle::normalize() {
+void Coords::angle::normalize() {
   // bring back into 0-360 range
   while (m_value > 360)
     m_value -= 360;

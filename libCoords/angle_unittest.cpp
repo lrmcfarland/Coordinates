@@ -6,12 +6,12 @@
 // Created:     2014 Jun 19
 // Language:    C++
 //
-//  Angle is free software: you can redistribute it and/or modify it
+//  angle is free software: you can redistribute it and/or modify it
 //  under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
 //
-//  Angle is distributed in the hope that it will be useful, but
+//  angle is distributed in the hope that it will be useful, but
 //  WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 //  General Public License for more details.
@@ -30,304 +30,304 @@ namespace {
 
 
   // -----------------
-  // ----- Angle -----
+  // ----- angle -----
   // -----------------
 
   // ----- static methods -----
 
-  TEST(Angle, Degree2Radians) {
-    double a = Coords::Angle::deg2rad(45);
+  TEST(angle, Degree2Radians) {
+    double a = Coords::angle::deg2rad(45);
     EXPECT_DOUBLE_EQ(0.78539816339744828, a);
   }
 
-  TEST(Angle, Radian2Degrees) {
-    double a = Coords::Angle::rad2deg(0.78539816339744828);
+  TEST(angle, Radian2Degrees) {
+    double a = Coords::angle::rad2deg(0.78539816339744828);
     EXPECT_DOUBLE_EQ(45, a);
   }
 
   // constructors (and implicitly radians() accessor)
 
-  TEST(Angle, CopyConstructor) {
-    Coords::Angle a;
+  TEST(angle, CopyConstructor) {
+    Coords::angle a;
     a.value(1);
-    Coords::Angle b(a);
+    Coords::angle b(a);
     EXPECT_TRUE(a == b);
   }
 
-  TEST(Angle, CopyAssign) {
-    Coords::Angle a;
+  TEST(angle, CopyAssign) {
+    Coords::angle a;
     a.value(1);
-    Coords::Angle b = a;
+    Coords::angle b = a;
     EXPECT_TRUE(a == b);
   }
 
-  TEST(Angle, DefaultConstructor) {
-    Coords::Angle a;
+  TEST(angle, DefaultConstructor) {
+    Coords::angle a;
     EXPECT_EQ(0, a.radians());
   }
 
 
-  TEST(Angle, ConstructorDeg) {
-    Coords::Angle a(-45);
-    EXPECT_EQ(Coords::Angle::deg2rad(-45), a.radians());
+  TEST(angle, ConstructorDeg) {
+    Coords::angle a(-45);
+    EXPECT_EQ(Coords::angle::deg2rad(-45), a.radians());
   }
 
-  TEST(Angle, ConstructorDegFromStr) {
-    Coords::Angle a("-45");
-    EXPECT_EQ(Coords::Angle::deg2rad(-45), a.radians());
+  TEST(angle, ConstructorDegFromStr) {
+    Coords::angle a("-45");
+    EXPECT_EQ(Coords::angle::deg2rad(-45), a.radians());
   }
 
-  TEST(Angle, ConstructorDegMin) {
-    Coords::Angle a(0, -60);
-    EXPECT_EQ(Coords::Angle::deg2rad(-1), a.radians());
+  TEST(angle, ConstructorDegMin) {
+    Coords::angle a(0, -60);
+    EXPECT_EQ(Coords::angle::deg2rad(-1), a.radians());
   }
 
-  TEST(Angle, ConstructorDegMinFromStr) {
-    Coords::Angle a("0", "-60");
-    EXPECT_EQ(Coords::Angle::deg2rad(-1), a.radians());
+  TEST(angle, ConstructorDegMinFromStr) {
+    Coords::angle a("0", "-60");
+    EXPECT_EQ(Coords::angle::deg2rad(-1), a.radians());
   }
 
-  TEST(Angle, ConstructorDegMinSec) {
-    Coords::Angle a(0, 0, -1);
-    EXPECT_DOUBLE_EQ(Coords::Angle::deg2rad(-1/3600.0), a.radians());
+  TEST(angle, ConstructorDegMinSec) {
+    Coords::angle a(0, 0, -1);
+    EXPECT_DOUBLE_EQ(Coords::angle::deg2rad(-1/3600.0), a.radians());
   }
 
-  TEST(Angle, ConstructorDegMinSecFromStr) {
-    Coords::Angle a("0", "0", "-6.1");
-    EXPECT_DOUBLE_EQ(Coords::Angle::deg2rad(-6.1/3600.0), a.radians());
+  TEST(angle, ConstructorDegMinSecFromStr) {
+    Coords::angle a("0", "0", "-6.1");
+    EXPECT_DOUBLE_EQ(Coords::angle::deg2rad(-6.1/3600.0), a.radians());
   }
 
   // TODO correct behavior?
-  TEST(Angle, MixedSignX) {
-    Coords::Angle a(-1, 2);
-    Coords::Angle b(1, -2);
+  TEST(angle, MixedSignX) {
+    Coords::angle a(-1, 2);
+    Coords::angle b(1, -2);
     EXPECT_FALSE(a.value() == b.value());
   }
 
-  TEST(Angle, MixedSign1) {
-    Coords::Angle a(-1, 2);
-    Coords::Angle b(-1, -2);
+  TEST(angle, MixedSign1) {
+    Coords::angle a(-1, 2);
+    Coords::angle b(-1, -2);
     EXPECT_DOUBLE_EQ(a.value(), b.value());
   }
 
-  TEST(Angle, MixedSign2) {
-    Coords::Angle a(-1, 2, 3);
-    Coords::Angle b(-1, -2, -3);
+  TEST(angle, MixedSign2) {
+    Coords::angle a(-1, 2, 3);
+    Coords::angle b(-1, -2, -3);
     EXPECT_DOUBLE_EQ(a.value(), b.value());
   }
 
-  TEST(Angle, MixedSign3) {
-    Coords::Angle a(1, 2, 3);
-    Coords::Angle b(1, -2, -3);
+  TEST(angle, MixedSign3) {
+    Coords::angle a(1, 2, 3);
+    Coords::angle b(1, -2, -3);
     EXPECT_DOUBLE_EQ(a.value(), b.value());
   }
 
   // accessors
 
-  TEST(Angle, Accessors) {
-    Coords::Angle a(-45);
+  TEST(angle, Accessors) {
+    Coords::angle a(-45);
     EXPECT_EQ(-45, a.value());
     EXPECT_EQ(-45, a.getValue());
-    EXPECT_EQ(Coords::Angle::deg2rad(-45), a.radians());
-    EXPECT_EQ(Coords::Angle::deg2rad(-45), a.getRadians());
+    EXPECT_EQ(Coords::angle::deg2rad(-45), a.radians());
+    EXPECT_EQ(Coords::angle::deg2rad(-45), a.getRadians());
   }
 
   // ----- booleans -----
 
-  TEST(Angle, Equivalence1) {
-    Coords::Angle a;
-    Coords::Angle b;
+  TEST(angle, Equivalence1) {
+    Coords::angle a;
+    Coords::angle b;
     a.value(1);
     b.value(1);
     EXPECT_TRUE(a == b);
   }
 
-  TEST(Angle, Equivalence2) {
-    Coords::Angle a;
-    Coords::Angle b;
+  TEST(angle, Equivalence2) {
+    Coords::angle a;
+    Coords::angle b;
     a.value(1);
     b.value(-1);
     EXPECT_FALSE(a == b);
   }
 
-  TEST(Angle, NotEquivalence1) {
-    Coords::Angle a(1);
-    Coords::Angle b(1);
+  TEST(angle, NotEquivalence1) {
+    Coords::angle a(1);
+    Coords::angle b(1);
     EXPECT_FALSE(a != b);
   }
 
-  TEST(Angle, NotEquivalence2) {
-    Coords::Angle a(1);
-    Coords::Angle b(-1);
+  TEST(angle, NotEquivalence2) {
+    Coords::angle a(1);
+    Coords::angle b(-1);
     EXPECT_TRUE(a != b);
   }
 
-  TEST(Angle, LessThan1) {
-    Coords::Angle a(10);
-    Coords::Angle b(20);
+  TEST(angle, LessThan1) {
+    Coords::angle a(10);
+    Coords::angle b(20);
     EXPECT_TRUE(a < b);
   }
 
-  TEST(Angle, LessThan2) {
-    Coords::Angle a(10);
-    Coords::Angle b(20);
+  TEST(angle, LessThan2) {
+    Coords::angle a(10);
+    Coords::angle b(20);
     EXPECT_FALSE(b < a);
   }
 
-  TEST(Angle, LessThanOrEqualTo1) {
-    Coords::Angle a(25.1);
-    Coords::Angle b(25.1);
+  TEST(angle, LessThanOrEqualTo1) {
+    Coords::angle a(25.1);
+    Coords::angle b(25.1);
     EXPECT_TRUE(a <= b);
   }
 
-  TEST(Angle, LessThanOrEqualTo2) {
-    Coords::Angle a(10.5);
-    Coords::Angle b(10.6);
+  TEST(angle, LessThanOrEqualTo2) {
+    Coords::angle a(10.5);
+    Coords::angle b(10.6);
     EXPECT_FALSE(b <= a);
   }
 
-  TEST(Angle, GreaterThan1) {
-    Coords::Angle a(20);
-    Coords::Angle b(10);
+  TEST(angle, GreaterThan1) {
+    Coords::angle a(20);
+    Coords::angle b(10);
     EXPECT_TRUE(a > b);
   }
 
-  TEST(Angle, GreaterThan2) {
-    Coords::Angle a(20);
-    Coords::Angle b(10);
+  TEST(angle, GreaterThan2) {
+    Coords::angle a(20);
+    Coords::angle b(10);
     EXPECT_FALSE(b > a);
   }
 
-  TEST(Angle, GreaterThanOrEqualTo1) {
-    Coords::Angle a(25.1);
-    Coords::Angle b(25.1);
+  TEST(angle, GreaterThanOrEqualTo1) {
+    Coords::angle a(25.1);
+    Coords::angle b(25.1);
     EXPECT_TRUE(a >= b);
   }
 
-  TEST(Angle, GreaterThanOrEqualTo2) {
-    Coords::Angle a(10.6);
-    Coords::Angle b(10.5);
+  TEST(angle, GreaterThanOrEqualTo2) {
+    Coords::angle a(10.6);
+    Coords::angle b(10.5);
     EXPECT_FALSE(b >= a);
   }
 
   // operators
 
   // add
-  TEST(Angle, InplaceAddAngle) {
-    Coords::Angle a(45);
-    Coords::Angle b(45);
+  TEST(angle, InplaceAddangle) {
+    Coords::angle a(45);
+    Coords::angle b(45);
     a += b;
     EXPECT_DOUBLE_EQ(90, a.value());
   }
 
-  TEST(Angle, InplaceAddAngleNeg) {
-    Coords::Angle a(45);
-    Coords::Angle b(-45);
+  TEST(angle, InplaceAddangleNeg) {
+    Coords::angle a(45);
+    Coords::angle b(-45);
     a += b;
     EXPECT_DOUBLE_EQ(0, a.value());
   }
 
-  TEST(Angle, AnglePlusAnglePos) {
-    Coords::Angle a(44.5);
-    Coords::Angle b(44.5);
-    Coords::Angle c;
+  TEST(angle, anglePlusanglePos) {
+    Coords::angle a(44.5);
+    Coords::angle b(44.5);
+    Coords::angle c;
     c = a + b;
     EXPECT_DOUBLE_EQ(89, c.value());
   }
 
-  TEST(Angle, AnglePlusAngleNeg) {
-    Coords::Angle a(45);
-    Coords::Angle b(-45);
-    Coords::Angle c;
+  TEST(angle, anglePlusangleNeg) {
+    Coords::angle a(45);
+    Coords::angle b(-45);
+    Coords::angle c;
     c = a + b;
     EXPECT_DOUBLE_EQ(0, c.value());
   }
 
   // subtract
-  TEST(Angle, InplaceSubtractAnglePos) {
-    Coords::Angle a(45);
-    Coords::Angle b(40);
+  TEST(angle, InplaceSubtractanglePos) {
+    Coords::angle a(45);
+    Coords::angle b(40);
     a -= b;
     EXPECT_DOUBLE_EQ(5, a.value());
   }
 
-  TEST(Angle, InplaceSubtractAngleNeg) {
-    Coords::Angle a(45);
-    Coords::Angle b(-45);
+  TEST(angle, InplaceSubtractangleNeg) {
+    Coords::angle a(45);
+    Coords::angle b(-45);
     a -= b;
     EXPECT_DOUBLE_EQ(90, a.value());
   }
 
-  TEST(Angle, AngleMinusAnglePos) {
-    Coords::Angle a(45);
-    Coords::Angle b(45);
-    Coords::Angle c;
+  TEST(angle, angleMinusanglePos) {
+    Coords::angle a(45);
+    Coords::angle b(45);
+    Coords::angle c;
     c = a - b;
     EXPECT_DOUBLE_EQ(0, c.value());
   }
 
-  TEST(Angle, AngleMinusAngleNeg) {
-    Coords::Angle a(45);
-    Coords::Angle b(-45);
-    Coords::Angle c;
+  TEST(angle, angleMinusangleNeg) {
+    Coords::angle a(45);
+    Coords::angle b(-45);
+    Coords::angle c;
     c = a - b;
     EXPECT_DOUBLE_EQ(90, c.value());
   }
 
   // unitary minus
-  TEST(Angle, UnitaryMinus) {
-    Coords::Angle a;
-    Coords::Angle b(-45);
+  TEST(angle, UnitaryMinus) {
+    Coords::angle a;
+    Coords::angle b(-45);
     a = -b;
     EXPECT_DOUBLE_EQ(45, a.value());
   }
 
   // multiply
 
-  TEST(Angle, InplaceMultiply) {
-    Coords::Angle a(45);
-    Coords::Angle b(2);
+  TEST(angle, InplaceMultiply) {
+    Coords::angle a(45);
+    Coords::angle b(2);
     a *= b;
     EXPECT_DOUBLE_EQ(90, a.value());
   }
 
-  TEST(Angle, MultiplyAngleByAngle) {
-    Coords::Angle a(45);
-    Coords::Angle b(2);
-    Coords::Angle c;
+  TEST(angle, MultiplyangleByangle) {
+    Coords::angle a(45);
+    Coords::angle b(2);
+    Coords::angle c;
     c = a * b;
     EXPECT_DOUBLE_EQ(90, c.value());
   }
 
   // divide
 
-  TEST(Angle, InplaceDivide) {
-    Coords::Angle a(90);
-    Coords::Angle b(2);
+  TEST(angle, InplaceDivide) {
+    Coords::angle a(90);
+    Coords::angle b(2);
     a /= b;
     EXPECT_DOUBLE_EQ(45, a.value());
   }
 
-  TEST(Angle, InplaceDivideByZeroError) {
-    Coords::Angle a(45);
-    Coords::Angle b(0);
+  TEST(angle, InplaceDivideByZeroError) {
+    Coords::angle a(45);
+    Coords::angle b(0);
     EXPECT_THROW(a /= b, Coords::DivideByZeroError);
   }
 
-  TEST(Angle, InplaceDivideByZeroErrorMsg) {
+  TEST(angle, InplaceDivideByZeroErrorMsg) {
     try {
-      Coords::Angle a(15);
-      Coords::Angle b;
+      Coords::angle a(15);
+      Coords::angle b;
       a /= b;
     } catch (Coords::DivideByZeroError& err) {
       EXPECT_STREQ(err.what(), "division by zero is undefined");
     }
   }
 
-  TEST(Angle, DivideAngleByAngle) {
-    Coords::Angle a(90);
-    Coords::Angle b(2);
-    Coords::Angle c;
+  TEST(angle, DivideangleByangle) {
+    Coords::angle a(90);
+    Coords::angle b(2);
+    Coords::angle c;
     c = a / b;
     EXPECT_DOUBLE_EQ(45, c.value());
   }
@@ -335,8 +335,8 @@ namespace {
 
   // operator<<
 
-  TEST(Angle, operatorStdOut) {
-    Coords::Angle a(44, 32, 15.4);
+  TEST(angle, operatorStdOut) {
+    Coords::angle a(44, 32, 15.4);
     std::stringstream out;
     out << a;
     EXPECT_STREQ("44* 32' 15.4\"", out.str().c_str());
@@ -345,31 +345,31 @@ namespace {
 
   // 360 and beyond
 
-  TEST(Angle, Stdout360) {
-    Coords::Angle a(360);
+  TEST(angle, Stdout360) {
+    Coords::angle a(360);
     std::stringstream out;
     out << a;
     EXPECT_STREQ("360* 0' 0\"", out.str().c_str());
   }
 
-  TEST(Angle, Stdout361) {
-    Coords::Angle a(361);
+  TEST(angle, Stdout361) {
+    Coords::angle a(361);
     std::stringstream out;
     out << a;
     EXPECT_STREQ("361* 0' 0\"", out.str().c_str());
   }
 
-  TEST(Angle, RoundingIssuesBeyond360) {
+  TEST(angle, RoundingIssuesBeyond360) {
     // had rounding issues when storing value in radians.
-    Coords::Angle a(45+360);
+    Coords::angle a(45+360);
     std::stringstream out;
     out << a;
     EXPECT_STREQ("405* 0' 0\"", out.str().c_str());
   }
 
-  // TODO fix this Angle(45 * 10).normalize() != 180
-  TEST(Angle, Normalize) {
-    Coords::Angle a(45 + 360);
+  // TODO fix this angle(45 * 10).normalize() != 180
+  TEST(angle, Normalize) {
+    Coords::angle a(45 + 360);
     a.normalize();
     EXPECT_NEAR(45, a.value(), 1e-15);
   }
@@ -412,8 +412,8 @@ namespace {
 
   // opeartor<<()
 
-  TEST(Angle, output_dms) {
-    Coords::Angle a(12, 34, 56);
+  TEST(angle, output_dms) {
+    Coords::angle a(12, 34, 56);
 
     std::stringstream out;
     Coords::value2DMSString(a.value(), out);
@@ -421,8 +421,8 @@ namespace {
     EXPECT_STREQ("12* 34' 56\"", out.str().c_str());
   }
 
-  TEST(Angle, output_hms) {
-    Coords::Angle a(2, 4, 6);
+  TEST(angle, output_hms) {
+    Coords::angle a(2, 4, 6);
 
     std::stringstream out;
     Coords::value2HMSString(a.value(), out);

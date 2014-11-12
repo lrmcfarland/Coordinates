@@ -1,6 +1,6 @@
 # ===============================================================
 # Filename:    Makefile
-# Description: makes libAngles.so and test scripts
+# Description: makes libCoords and runs test scripts
 # Author:      L.R. McFarland, lrm@starbug.com
 # Created:     2014 Jun 19
 #

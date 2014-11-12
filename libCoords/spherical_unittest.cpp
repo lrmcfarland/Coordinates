@@ -52,47 +52,47 @@ namespace {
     EXPECT_EQ(1.1, a.r());
     EXPECT_EQ(1.1, a.getR());
 
-    a.theta(Coords::Angle(-2.2));
+    a.theta(Coords::angle(-2.2));
     EXPECT_EQ(-2.2, a.theta().value());
     EXPECT_EQ(-2.2, a.getTheta().value());
 
-    a.phi(Coords::Angle(3.3));
+    a.phi(Coords::angle(3.3));
     EXPECT_EQ(3.3, a.phi().value());
     EXPECT_EQ(3.3, a.getPhi().value());
 
   }
 
   TEST(FixedSpace, OutputOperator) {
-    Coords::spherical a(1, Coords::Angle(2), Coords::Angle(3));
+    Coords::spherical a(1, Coords::angle(2), Coords::angle(3));
     std::stringstream out;
     out << a;
     EXPECT_STREQ("<spherical><r>1</r><theta>2</theta><phi>3</phi></spherical>", out.str().c_str());
   }
 
   TEST(FixedSpherical, Equivalence) {
-    EXPECT_TRUE(Coords::spherical(1, Coords::Angle(2), Coords::Angle(3)) ==
-		Coords::spherical(1.0, Coords::Angle(2.0), Coords::Angle(3.0)));
+    EXPECT_TRUE(Coords::spherical(1, Coords::angle(2), Coords::angle(3)) ==
+		Coords::spherical(1.0, Coords::angle(2.0), Coords::angle(3.0)));
 
-    EXPECT_FALSE(Coords::spherical(1, Coords::Angle(2), Coords::Angle(3)) ==
-		 Coords::spherical(1.1, Coords::Angle(2.0), Coords::Angle(3.0)));
-    EXPECT_FALSE(Coords::spherical(1, Coords::Angle(2), Coords::Angle(3)) ==
-		 Coords::spherical(1.0, Coords::Angle(2.1), Coords::Angle(3.0)));
-    EXPECT_FALSE(Coords::spherical(1, Coords::Angle(2), Coords::Angle(3)) ==
-		 Coords::spherical(1.0, Coords::Angle(2.0), Coords::Angle(3.1)));
+    EXPECT_FALSE(Coords::spherical(1, Coords::angle(2), Coords::angle(3)) ==
+		 Coords::spherical(1.1, Coords::angle(2.0), Coords::angle(3.0)));
+    EXPECT_FALSE(Coords::spherical(1, Coords::angle(2), Coords::angle(3)) ==
+		 Coords::spherical(1.0, Coords::angle(2.1), Coords::angle(3.0)));
+    EXPECT_FALSE(Coords::spherical(1, Coords::angle(2), Coords::angle(3)) ==
+		 Coords::spherical(1.0, Coords::angle(2.0), Coords::angle(3.1)));
 
-    EXPECT_TRUE(Coords::spherical(1, Coords::Angle(2), Coords::Angle(3)) !=
-		Coords::spherical(1.1, Coords::Angle(2.0), Coords::Angle(3.0)));
-    EXPECT_TRUE(Coords::spherical(1, Coords::Angle(2), Coords::Angle(3)) !=
-		Coords::spherical(1.0, Coords::Angle(2.1), Coords::Angle(3.0)));
-    EXPECT_TRUE(Coords::spherical(1, Coords::Angle(2), Coords::Angle(3)) !=
-		Coords::spherical(1.0, Coords::Angle(2.0), Coords::Angle(3.1)));
+    EXPECT_TRUE(Coords::spherical(1, Coords::angle(2), Coords::angle(3)) !=
+		Coords::spherical(1.1, Coords::angle(2.0), Coords::angle(3.0)));
+    EXPECT_TRUE(Coords::spherical(1, Coords::angle(2), Coords::angle(3)) !=
+		Coords::spherical(1.0, Coords::angle(2.1), Coords::angle(3.0)));
+    EXPECT_TRUE(Coords::spherical(1, Coords::angle(2), Coords::angle(3)) !=
+		Coords::spherical(1.0, Coords::angle(2.0), Coords::angle(3.1)));
   }
 
   TEST(FixedSpherical, DefaultConstructor) {
     Coords::spherical a;
     EXPECT_DOUBLE_EQ(0, a.r());
-    EXPECT_EQ(Coords::Angle(0), a.theta());
-    EXPECT_EQ(Coords::Angle(0), a.phi());
+    EXPECT_EQ(Coords::angle(0), a.theta());
+    EXPECT_EQ(Coords::angle(0), a.phi());
   }
 
   TEST(FixedSpherical, ConstructFromString) {
@@ -139,8 +139,8 @@ namespace {
     Coords::spherical b(a);
 
     EXPECT_DOUBLE_EQ(1.0, b.r());
-    EXPECT_EQ(Coords::Angle(90.0), b.theta());
-    EXPECT_EQ(Coords::Angle(0.0), b.phi());
+    EXPECT_EQ(Coords::angle(90.0), b.theta());
+    EXPECT_EQ(Coords::angle(0.0), b.phi());
   }
 
   TEST(FixedSpherical, ConstructFromCartesian_y) {
@@ -151,10 +151,10 @@ namespace {
     EXPECT_DOUBLE_EQ(1.0, b.r());
 
     EXPECT_DOUBLE_EQ(90.0, b.theta().value());
-    EXPECT_EQ(Coords::Angle(90.0), b.theta());
+    EXPECT_EQ(Coords::angle(90.0), b.theta());
 
     EXPECT_DOUBLE_EQ(0.0, b.phi().value());
-    EXPECT_EQ(Coords::Angle(0.0), b.phi());
+    EXPECT_EQ(Coords::angle(0.0), b.phi());
   }
 
   TEST(FixedSpherical, ConstructFromCartesian_z) {
@@ -163,37 +163,37 @@ namespace {
     Coords::spherical b(a);
 
     EXPECT_DOUBLE_EQ(1.0, b.r());
-    EXPECT_EQ(Coords::Angle(0.0), b.theta());
-    EXPECT_EQ(Coords::Angle(0.0), b.phi());
+    EXPECT_EQ(Coords::angle(0.0), b.theta());
+    EXPECT_EQ(Coords::angle(0.0), b.phi());
   }
 
 
 
 
   TEST(FixedSpherical, Add_inplace_trivial_1) {
-    Coords::spherical a(1, Coords::Angle(30), Coords::Angle(60));
-    Coords::spherical b(1, Coords::Angle(30), Coords::Angle(60));
+    Coords::spherical a(1, Coords::angle(30), Coords::angle(60));
+    Coords::spherical b(1, Coords::angle(30), Coords::angle(60));
 
     a += b;
     EXPECT_DOUBLE_EQ(2.0, a.r());
-    EXPECT_DOUBLE_EQ(Coords::Angle(30.0).value(), a.theta().value());
-    EXPECT_DOUBLE_EQ(Coords::Angle(60.0).value(), a.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(30.0).value(), a.theta().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(60.0).value(), a.phi().value());
   }
 
 
   TEST(FixedSpherical, Add_trivial_1) {
-    Coords::spherical a(1, Coords::Angle(30), Coords::Angle(60));
-    Coords::spherical b(1, Coords::Angle(30), Coords::Angle(60));
+    Coords::spherical a(1, Coords::angle(30), Coords::angle(60));
+    Coords::spherical b(1, Coords::angle(30), Coords::angle(60));
     Coords::spherical c;
     c = a + b;
     EXPECT_DOUBLE_EQ(2.0, c.r());
-    EXPECT_DOUBLE_EQ(Coords::Angle(30.0).value(), c.theta().value());
-    EXPECT_DOUBLE_EQ(Coords::Angle(60.0).value(), c.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(30.0).value(), c.theta().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(60.0).value(), c.phi().value());
   }
 
   TEST(FixedSpherical, Add_1) {
-    Coords::spherical a(1, Coords::Angle(45), Coords::Angle(45));
-    Coords::spherical b(1, Coords::Angle(45), Coords::Angle(-45));
+    Coords::spherical a(1, Coords::angle(45), Coords::angle(45));
+    Coords::spherical b(1, Coords::angle(45), Coords::angle(-45));
     Coords::spherical c;
     c = a + b;
 
@@ -201,16 +201,16 @@ namespace {
     // +0.5 along x axis (1.0 total)
     // and +/- 0.5 along the y axis (0.0 total)
 
-    double c_z = 2.0*sin(Coords::Angle::deg2rad(45));
+    double c_z = 2.0*sin(Coords::angle::deg2rad(45));
 
     // r is hypotenuse, z total/asin(z total/x total):
     EXPECT_DOUBLE_EQ(c_z/sin(atan(c_z/1.0)), c.r());
 
     // theta, the angle to the z-axis, is:
-    EXPECT_DOUBLE_EQ(Coords::Angle(90).value() - Coords::Angle::rad2deg(atan(c_z/1.0)),
+    EXPECT_DOUBLE_EQ(Coords::angle(90).value() - Coords::angle::rad2deg(atan(c_z/1.0)),
 		     c.theta().value());
 
-    EXPECT_DOUBLE_EQ(Coords::Angle(0.0).value(), c.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(0.0).value(), c.phi().value());
 
     Coords::Cartesian cart_c(c);
     EXPECT_DOUBLE_EQ(1.0, cart_c.x()); // 0.5 + 0.5 projection in xy plane
@@ -223,43 +223,43 @@ namespace {
 
 
   TEST(FixedSpherical, Subtract_inplace_trivial_1) {
-    Coords::spherical a(1, Coords::Angle(30), Coords::Angle(60));
-    Coords::spherical b(1, Coords::Angle(30), Coords::Angle(60));
+    Coords::spherical a(1, Coords::angle(30), Coords::angle(60));
+    Coords::spherical b(1, Coords::angle(30), Coords::angle(60));
     a -= b;
     EXPECT_DOUBLE_EQ(0.0, a.r());
-    EXPECT_DOUBLE_EQ(Coords::Angle(0.0).value(), a.theta().value());
-    EXPECT_DOUBLE_EQ(Coords::Angle(0.0).value(), a.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(0.0).value(), a.theta().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(0.0).value(), a.phi().value());
   }
 
   TEST(FixedSpherical, Subtract_inplace_trivial_2) {
-    Coords::spherical a(10, Coords::Angle(30), Coords::Angle(-60));
-    Coords::spherical b(1, Coords::Angle(30), Coords::Angle(-60));
+    Coords::spherical a(10, Coords::angle(30), Coords::angle(-60));
+    Coords::spherical b(1, Coords::angle(30), Coords::angle(-60));
     a -= b;
     EXPECT_DOUBLE_EQ(9.0, a.r());
-    EXPECT_DOUBLE_EQ(Coords::Angle(30.0).value(), a.theta().value());
-    EXPECT_DOUBLE_EQ(Coords::Angle(-60.0).value(), a.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(30.0).value(), a.theta().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(-60.0).value(), a.phi().value());
   }
 
 
   TEST(FixedSpherical, Subtract_trivial_1) {
-    Coords::spherical a(10, Coords::Angle(30), Coords::Angle(60));
-    Coords::spherical b(1, Coords::Angle(30), Coords::Angle(60));
+    Coords::spherical a(10, Coords::angle(30), Coords::angle(60));
+    Coords::spherical b(1, Coords::angle(30), Coords::angle(60));
     Coords::spherical c;
     c = a - b;
     EXPECT_DOUBLE_EQ(9.0, c.r());
-    EXPECT_DOUBLE_EQ(Coords::Angle(30.0).value(), c.theta().value());
-    EXPECT_DOUBLE_EQ(Coords::Angle(60.0).value(), c.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(30.0).value(), c.theta().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(60.0).value(), c.phi().value());
   }
 
 
   TEST(FixedSpherical, Subtract_1) {
-    Coords::spherical a(1, Coords::Angle(45), Coords::Angle(45));
-    Coords::spherical b(1, Coords::Angle(45), Coords::Angle(-45));
+    Coords::spherical a(1, Coords::angle(45), Coords::angle(45));
+    Coords::spherical b(1, Coords::angle(45), Coords::angle(-45));
     Coords::spherical c;
     c = a - b;
     EXPECT_DOUBLE_EQ(1.0, c.r());
-    EXPECT_DOUBLE_EQ(Coords::Angle(90.0).value(), c.theta().value());
-    EXPECT_DOUBLE_EQ(Coords::Angle(0.0).value(), c.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(90.0).value(), c.theta().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(0.0).value(), c.phi().value());
 
     Coords::Cartesian cart_c(c);
     EXPECT_DOUBLE_EQ(1.0, cart_c.x());
@@ -273,57 +273,57 @@ namespace {
 
 
   TEST(FixedSpherical, Multiply_inplace_1) {
-    Coords::spherical a(1, Coords::Angle(30), Coords::Angle(60));
+    Coords::spherical a(1, Coords::angle(30), Coords::angle(60));
     a *= 10;
     EXPECT_DOUBLE_EQ(10.0, a.r());
-    EXPECT_EQ(Coords::Angle(30.0), a.theta());
-    EXPECT_EQ(Coords::Angle(60.0), a.phi());
+    EXPECT_EQ(Coords::angle(30.0), a.theta());
+    EXPECT_EQ(Coords::angle(60.0), a.phi());
   }
 
 
   TEST(FixedSpherical, Multiply_by_double_1) {
-    Coords::spherical a(1, Coords::Angle(30), Coords::Angle(60));
+    Coords::spherical a(1, Coords::angle(30), Coords::angle(60));
     Coords::spherical b;
     b = a * 10;
     EXPECT_DOUBLE_EQ(10.0, b.r());
-    EXPECT_EQ(Coords::Angle(30.0), b.theta());
-    EXPECT_EQ(Coords::Angle(60.0), b.phi());
+    EXPECT_EQ(Coords::angle(30.0), b.theta());
+    EXPECT_EQ(Coords::angle(60.0), b.phi());
   }
 
   TEST(FixedSpherical, Multiply_by_double_2) {
-    Coords::spherical a(1, Coords::Angle(30), Coords::Angle(-60));
+    Coords::spherical a(1, Coords::angle(30), Coords::angle(-60));
     Coords::spherical b;
     b = 10 * a; // commutes
     EXPECT_DOUBLE_EQ(10.0, b.r());
-    EXPECT_EQ(Coords::Angle(30.0), b.theta());
-    EXPECT_EQ(Coords::Angle(-60.0), b.phi());
+    EXPECT_EQ(Coords::angle(30.0), b.theta());
+    EXPECT_EQ(Coords::angle(-60.0), b.phi());
   }
 
 
   TEST(FixedSpherical, Divide_inplace_1) {
-    Coords::spherical a(1, Coords::Angle(30), Coords::Angle(60));
+    Coords::spherical a(1, Coords::angle(30), Coords::angle(60));
     a /= 10;
     EXPECT_DOUBLE_EQ(0.1, a.r());
-    EXPECT_EQ(Coords::Angle(30.0), a.theta());
-    EXPECT_EQ(Coords::Angle(60.0), a.phi());
+    EXPECT_EQ(Coords::angle(30.0), a.theta());
+    EXPECT_EQ(Coords::angle(60.0), a.phi());
   }
 
   TEST(FixedSpherical, Divide_by_double_1) {
-    Coords::spherical a(1, Coords::Angle(30), Coords::Angle(-60));
+    Coords::spherical a(1, Coords::angle(30), Coords::angle(-60));
     Coords::spherical b;
     b = a/10; // commutes
     EXPECT_DOUBLE_EQ(0.1, b.r());
-    EXPECT_EQ(Coords::Angle(30.0), b.theta());
-    EXPECT_EQ(Coords::Angle(-60.0), b.phi());
+    EXPECT_EQ(Coords::angle(30.0), b.theta());
+    EXPECT_EQ(Coords::angle(-60.0), b.phi());
   }
 
   TEST(FixedSpherical, Divide_by_double_2) {
-    Coords::spherical a(10.0, Coords::Angle(-30), Coords::Angle(-60));
+    Coords::spherical a(10.0, Coords::angle(-30), Coords::angle(-60));
     Coords::spherical b;
     b = 1/a; // commutes
     EXPECT_DOUBLE_EQ(0.1, b.r());
-    EXPECT_EQ(Coords::Angle(-30.0), b.theta());
-    EXPECT_EQ(Coords::Angle(-60.0), b.phi());
+    EXPECT_EQ(Coords::angle(-30.0), b.theta());
+    EXPECT_EQ(Coords::angle(-60.0), b.phi());
   }
 
   TEST(FixedSpherical, InplaceDivideByZeroException) {

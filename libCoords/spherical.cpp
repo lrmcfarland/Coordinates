@@ -39,8 +39,8 @@ Coords::spherical::spherical(const std::string& a,
 			     const std::string& c)
   : m_r(0), m_theta(0), m_phi(0) {
   m_r     = Coords::stod(a);
-  m_theta = Coords::Angle(b);
-  m_phi   = Coords::Angle(c);
+  m_theta = Coords::angle(b);
+  m_phi   = Coords::angle(c);
 }
 
 Coords::spherical::spherical(const Coords::Cartesian& a)
@@ -49,12 +49,12 @@ Coords::spherical::spherical(const Coords::Cartesian& a)
   r(a.magnitude());
 
   if (a.x() != 0)
-    phi(Coords::Angle(Coords::Angle::rad2deg(atan(a.y()/a.x()))));
+    phi(Coords::angle(Coords::angle::rad2deg(atan(a.y()/a.x()))));
 
   double r_xy(sqrt(a.x()*a.x() + a.y()*a.y()));
 
   if (r())
-    theta(Coords::Angle(Coords::Angle::rad2deg(asin(r_xy/r()))));
+    theta(Coords::angle(Coords::angle::rad2deg(asin(r_xy/r()))));
 
 }
 

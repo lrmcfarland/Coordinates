@@ -34,7 +34,7 @@
 
 namespace Coords {
 
-  class Angle;
+  class angle;
   class spherical;
 
   class Cartesian {

@@ -8,12 +8,12 @@
 // Created:     2014 Nov 06
 // Language:    C++
 //
-//  Angle is free software: you can redistribute it and/or modify it
+//  angle is free software: you can redistribute it and/or modify it
 //  under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
 //
-//  Angle is distributed in the hope that it will be useful, but
+//  angle is distributed in the hope that it will be useful, but
 //  WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 //  General Public License for more details.
@@ -34,10 +34,10 @@
 namespace Coords {
 
   // =================
-  // ===== Angle =====
+  // ===== angle =====
   // =================
 
-  class Angle {
+  class angle {
     // base class for latitude, longitude, declination and right ascension
 
   public:
@@ -47,18 +47,18 @@ namespace Coords {
 
     // ----- ctor and dtor -----
 
-    explicit Angle(const double& a_deg = 0.0,
+    explicit angle(const double& a_deg = 0.0,
 		   const double& a_min = 0.0,
 		   const double& a_sec = 0.0);
 
-    explicit Angle(const std::string& a_deg, // The ambiguity is in the box.
+    explicit angle(const std::string& a_deg, // The ambiguity is in the box.
 		   const std::string& a_min = "0",
 		   const std::string& a_sec = "0");
 
-    virtual ~Angle() {};
+    virtual ~angle() {};
 
-     Angle(const Angle& a);
-     Angle& operator=(const Angle& rhs);
+     angle(const angle& a);
+     angle& operator=(const angle& rhs);
 
     // ----- accessors -----
     void          value(const double& a_value) {m_value = a_value;}
@@ -75,22 +75,22 @@ namespace Coords {
 
     // ----- boolean operators -----
 
-     bool operator== (const Angle& rhs) const;
-     bool operator!= (const Angle& rhs) const;
+     bool operator== (const angle& rhs) const;
+     bool operator!= (const angle& rhs) const;
 
-     bool operator< (const Angle& rhs) const;
-     bool operator<= (const Angle& rhs) const;
+     bool operator< (const angle& rhs) const;
+     bool operator<= (const angle& rhs) const;
 
-     bool operator> (const Angle& rhs) const;
-     bool operator>= (const Angle& rhs) const;
+     bool operator> (const angle& rhs) const;
+     bool operator>= (const angle& rhs) const;
 
     // ----- in-place operators -----
 
-    virtual Angle& operator+=(const Angle& rhs);
-    virtual Angle& operator-=(const Angle& rhs);
+    virtual angle& operator+=(const angle& rhs);
+    virtual angle& operator-=(const angle& rhs);
 
-    virtual Angle& operator*=(const Angle& rhs);
-    virtual Angle& operator/=(const Angle& rhs) throw (DivideByZeroError);
+    virtual angle& operator*=(const angle& rhs);
+    virtual angle& operator/=(const angle& rhs) throw (DivideByZeroError);
 
 
     // ----- other methods -----
@@ -107,12 +107,12 @@ namespace Coords {
   // ----- operators -----
   // ---------------------
 
-  Angle operator+ (const Angle& lhs, const Angle& rhs);
-  Angle operator- (const Angle& lhs, const Angle& rhs);
-  Angle operator- (const Angle& rhs); // unitary minus
+  angle operator+ (const angle& lhs, const angle& rhs);
+  angle operator- (const angle& lhs, const angle& rhs);
+  angle operator- (const angle& rhs); // unitary minus
 
-  Angle operator* (const Angle& lhs, const Angle& rhs);
-  Angle operator/ (const Angle& lhs, const Angle& rhs) throw (DivideByZeroError);
+  angle operator* (const angle& lhs, const angle& rhs);
+  angle operator/ (const angle& lhs, const angle& rhs) throw (DivideByZeroError);
 
 
   // -------------------------------
@@ -124,7 +124,7 @@ namespace Coords {
   void value2HMSString(const double& a_value, std::stringstream& a_string);
 
   // inline for boost. Use hpp instead?
-  inline std::ostream& operator<< (std::ostream& os, const Coords::Angle& a) {
+  inline std::ostream& operator<< (std::ostream& os, const Coords::angle& a) {
     std::stringstream out;
     Coords::value2DMSString(a.value(), out);
     return os << out.str();

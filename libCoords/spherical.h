@@ -28,7 +28,7 @@
 
 namespace Coords {
 
-  class Angle;
+  class angle;
   class Cartesian;
 
   class spherical {
@@ -37,8 +37,8 @@ namespace Coords {
     // ----- ctor and dtor -----
 
     explicit spherical(const double& r = 0.0,
-		       const Angle& theta = Angle(0.0),
-		       const Angle& phi = Angle(0.0))
+		       const angle& theta = angle(0.0),
+		       const angle& phi = angle(0.0))
       : m_r(r), m_theta(theta), m_phi(phi) {}; // ctors, including default.
 
     explicit spherical(const std::string& r, // The ambiguity is in the box.
@@ -58,13 +58,13 @@ namespace Coords {
     const double& r() const            {return m_r;}
     double        getR() const         {return m_r;} // for boost python wrappers
 
-    void          theta(const Angle& rhs)  {m_theta = rhs;}
-    const Angle&  theta() const            {return m_theta;}
-    Angle         getTheta() const         {return m_theta;} // for boost python wrappers
+    void          theta(const angle& rhs)  {m_theta = rhs;}
+    const angle&  theta() const            {return m_theta;}
+    angle         getTheta() const         {return m_theta;} // for boost python wrappers
 
-    void          phi(const Angle& rhs)  {m_phi = rhs;}
-    const Angle&  phi() const            {return m_phi;}
-    Angle         getPhi() const         {return m_phi;} // for boost python wrappers
+    void          phi(const angle& rhs)  {m_phi = rhs;}
+    const angle&  phi() const            {return m_phi;}
+    angle         getPhi() const         {return m_phi;} // for boost python wrappers
 
     // ----- bool operators -----
 
@@ -81,15 +81,15 @@ namespace Coords {
 
     // ----- other methods -----
 
-    void zero() {r(0.0); theta(Angle(0.0)); phi(Angle(0.0));};
+    void zero() {r(0.0); theta(angle(0.0)); phi(angle(0.0));};
 
   private:
 
     // ----- data members -----
 
     double m_r;     // Radius: Euclidean distance from the origin (O) to point (P).
-    Angle  m_theta; // Inclination: The angle between the zenith direction and the line segment OP
-    Angle  m_phi;   // Azimuth: The angle between the x-axis and the projection of OP into the xy plane.
+    angle  m_theta; // Inclination: The angle between the zenith direction and the line segment OP
+    angle  m_phi;   // Azimuth: The angle between the x-axis and the projection of OP into the xy plane.
 
   };
 

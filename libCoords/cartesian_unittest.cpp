@@ -145,7 +145,7 @@ namespace {
 
   TEST(FixedCartesian, ConstructFromSpherical_x) {
     // all x
-    Coords::spherical a(2.0, Coords::Angle(90));
+    Coords::spherical a(2.0, Coords::angle(90));
     Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(2.0, b.x());
     EXPECT_DOUBLE_EQ(0.0, b.y());
@@ -155,7 +155,7 @@ namespace {
 
   TEST(FixedCartesian, ConstructFromSpherical_y_1) {
     // all y
-    Coords::spherical a(3.0, Coords::Angle(90), Coords::Angle(90));
+    Coords::spherical a(3.0, Coords::angle(90), Coords::angle(90));
     Coords::Cartesian b(a);
     EXPECT_NEAR(0.0, b.x(), Coords::epsilon*10); // TODO meh?
     EXPECT_DOUBLE_EQ(3.0, b.y());
@@ -163,7 +163,7 @@ namespace {
   }
 
   TEST(FixedCartesian, ConstructFromSpherical_y_2) {
-    Coords::spherical a(10.0, Coords::Angle(-90), Coords::Angle(45));
+    Coords::spherical a(10.0, Coords::angle(-90), Coords::angle(45));
     Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(-7.0710678118654755, b.x());
     EXPECT_DOUBLE_EQ(-7.0710678118654755, b.y());
@@ -172,7 +172,7 @@ namespace {
 
 
   TEST(FixedCartesian, ConstructFromSpherical_theta45_1) {
-    Coords::spherical a(1, Coords::Angle(45), Coords::Angle(45));
+    Coords::spherical a(1, Coords::angle(45), Coords::angle(45));
     Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(0.5, b.x());
     EXPECT_DOUBLE_EQ(0.5, b.y());
@@ -180,7 +180,7 @@ namespace {
   }
 
   TEST(FixedCartesian, ConstructFromSpherical_theta45_2) {
-    Coords::spherical a(10.0, Coords::Angle(-45), Coords::Angle(45));
+    Coords::spherical a(10.0, Coords::angle(-45), Coords::angle(45));
     Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(-5.0, b.x());
     EXPECT_DOUBLE_EQ(-5.0, b.y());
@@ -188,7 +188,7 @@ namespace {
   }
 
   TEST(FixedCartesian, ConstructFromSpherical_theta45_3) {
-    Coords::spherical a(10.0, Coords::Angle(135), Coords::Angle(45));
+    Coords::spherical a(10.0, Coords::angle(135), Coords::angle(45));
     Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(5.0, b.x());
     EXPECT_DOUBLE_EQ(5.0, b.y());
@@ -196,7 +196,7 @@ namespace {
   }
 
   TEST(FixedCartesian, ConstructFromSpherical_theta45_4) {
-    Coords::spherical a(10.0, Coords::Angle(-135), Coords::Angle(45));
+    Coords::spherical a(10.0, Coords::angle(-135), Coords::angle(45));
     Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(-5.0, b.x());
     EXPECT_DOUBLE_EQ(-5.0, b.y());
@@ -204,7 +204,7 @@ namespace {
   }
 
   TEST(FixedCartesian, ConstructFromSpherical_theta45_5) {
-    Coords::spherical a(10.0, Coords::Angle(45), Coords::Angle(-45));
+    Coords::spherical a(10.0, Coords::angle(45), Coords::angle(-45));
     Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(5.0, b.x());
     EXPECT_DOUBLE_EQ(-5.0, b.y());
@@ -212,7 +212,7 @@ namespace {
   }
 
   TEST(FixedCartesian, ConstructFromSpherical_theta45_6) {
-    Coords::spherical a(10.0, Coords::Angle(45), Coords::Angle(135));
+    Coords::spherical a(10.0, Coords::angle(45), Coords::angle(135));
     Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(-5.0, b.x());
     EXPECT_DOUBLE_EQ(5.0, b.y());
@@ -490,7 +490,7 @@ namespace {
 
   TEST(XRotationTest, Positive90AboutZ) {
 
-    double angle(Coords::Angle::deg2rad(90));
+    double angle(Coords::angle::deg2rad(90));
     Coords::rotator about_z(Coords::Cartesian::Uz);
 
     Coords::Cartesian s(about_z.rotate(Coords::Cartesian::Ux, angle));
@@ -503,7 +503,7 @@ namespace {
 
   TEST(XRotationTest, Negative90AboutY) {
 
-    double angle(Coords::Angle::deg2rad(-90));
+    double angle(Coords::angle::deg2rad(-90));
     Coords::rotator about_y(Coords::Cartesian::Uy);
 
     Coords::Cartesian s(about_y.rotate(Coords::Cartesian::Ux, angle));
@@ -520,7 +520,7 @@ namespace {
 
   TEST(YRotationTest, Positive90AboutX) {
 
-    double angle(Coords::Angle::deg2rad(90));
+    double angle(Coords::angle::deg2rad(90));
     Coords::rotator about_x(Coords::Cartesian::Ux);
 
     Coords::Cartesian s(about_x.rotate(Coords::Cartesian::Uy, angle));
@@ -533,7 +533,7 @@ namespace {
 
   TEST(YRotationTest, Negative90AboutZ) {
 
-    double angle(Coords::Angle::deg2rad(-90));
+    double angle(Coords::angle::deg2rad(-90));
     Coords::rotator about_z(Coords::Cartesian::Uz);
 
     Coords::Cartesian s(about_z.rotate(Coords::Cartesian::Uy, angle));
@@ -550,7 +550,7 @@ namespace {
 
   TEST(ZRotationTest, Positive90AboutY) {
 
-    double angle(Coords::Angle::deg2rad(90));
+    double angle(Coords::angle::deg2rad(90));
     Coords::rotator about_y(Coords::Cartesian::Uy);
 
     Coords::Cartesian s(about_y.rotate(Coords::Cartesian::Uz, angle));
@@ -563,7 +563,7 @@ namespace {
 
   TEST(ZRotationTest, Negative90AboutX) {
 
-    double angle(Coords::Angle::deg2rad(-90));
+    double angle(Coords::angle::deg2rad(-90));
     Coords::rotator about_x(Coords::Cartesian::Ux);
 
     Coords::Cartesian s(about_x.rotate(Coords::Cartesian::Uz, angle));
