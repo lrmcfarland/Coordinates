@@ -98,9 +98,64 @@ TODO
 
 ### C++
 
-TODO
+
+```
+
+// ============================================================
+// Filename:    example1.cpp
+//
+// Description: Example of using libCoords
+//
+// Authors:     L.R. McFarland
+// Created:     2014nov11
+// ============================================================
+
+#include <iostream>
+
+#include <angle.h>
+#include <Cartesian.h>
+#include <spherical.h>
+
+int main () {
+
+    Coords::spherical a(1, Coords::angle(45), Coords::angle(45));
+    Coords::spherical b(1, Coords::angle(45), Coords::angle(-45));
+    Coords::spherical c;
+    c = a + b;
+
+    // a and b are both sin(45) high along z axis
+    // +0.5 along x axis (1.0 total)
+    // and +/- 0.5 along the y axis (0.0 total)
+
+    Coords::Cartesian cart_c(c);
+
+    std::cout << "a (" << a << ") + " << std::endl
+	      << "b (" << b << ") = " << std::endl
+	      << "c (" << cart_c << ")" << std::endl;
+
+  return 0;
+}
+
+```
+
+```
+
+[libCoords (master)]$ make example1
+g++ -g -W -Wall -fPIC -I.   -c -o example1.o example1.cpp
+g++ example1.o -o example1 -L. -lCoords
+
+[libCoords (master)]$ ./example1.sh
+# COORD_ORIGIN not set. Using ..
+# GTEST_DIR not set. Using /usr/local/gtest-1.7.0
+# DYLD_LIBRARY_PATH :../libCoords:/usr/local/gtest-1.7.0
+
+a (<spherical><r>1</r><theta>45</theta><phi>45</phi></spherical>) +
+b (<spherical><r>1</r><theta>45</theta><phi>-45</phi></spherical>) =
+c (<Cartesian><x>1</x><y>0</y><z>1.41421</z></Cartesian>)
+
+```
+
 
 ### Python
 
 TODO
-
