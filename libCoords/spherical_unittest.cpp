@@ -34,7 +34,7 @@
 #include <gtest/gtest.h>
 
 #include <angle.h>
-#include <cartesian.h>
+#include <Cartesian.h>
 #include <spherical.h>
 
 
@@ -135,7 +135,7 @@ namespace {
 
   TEST(FixedSpherical, ConstructFromCartesian_x) {
     // all x
-    Coords::cartesian a(1);
+    Coords::Cartesian a(1);
     Coords::spherical b(a);
 
     EXPECT_DOUBLE_EQ(1.0, b.r());
@@ -145,7 +145,7 @@ namespace {
 
   TEST(FixedSpherical, ConstructFromCartesian_y) {
     // all y
-    Coords::cartesian a(0, 1);
+    Coords::Cartesian a(0, 1);
     Coords::spherical b(a);
 
     EXPECT_DOUBLE_EQ(1.0, b.r());
@@ -159,7 +159,7 @@ namespace {
 
   TEST(FixedSpherical, ConstructFromCartesian_z) {
     // all z
-    Coords::cartesian a(0, 0, 1);
+    Coords::Cartesian a(0, 0, 1);
     Coords::spherical b(a);
 
     EXPECT_DOUBLE_EQ(1.0, b.r());
@@ -212,7 +212,7 @@ namespace {
 
     EXPECT_DOUBLE_EQ(Coords::Angle(0.0).value(), c.phi().value());
 
-    Coords::cartesian cart_c(c);
+    Coords::Cartesian cart_c(c);
     EXPECT_DOUBLE_EQ(1.0, cart_c.x()); // 0.5 + 0.5 projection in xy plane
     EXPECT_DOUBLE_EQ(0.0, cart_c.y()); // 0.5 - 0.5 projection in xy plane
     EXPECT_NEAR(c_z, cart_c.z(), Coords::epsilon*10);
@@ -261,7 +261,7 @@ namespace {
     EXPECT_DOUBLE_EQ(Coords::Angle(90.0).value(), c.theta().value());
     EXPECT_DOUBLE_EQ(Coords::Angle(0.0).value(), c.phi().value());
 
-    Coords::cartesian cart_c(c);
+    Coords::Cartesian cart_c(c);
     EXPECT_DOUBLE_EQ(1.0, cart_c.x());
     EXPECT_DOUBLE_EQ(0.0, cart_c.y());
     EXPECT_NEAR(0.0, cart_c.z(), Coords::epsilon);

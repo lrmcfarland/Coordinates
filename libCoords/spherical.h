@@ -29,7 +29,7 @@
 namespace Coords {
 
   class Angle;
-  class cartesian;
+  class Cartesian;
 
   class spherical {
   public:
@@ -45,7 +45,7 @@ namespace Coords {
 		       const std::string& theta="0",
 		       const std::string& phi="0");
 
-    explicit spherical(const cartesian& a);
+    explicit spherical(const Cartesian& a);
 
     ~spherical() {};
 
@@ -108,11 +108,6 @@ namespace Coords {
 
   spherical operator/(const spherical& lhs, const double& rhs) throw (DivideByZeroError); // scale
   spherical operator/(const double& lhs, const spherical& rhs) throw (DivideByZeroError); // scale
-
-  // vector products
-  double operator*(const cartesian& lhs, const cartesian& rhs); // dot product
-  double dot(const cartesian& a, const cartesian& b);  // vector dot product
-  cartesian cross(const cartesian& a, const cartesian& b);  // vector cross product
 
   // -------------------------------
   // ----- output operator<<() -----

@@ -1,7 +1,7 @@
 // ==================================================================
-// Filename:    cartesian.cpp
+// Filename:    Cartesian.cpp
 //
-// Description: Implements the cartesian class This file is part of my
+// Description: Implements the Cartesian class This file is part of my
 //              Orbits software library.
 //
 // Author:      L.R. McFarland
@@ -25,23 +25,23 @@
 #include <stdlib.h> // strtod
 
 #include <angle.h>
-#include <cartesian.h>
+#include <Cartesian.h>
 #include <spherical.h>
 #include <utils.h>
 
 // ---------------------------
-// ----- class cartesian -----
+// ----- class Cartesian -----
 // ---------------------------
 
 // ----- static data members -----
 
-const Coords::cartesian Coords::cartesian::Uo(0,0,0);
-const Coords::cartesian Coords::cartesian::Ux(1,0,0);
-const Coords::cartesian Coords::cartesian::Uy(0,1,0);
-const Coords::cartesian Coords::cartesian::Uz(0,0,1);
+const Coords::Cartesian Coords::Cartesian::Uo(0,0,0);
+const Coords::Cartesian Coords::Cartesian::Ux(1,0,0);
+const Coords::Cartesian Coords::Cartesian::Uy(0,1,0);
+const Coords::Cartesian Coords::Cartesian::Uz(0,0,1);
 
 // ----- constructor from string for building from xml ----
-Coords::cartesian::cartesian(const std::string& a,
+Coords::Cartesian::Cartesian(const std::string& a,
 			     const std::string& b,
 			     const std::string& c)
   : m_x(0), m_y(0), m_z(0) {
@@ -51,7 +51,7 @@ Coords::cartesian::cartesian(const std::string& a,
 }
 
 // ----- conversion constructor to build from spherical coords ----
-Coords::cartesian::cartesian(const Coords::spherical& a)
+Coords::Cartesian::Cartesian(const Coords::spherical& a)
   : m_x(0), m_y(0), m_z(0) {
   
   // ASSUMES: theta is the angle between z and r.
@@ -64,14 +64,14 @@ Coords::cartesian::cartesian(const Coords::spherical& a)
 }
 
 // ----- copy constructor -----
-Coords::cartesian::cartesian(const Coords::cartesian& a) {
+Coords::Cartesian::Cartesian(const Coords::Cartesian& a) {
   x(a.x());
   y(a.y());
   z(a.z());
 };
 
 // ----- copy assignment -----
-Coords::cartesian& Coords::cartesian::operator=(const Coords::cartesian& rhs) {
+Coords::Cartesian& Coords::Cartesian::operator=(const Coords::Cartesian& rhs) {
   if (this == &rhs) return *this;
   x(rhs.x());
   y(rhs.y());
@@ -81,38 +81,38 @@ Coords::cartesian& Coords::cartesian::operator=(const Coords::cartesian& rhs) {
 
 // ----- bool operators -----
 
-bool Coords::cartesian::operator== (const Coords::cartesian& rhs) const {
+bool Coords::Cartesian::operator== (const Coords::Cartesian& rhs) const {
   return x() == rhs.x() && y() == rhs.y() && z() == rhs.z();
 }
 
-bool Coords::cartesian::operator!= (const Coords::cartesian& rhs) const {
+bool Coords::Cartesian::operator!= (const Coords::Cartesian& rhs) const {
   return !operator==(rhs);
 }
 
 // ----- in-place operators -----
 
-Coords::cartesian& Coords::cartesian::operator+=(const Coords::cartesian& rhs) {
+Coords::Cartesian& Coords::Cartesian::operator+=(const Coords::Cartesian& rhs) {
   m_x += rhs.x();
   m_y += rhs.y();
   m_z += rhs.z();
   return *this;
 }
 
-Coords::cartesian& Coords::cartesian::operator-=(const Coords::cartesian& rhs) {
+Coords::Cartesian& Coords::Cartesian::operator-=(const Coords::Cartesian& rhs) {
   m_x -= rhs.x();
   m_y -= rhs.y();
   m_z -= rhs.z();
   return *this;
 }
 
-Coords::cartesian& Coords::cartesian::operator*=(const double& rhs) {
+Coords::Cartesian& Coords::Cartesian::operator*=(const double& rhs) {
   m_x *= rhs;
   m_y *= rhs;
   m_z *= rhs;
   return *this;
 }
 
-Coords::cartesian& Coords::cartesian::operator/=(const double& rhs) throw (DivideByZeroError) {
+Coords::Cartesian& Coords::Cartesian::operator/=(const double& rhs) throw (DivideByZeroError) {
   if (rhs == 0)
     throw DivideByZeroError();
   m_x /= rhs;
@@ -123,85 +123,85 @@ Coords::cartesian& Coords::cartesian::operator/=(const double& rhs) throw (Divid
 
 // ----- normalizing -----
 
-double Coords::cartesian::magnitude() const {
+double Coords::Cartesian::magnitude() const {
   return sqrt(magnitude2());
 }
 
-double Coords::cartesian::magnitude2() const {
+double Coords::Cartesian::magnitude2() const {
   return m_x*m_x + m_y*m_y + m_z*m_z;
 }
 
-Coords::cartesian Coords::cartesian::normalized() const throw (DivideByZeroError) {
+Coords::Cartesian Coords::Cartesian::normalized() const throw (DivideByZeroError) {
   const double h(magnitude());
-  return Coords::cartesian(m_x/h, m_y/h, m_z/h);
+  return Coords::Cartesian(m_x/h, m_y/h, m_z/h);
 }
 
 // ---------------------
 // ----- operators -----
 // ---------------------
 
-Coords::cartesian Coords::operator+(const Coords::cartesian& lhs,
-				    const Coords::cartesian& rhs) {
-  return Coords::cartesian(lhs.x() + rhs.x(),
+Coords::Cartesian Coords::operator+(const Coords::Cartesian& lhs,
+				    const Coords::Cartesian& rhs) {
+  return Coords::Cartesian(lhs.x() + rhs.x(),
 			   lhs.y() + rhs.y(),
 			   lhs.z() + rhs.z());
 }
 
-Coords::cartesian Coords::operator-(const Coords::cartesian& lhs,
-				    const Coords::cartesian& rhs) {
-  return Coords::cartesian(lhs.x() - rhs.x(),
+Coords::Cartesian Coords::operator-(const Coords::Cartesian& lhs,
+				    const Coords::Cartesian& rhs) {
+  return Coords::Cartesian(lhs.x() - rhs.x(),
 			   lhs.y() - rhs.y(),
 			   lhs.z() - rhs.z());
 }
 
-Coords::cartesian Coords::operator-(const Coords::cartesian& rhs) {
-  return Coords::cartesian(-rhs.x(),
+Coords::Cartesian Coords::operator-(const Coords::Cartesian& rhs) {
+  return Coords::Cartesian(-rhs.x(),
 			   -rhs.y(),
 			   -rhs.z());
 }
 
 // scale
-Coords::cartesian Coords::operator*(const Coords::cartesian& lhs,
+Coords::Cartesian Coords::operator*(const Coords::Cartesian& lhs,
 				    const double& rhs) {
-  return Coords::cartesian(lhs.x() * rhs, lhs.y() * rhs, lhs.z() * rhs);
+  return Coords::Cartesian(lhs.x() * rhs, lhs.y() * rhs, lhs.z() * rhs);
 }
 
-Coords::cartesian Coords::operator*(const double& lhs,
-				    const Coords::cartesian& rhs) {
+Coords::Cartesian Coords::operator*(const double& lhs,
+				    const Coords::Cartesian& rhs) {
   return Coords::operator*(rhs, lhs);
 }
 
-Coords::cartesian Coords::operator/(const Coords::cartesian& lhs,
+Coords::Cartesian Coords::operator/(const Coords::Cartesian& lhs,
 				    const double& rhs)
   throw (DivideByZeroError) {
   if (rhs == 0)
     throw DivideByZeroError();
-  return Coords::cartesian(lhs.x() / rhs, lhs.y() / rhs, lhs.z() / rhs);
+  return Coords::Cartesian(lhs.x() / rhs, lhs.y() / rhs, lhs.z() / rhs);
 }
 
-Coords::cartesian Coords::operator/(const double& lhs,
-				    const Coords::cartesian& rhs)
+Coords::Cartesian Coords::operator/(const double& lhs,
+				    const Coords::Cartesian& rhs)
   throw (DivideByZeroError) {
   if (rhs.x() == 0 || rhs.y() == 0 || rhs.z() == 0)
     throw DivideByZeroError();
-  return Coords::cartesian(lhs / rhs.x(), lhs / rhs.y(), lhs / rhs.z());
+  return Coords::Cartesian(lhs / rhs.x(), lhs / rhs.y(), lhs / rhs.z());
 }
 
 // ----- vector products -----
 
-double Coords::operator*(const Coords::cartesian& lhs,
-			 const Coords::cartesian& rhs) {
+double Coords::operator*(const Coords::Cartesian& lhs,
+			 const Coords::Cartesian& rhs) {
   return lhs.x()*rhs.x() + lhs.y()*rhs.y() + lhs.z()*rhs.z();
 }
 
-double Coords::dot(const Coords::cartesian& lhs,
-		   const Coords::cartesian& rhs) {
+double Coords::dot(const Coords::Cartesian& lhs,
+		   const Coords::Cartesian& rhs) {
   return lhs * rhs;
 }
 
-Coords::cartesian Coords::cross(const Coords::cartesian& a,
-				const Coords::cartesian& b) {
-  Coords::cartesian tmp;
+Coords::Cartesian Coords::cross(const Coords::Cartesian& a,
+				const Coords::Cartesian& b) {
+  Coords::Cartesian tmp;
   tmp.x(a.y()*b.z() - a.z()*b.y());
   tmp.y(a.z()*b.x() - a.x()*b.z());
   tmp.z(a.x()*b.y() - a.y()*b.x());
@@ -212,7 +212,7 @@ Coords::cartesian Coords::cross(const Coords::cartesian& a,
 // ----- class rotator -----
 // -------------------------
 
-Coords::rotator::rotator(const Coords::cartesian& a_axis) :
+Coords::rotator::rotator(const Coords::Cartesian& a_axis) :
   m_axis(a_axis),
   m_rotation_matrix(3, std::vector<double>(3, 0)),
   m_is_new_axis(true),
@@ -237,14 +237,14 @@ Coords::rotator::operator=(const Coords::rotator& rhs) {
 
 
 
-void Coords::rotator::axis(const Coords::cartesian& a_axis) {
+void Coords::rotator::axis(const Coords::Cartesian& a_axis) {
   if (a_axis != m_axis) {
     m_axis = a_axis;
     m_is_new_axis = true;
   }
 }
 
-Coords::cartesian Coords::rotator::rotate(const Coords::cartesian& a_heading,
+Coords::Cartesian Coords::rotator::rotate(const Coords::Cartesian& a_heading,
 					  const double& a_radians) {
   
   if (m_is_new_axis || m_old_radians != a_radians) {
@@ -252,7 +252,7 @@ Coords::cartesian Coords::rotator::rotate(const Coords::cartesian& a_heading,
     double c(cos(a_radians));
     double s(sin(a_radians));
     
-    Coords::cartesian normal(axis().normalized());
+    Coords::Cartesian normal(axis().normalized());
     
     double t(1-c);
     
@@ -283,7 +283,7 @@ Coords::cartesian Coords::rotator::rotate(const Coords::cartesian& a_heading,
     
   }
   
-  Coords::cartesian tmp(m_rotation_matrix[0][0]*a_heading.x() +
+  Coords::Cartesian tmp(m_rotation_matrix[0][0]*a_heading.x() +
 			m_rotation_matrix[0][1]*a_heading.y() +
 			m_rotation_matrix[0][2]*a_heading.z(),
 			m_rotation_matrix[1][0]*a_heading.x() +
@@ -306,7 +306,7 @@ const unsigned int Coords::CartesianRecorder::default_size(1024);
 
 Coords::CartesianRecorder::CartesianRecorder(const unsigned int& a_size_limit) :
   m_size_limit(a_size_limit),
-  m_data(std::deque<Coords::cartesian>(m_size_limit))
+  m_data(std::deque<Coords::Cartesian>(m_size_limit))
 {}
 
 Coords::CartesianRecorder::CartesianRecorder(const Coords::CartesianRecorder& a):
@@ -322,7 +322,7 @@ Coords::CartesianRecorder::operator=(const Coords::CartesianRecorder& rhs) {
   return *this;
 }
 
-void Coords::CartesianRecorder::push(Coords::cartesian a) {
+void Coords::CartesianRecorder::push(Coords::Cartesian a) {
   // even up the sizes to just under the limit.
   while (m_data.size() > sizeLimit() - 1)
     m_data.pop_front();
@@ -347,7 +347,7 @@ void Coords::CartesianRecorder::write2R(const std::string& flnm, bool skip_Uo) {
   for (unsigned int k = 0; k < m_data.size(); ++k) {
     
     // skip zero points from partially filled buffer.
-    if (skip_Uo and m_data[k] == Coords::cartesian::Uo)
+    if (skip_Uo and m_data[k] == Coords::Cartesian::Uo)
       continue;
     
     ssfile << k << " "

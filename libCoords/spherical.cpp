@@ -25,7 +25,7 @@
 #include <stdlib.h> // strtod
 
 #include <angle.h>
-#include <cartesian.h>
+#include <Cartesian.h>
 #include <spherical.h>
 
 // -----------------------
@@ -43,7 +43,7 @@ Coords::spherical::spherical(const std::string& a,
   m_phi   = Coords::Angle(c);
 }
 
-Coords::spherical::spherical(const Coords::cartesian& a)
+Coords::spherical::spherical(const Coords::Cartesian& a)
   : m_r(0), m_theta(0), m_phi(0) {
 
   r(a.magnitude());
@@ -127,18 +127,18 @@ Coords::spherical& Coords::spherical::operator/=(const double& rhs) throw (Divid
 
 Coords::spherical Coords::operator+(const Coords::spherical& lhs,
 				    const Coords::spherical& rhs) {
-  Coords::cartesian cart_lhs(lhs);
-  Coords::cartesian cart_rhs(rhs);
-  Coords::cartesian cart_sum(cart_lhs + cart_rhs);
+  Coords::Cartesian cart_lhs(lhs);
+  Coords::Cartesian cart_rhs(rhs);
+  Coords::Cartesian cart_sum(cart_lhs + cart_rhs);
   Coords::spherical sum(cart_sum);
   return sum;
 }
 
 Coords::spherical Coords::operator-(const Coords::spherical& lhs,
 				    const Coords::spherical& rhs) {
-  Coords::cartesian cart_lhs(lhs);
-  Coords::cartesian cart_rhs(rhs);
-  Coords::cartesian cart_diff(cart_lhs - cart_rhs);
+  Coords::Cartesian cart_lhs(lhs);
+  Coords::Cartesian cart_rhs(rhs);
+  Coords::Cartesian cart_diff(cart_lhs - cart_rhs);
   Coords::spherical diff(cart_diff);
   return diff;
 }

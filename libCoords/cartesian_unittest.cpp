@@ -1,6 +1,6 @@
 // ================================================================
-// Filename:    cartesian_unittest.cpp
-// Description: This is the gtest unittest of the cartesian library.
+// Filename:    Cartesian_unittest.cpp
+// Description: This is the gtest unittest of the Cartesian library.
 //
 // Author:      L.R. McFarland, lrm@starbug.com
 // Created:     2012 May 13
@@ -9,8 +9,8 @@
 // See also: http://code.google.com/p/googletest/wiki/Primer
 //
 // To compile manually:
-// g++ -I /usr/local/gtest-1.6.0/include -I . -c cartesian_unittest.cpp
-// g++ -L /usr/local/gtest-1.6.0 -lgtest cartesian_unittest.o -o cartesian_unittest
+// g++ -I /usr/local/gtest-1.6.0/include -I . -c Cartesian_unittest.cpp
+// g++ -L /usr/local/gtest-1.6.0 -lgtest Cartesian_unittest.o -o Cartesian_unittest
 //
 //  Orbits is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@
 #include <gtest/gtest.h>
 
 #include <angle.h>
-#include <cartesian.h>
+#include <Cartesian.h>
 #include <spherical.h>
 
 
@@ -49,7 +49,7 @@ namespace {
 
   TEST(FixedCartesian, Accessors) {
 
-    Coords::cartesian a;
+    Coords::Cartesian a;
 
     a.x(1.1);
     EXPECT_EQ(1.1, a.x());
@@ -66,33 +66,33 @@ namespace {
   }
 
   TEST(FixedCartesian, OutputOperator) {
-    Coords::cartesian a(1, 2, 3);
+    Coords::Cartesian a(1, 2, 3);
     std::stringstream out;
     out << a;
-    EXPECT_STREQ("<cartesian><x>1</x><y>2</y><z>3</z></cartesian>", out.str().c_str());
+    EXPECT_STREQ("<Cartesian><x>1</x><y>2</y><z>3</z></Cartesian>", out.str().c_str());
   }
 
   TEST(FixedCartesian, UnitVectors) {
-    EXPECT_EQ(Coords::cartesian::Uo, Coords::cartesian());
-    EXPECT_EQ(Coords::cartesian::Ux, Coords::cartesian(1));
-    EXPECT_EQ(Coords::cartesian::Uy, Coords::cartesian(0, 1));
-    EXPECT_EQ(Coords::cartesian::Uz, Coords::cartesian(0, 0, 1));
+    EXPECT_EQ(Coords::Cartesian::Uo, Coords::Cartesian());
+    EXPECT_EQ(Coords::Cartesian::Ux, Coords::Cartesian(1));
+    EXPECT_EQ(Coords::Cartesian::Uy, Coords::Cartesian(0, 1));
+    EXPECT_EQ(Coords::Cartesian::Uz, Coords::Cartesian(0, 0, 1));
   }
 
   TEST(FixedCartesian, Equivalence) {
-    EXPECT_TRUE(Coords::cartesian(1, 2, 3) == Coords::cartesian(1.0, 2.0, 3.0));
+    EXPECT_TRUE(Coords::Cartesian(1, 2, 3) == Coords::Cartesian(1.0, 2.0, 3.0));
 
-    EXPECT_FALSE(Coords::cartesian(1, 2, 3) == Coords::cartesian(1.1, 2.0, 3.0));
-    EXPECT_FALSE(Coords::cartesian(1, 2, 3) == Coords::cartesian(1.0, 2.1, 3.0));
-    EXPECT_FALSE(Coords::cartesian(1, 2, 3) == Coords::cartesian(1.0, 2.0, 3.1));
+    EXPECT_FALSE(Coords::Cartesian(1, 2, 3) == Coords::Cartesian(1.1, 2.0, 3.0));
+    EXPECT_FALSE(Coords::Cartesian(1, 2, 3) == Coords::Cartesian(1.0, 2.1, 3.0));
+    EXPECT_FALSE(Coords::Cartesian(1, 2, 3) == Coords::Cartesian(1.0, 2.0, 3.1));
 
-    EXPECT_TRUE(Coords::cartesian(1, 2, 3) != Coords::cartesian(1.1, 2.0, 3.0));
-    EXPECT_TRUE(Coords::cartesian(1, 2, 3) != Coords::cartesian(1.0, 2.1, 3.0));
-    EXPECT_TRUE(Coords::cartesian(1, 2, 3) != Coords::cartesian(1.0, 2.0, 3.1));
+    EXPECT_TRUE(Coords::Cartesian(1, 2, 3) != Coords::Cartesian(1.1, 2.0, 3.0));
+    EXPECT_TRUE(Coords::Cartesian(1, 2, 3) != Coords::Cartesian(1.0, 2.1, 3.0));
+    EXPECT_TRUE(Coords::Cartesian(1, 2, 3) != Coords::Cartesian(1.0, 2.0, 3.1));
   }
 
   TEST(FixedCartesian, DefaultConstructor) {
-    Coords::cartesian a;
+    Coords::Cartesian a;
     EXPECT_DOUBLE_EQ(0, a.x());
     EXPECT_DOUBLE_EQ(0, a.y());
     EXPECT_DOUBLE_EQ(0, a.z());
@@ -100,17 +100,17 @@ namespace {
 
   TEST(FixedCartesian, ConstructFromString) {
 
-    Coords::cartesian a("1.23");
+    Coords::Cartesian a("1.23");
     EXPECT_DOUBLE_EQ(1.23, a.x());
     EXPECT_DOUBLE_EQ(0.0, a.y());
     EXPECT_DOUBLE_EQ(0.0, a.z());
 
-    Coords::cartesian b("-1.23", "1.23e-7");
+    Coords::Cartesian b("-1.23", "1.23e-7");
     EXPECT_DOUBLE_EQ(-1.23, b.x());
     EXPECT_DOUBLE_EQ(1.23e-7, b.y());
     EXPECT_DOUBLE_EQ(0.0, b.z());
 
-    Coords::cartesian c("1.23", "-1.23e-7", "10");
+    Coords::Cartesian c("1.23", "-1.23e-7", "10");
     EXPECT_DOUBLE_EQ(1.23, c.x());
     EXPECT_DOUBLE_EQ(-1.23e-7, c.y());
     EXPECT_DOUBLE_EQ(10.0, c.z());
@@ -118,16 +118,16 @@ namespace {
   }
 
   TEST(FixedCartesian, ConstructFromBadString) {
-    Coords::cartesian def; // default
+    Coords::Cartesian def; // default
 
     // TODO in future, expect throw std::invalid_argument from std::stod.
-    Coords::cartesian d("asdf");
+    Coords::Cartesian d("asdf");
     EXPECT_EQ(def, d);
 
-    Coords::cartesian e("");
+    Coords::Cartesian e("");
     EXPECT_EQ(def, e);
 
-    Coords::cartesian f("asdf 3.1415 blah");
+    Coords::Cartesian f("asdf 3.1415 blah");
     EXPECT_EQ(def, f);
   }
 
@@ -137,7 +137,7 @@ namespace {
   TEST(FixedCartesian, ConstructFromSpherical_z) {
     // all z
     Coords::spherical a(1.0);
-    Coords::cartesian b(a);
+    Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(0.0, b.x());
     EXPECT_DOUBLE_EQ(0.0, b.y());
     EXPECT_DOUBLE_EQ(1.0, b.z());
@@ -146,7 +146,7 @@ namespace {
   TEST(FixedCartesian, ConstructFromSpherical_x) {
     // all x
     Coords::spherical a(2.0, Coords::Angle(90));
-    Coords::cartesian b(a);
+    Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(2.0, b.x());
     EXPECT_DOUBLE_EQ(0.0, b.y());
     EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10); // TODO meh?
@@ -156,7 +156,7 @@ namespace {
   TEST(FixedCartesian, ConstructFromSpherical_y_1) {
     // all y
     Coords::spherical a(3.0, Coords::Angle(90), Coords::Angle(90));
-    Coords::cartesian b(a);
+    Coords::Cartesian b(a);
     EXPECT_NEAR(0.0, b.x(), Coords::epsilon*10); // TODO meh?
     EXPECT_DOUBLE_EQ(3.0, b.y());
     EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10); // TODO meh?
@@ -164,7 +164,7 @@ namespace {
 
   TEST(FixedCartesian, ConstructFromSpherical_y_2) {
     Coords::spherical a(10.0, Coords::Angle(-90), Coords::Angle(45));
-    Coords::cartesian b(a);
+    Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(-7.0710678118654755, b.x());
     EXPECT_DOUBLE_EQ(-7.0710678118654755, b.y());
     EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10); // TODO meh?
@@ -173,7 +173,7 @@ namespace {
 
   TEST(FixedCartesian, ConstructFromSpherical_theta45_1) {
     Coords::spherical a(1, Coords::Angle(45), Coords::Angle(45));
-    Coords::cartesian b(a);
+    Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(0.5, b.x());
     EXPECT_DOUBLE_EQ(0.5, b.y());
     EXPECT_DOUBLE_EQ(0.70710678118654757, b.z());
@@ -181,7 +181,7 @@ namespace {
 
   TEST(FixedCartesian, ConstructFromSpherical_theta45_2) {
     Coords::spherical a(10.0, Coords::Angle(-45), Coords::Angle(45));
-    Coords::cartesian b(a);
+    Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(-5.0, b.x());
     EXPECT_DOUBLE_EQ(-5.0, b.y());
     EXPECT_DOUBLE_EQ(7.0710678118654757, b.z());
@@ -189,7 +189,7 @@ namespace {
 
   TEST(FixedCartesian, ConstructFromSpherical_theta45_3) {
     Coords::spherical a(10.0, Coords::Angle(135), Coords::Angle(45));
-    Coords::cartesian b(a);
+    Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(5.0, b.x());
     EXPECT_DOUBLE_EQ(5.0, b.y());
     EXPECT_DOUBLE_EQ(-7.0710678118654757, b.z());
@@ -197,7 +197,7 @@ namespace {
 
   TEST(FixedCartesian, ConstructFromSpherical_theta45_4) {
     Coords::spherical a(10.0, Coords::Angle(-135), Coords::Angle(45));
-    Coords::cartesian b(a);
+    Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(-5.0, b.x());
     EXPECT_DOUBLE_EQ(-5.0, b.y());
     EXPECT_DOUBLE_EQ(-7.0710678118654757, b.z());
@@ -205,7 +205,7 @@ namespace {
 
   TEST(FixedCartesian, ConstructFromSpherical_theta45_5) {
     Coords::spherical a(10.0, Coords::Angle(45), Coords::Angle(-45));
-    Coords::cartesian b(a);
+    Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(5.0, b.x());
     EXPECT_DOUBLE_EQ(-5.0, b.y());
     EXPECT_DOUBLE_EQ(7.0710678118654757, b.z());
@@ -213,7 +213,7 @@ namespace {
 
   TEST(FixedCartesian, ConstructFromSpherical_theta45_6) {
     Coords::spherical a(10.0, Coords::Angle(45), Coords::Angle(135));
-    Coords::cartesian b(a);
+    Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(-5.0, b.x());
     EXPECT_DOUBLE_EQ(5.0, b.y());
     EXPECT_DOUBLE_EQ(7.0710678118654757, b.z());
@@ -225,13 +225,13 @@ namespace {
 
 
   TEST(FixedCartesian, Magnitude) {
-    Coords::cartesian a(1, 2, 3);
+    Coords::Cartesian a(1, 2, 3);
     EXPECT_DOUBLE_EQ(3.7416573867739413, a.magnitude());
   }
 
   TEST(FixedCartesian, Normalized) {
-    Coords::cartesian a(1, 2, 3);
-    Coords::cartesian a_norm(a.normalized());
+    Coords::Cartesian a(1, 2, 3);
+    Coords::Cartesian a_norm(a.normalized());
     EXPECT_DOUBLE_EQ(1.0, a_norm.magnitude());
     EXPECT_DOUBLE_EQ(0.2672612419124244, a_norm.x());
     EXPECT_DOUBLE_EQ(0.53452248382484879, a_norm.y());
@@ -239,25 +239,25 @@ namespace {
   }
 
   TEST(FixedCartesian, DotProduct) {
-    Coords::cartesian dx2(-1, -2, -3);
-    EXPECT_EQ(-1.0, Coords::dot(dx2, Coords::cartesian::Ux));
-    EXPECT_EQ(-2.0, Coords::dot(dx2, Coords::cartesian::Uy));
-    EXPECT_EQ(-3.0, Coords::dot(dx2, Coords::cartesian::Uz));
+    Coords::Cartesian dx2(-1, -2, -3);
+    EXPECT_EQ(-1.0, Coords::dot(dx2, Coords::Cartesian::Ux));
+    EXPECT_EQ(-2.0, Coords::dot(dx2, Coords::Cartesian::Uy));
+    EXPECT_EQ(-3.0, Coords::dot(dx2, Coords::Cartesian::Uz));
   }
 
   TEST(FixedCartesian, XYCrossProduct) {
-    Coords::cartesian z = Coords::cross(Coords::cartesian::Ux, Coords::cartesian::Uy);
-    EXPECT_EQ(Coords::cartesian::Uz, z);
+    Coords::Cartesian z = Coords::cross(Coords::Cartesian::Ux, Coords::Cartesian::Uy);
+    EXPECT_EQ(Coords::Cartesian::Uz, z);
   }
 
   TEST(FixedCartesian, YZCrossProduct) {
-    Coords::cartesian x = Coords::cross(Coords::cartesian::Uy, Coords::cartesian::Uz);
-    EXPECT_EQ(Coords::cartesian::Ux, x);
+    Coords::Cartesian x = Coords::cross(Coords::Cartesian::Uy, Coords::Cartesian::Uz);
+    EXPECT_EQ(Coords::Cartesian::Ux, x);
   }
 
   TEST(FixedCartesian, ZXCrossProduct) {
-    Coords::cartesian y = Coords::cross(Coords::cartesian::Uz, Coords::cartesian::Ux);
-    EXPECT_EQ(Coords::cartesian::Uy, y);
+    Coords::Cartesian y = Coords::cross(Coords::Cartesian::Uz, Coords::Cartesian::Ux);
+    EXPECT_EQ(Coords::Cartesian::Uy, y);
   }
 
   TEST(FixedCartesian, CartesianException) {
@@ -270,7 +270,7 @@ namespace {
 
   TEST(FixedCartesian, InplaceDivideByZeroException) {
     try {
-      Coords::cartesian a; a /= 0;
+      Coords::Cartesian a; a /= 0;
     } catch (Coords::Error& err) {
       EXPECT_STREQ(err.what(), "division by zero is undefined");
     }
@@ -312,71 +312,71 @@ namespace {
     double lo;
     double hi;
 
-    Coords::cartesian p1;
-    Coords::cartesian p2;
+    Coords::Cartesian p1;
+    Coords::Cartesian p2;
     double c; // random double
 
   };
 
   TEST_F(RandomCartesian, CopyConstructor) {
-    Coords::cartesian a(p1);
+    Coords::Cartesian a(p1);
     EXPECT_EQ(p1, a);
   }
 
   TEST_F(RandomCartesian, CopyAssign) {
-    Coords::cartesian a;
+    Coords::Cartesian a;
     a = p1;
     EXPECT_EQ(p1, a);
   }
 
   TEST_F(RandomCartesian, Zero) {
-    Coords::cartesian a(p1);
+    Coords::Cartesian a(p1);
     a.zero();
-    EXPECT_EQ(Coords::cartesian::Uo, a);
+    EXPECT_EQ(Coords::Cartesian::Uo, a);
   }
 
 
   TEST_F(RandomCartesian, AddInplace) {
-    Coords::cartesian result(p1.x() + p2.x(),
+    Coords::Cartesian result(p1.x() + p2.x(),
 			     p1.y() + p2.y(),
 			     p1.z() + p2.z());
-    Coords::cartesian a(p1);
+    Coords::Cartesian a(p1);
     a += p2;
     EXPECT_EQ(result, a);
   }
 
   TEST_F(RandomCartesian, CartesianPlusCartesian) {
-    Coords::cartesian result(p1.x() + p2.x(),
+    Coords::Cartesian result(p1.x() + p2.x(),
 			     p1.y() + p2.y(),
 			     p1.z() + p2.z());
-    Coords::cartesian a;
+    Coords::Cartesian a;
     a = p1 + p2;
     EXPECT_EQ(result, a);
   }
 
   TEST_F(RandomCartesian, SubtractInplace) {
-    Coords::cartesian result(p1.x() - p2.x(),
+    Coords::Cartesian result(p1.x() - p2.x(),
 			     p1.y() - p2.y(),
 			     p1.z() - p2.z());
-    Coords::cartesian a(p1);
+    Coords::Cartesian a(p1);
     a -= p2;
     EXPECT_EQ(result, a);
   }
 
   TEST_F(RandomCartesian, UnitaryMinus) {
-    Coords::cartesian result(-p1.x(),
+    Coords::Cartesian result(-p1.x(),
 			     -p1.y(),
 			     -p1.z());
-    Coords::cartesian a(p1);
+    Coords::Cartesian a(p1);
     a = -p1;
     EXPECT_EQ(result, a);
   }
 
   TEST_F(RandomCartesian, CartesianMinusCartesian) {
-    Coords::cartesian result(p1.x() - p2.x(),
+    Coords::Cartesian result(p1.x() - p2.x(),
 			     p1.y() - p2.y(),
 			     p1.z() - p2.z());
-    Coords::cartesian a;
+    Coords::Cartesian a;
     a = p1 - p2;
     EXPECT_EQ(result, a);
   }
@@ -393,75 +393,75 @@ namespace {
 
   TEST_F(RandomCartesian, CartesianTimesDouble) {
     // scale
-    Coords::cartesian result(p1.x() * c,
+    Coords::Cartesian result(p1.x() * c,
 			     p1.y() * c,
 			     p1.z() * c);
-    Coords::cartesian a;
+    Coords::Cartesian a;
     a = p1 * c;
     EXPECT_EQ(result, a);
   }
 
   TEST_F(RandomCartesian, DoubleTimesCartesian) {
     // scale commutes
-    Coords::cartesian result(p1.x() * c,
+    Coords::Cartesian result(p1.x() * c,
 			     p1.y() * c,
 			     p1.z() * c);
 
-    Coords::cartesian a;
+    Coords::Cartesian a;
     a = c * p1;
     EXPECT_EQ(result, a);
   }
 
   TEST_F(RandomCartesian, CartesianTimesDoubleInplace) {
-    Coords::cartesian result(p1.x() * c,
+    Coords::Cartesian result(p1.x() * c,
 			     p1.y() * c,
 			     p1.z() * c);
-    Coords::cartesian a(p1);
+    Coords::Cartesian a(p1);
     a *= c;
     EXPECT_EQ(result, a);
   }
 
   TEST_F(RandomCartesian, CartesianDivideDouble) {
     // scale
-    Coords::cartesian result(p1.x() / c,
+    Coords::Cartesian result(p1.x() / c,
 			     p1.y() / c,
 			     p1.z() / c);
-    Coords::cartesian a;
+    Coords::Cartesian a;
     a = p1 / c;
     EXPECT_EQ(result, a);
   }
 
   TEST_F(RandomCartesian, CartesianDivideDoubleInplace) {
-    Coords::cartesian result(p1.x() / c,
+    Coords::Cartesian result(p1.x() / c,
 			     p1.y() / c,
 			     p1.z() / c);
-    Coords::cartesian a(p1);
+    Coords::Cartesian a(p1);
     a /= c;
     EXPECT_EQ(result, a);
   }
 
   TEST_F(RandomCartesian, DivideByZeroException) {
-    Coords::cartesian a(p1);
+    Coords::Cartesian a(p1);
     EXPECT_THROW(a/0, Coords::DivideByZeroError);
     EXPECT_THROW(a/=0, Coords::DivideByZeroError);
-    EXPECT_THROW(1.0/Coords::cartesian::Uo, Coords::DivideByZeroError);
+    EXPECT_THROW(1.0/Coords::Cartesian::Uo, Coords::DivideByZeroError);
   }
 
   TEST_F(RandomCartesian, Magnitude) {
     double result(sqrt(p1.x()*p1.x() + p1.y()*p1.y() + p1.z()*p1.z()));
-    Coords::cartesian a(p1);
+    Coords::Cartesian a(p1);
     EXPECT_EQ(result, a.magnitude());
   }
 
   TEST_F(RandomCartesian, Magnitude2) {
     double result(p1.x()*p1.x() + p1.y()*p1.y() + p1.z()*p1.z());
-    Coords::cartesian a(p1);
+    Coords::Cartesian a(p1);
     EXPECT_EQ(result, a.magnitude2());
   }
 
   TEST_F(RandomCartesian, Normalized) {
     double mag(sqrt(p1.x()*p1.x() + p1.y()*p1.y() + p1.z()*p1.z()));
-    Coords::cartesian result(p1.x()/mag,
+    Coords::Cartesian result(p1.x()/mag,
 			     p1.y()/mag,
 			     p1.z()/mag);
     EXPECT_EQ(result, p1.normalized());
@@ -476,10 +476,10 @@ namespace {
   }
 
   TEST_F(RandomCartesian, CrossProduct) {
-    Coords::cartesian result(p1.y() * p2.z() - p1.z()*p2.y(),
+    Coords::Cartesian result(p1.y() * p2.z() - p1.z()*p2.y(),
 			     p1.z() * p2.x() - p1.x()*p2.z(),
 			     p1.x() * p2.y() - p1.y()*p2.x());
-    Coords::cartesian a(Coords::cross(p1, p2));
+    Coords::Cartesian a(Coords::cross(p1, p2));
     EXPECT_EQ(result, a);
   }
 
@@ -491,26 +491,26 @@ namespace {
   TEST(XRotationTest, Positive90AboutZ) {
 
     double angle(Coords::Angle::deg2rad(90));
-    Coords::rotator about_z(Coords::cartesian::Uz);
+    Coords::rotator about_z(Coords::Cartesian::Uz);
 
-    Coords::cartesian s(about_z.rotate(Coords::cartesian::Ux, angle));
+    Coords::Cartesian s(about_z.rotate(Coords::Cartesian::Ux, angle));
 
-    EXPECT_NEAR(Coords::cartesian::Uy.x(), s.x(), Coords::epsilon);
-    EXPECT_DOUBLE_EQ(Coords::cartesian::Uy.y(), s.y());
-    EXPECT_DOUBLE_EQ(Coords::cartesian::Uy.z(), s.z());
+    EXPECT_NEAR(Coords::Cartesian::Uy.x(), s.x(), Coords::epsilon);
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Uy.y(), s.y());
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Uy.z(), s.z());
 
   }
 
   TEST(XRotationTest, Negative90AboutY) {
 
     double angle(Coords::Angle::deg2rad(-90));
-    Coords::rotator about_y(Coords::cartesian::Uy);
+    Coords::rotator about_y(Coords::Cartesian::Uy);
 
-    Coords::cartesian s(about_y.rotate(Coords::cartesian::Ux, angle));
+    Coords::Cartesian s(about_y.rotate(Coords::Cartesian::Ux, angle));
 
-    EXPECT_NEAR(Coords::cartesian::Uz.x(), s.x(), Coords::epsilon);
-    EXPECT_DOUBLE_EQ(Coords::cartesian::Uz.y(), s.y());
-    EXPECT_DOUBLE_EQ(Coords::cartesian::Uz.z(), s.z());
+    EXPECT_NEAR(Coords::Cartesian::Uz.x(), s.x(), Coords::epsilon);
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Uz.y(), s.y());
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Uz.z(), s.z());
 
   }
 
@@ -521,26 +521,26 @@ namespace {
   TEST(YRotationTest, Positive90AboutX) {
 
     double angle(Coords::Angle::deg2rad(90));
-    Coords::rotator about_x(Coords::cartesian::Ux);
+    Coords::rotator about_x(Coords::Cartesian::Ux);
 
-    Coords::cartesian s(about_x.rotate(Coords::cartesian::Uy, angle));
+    Coords::Cartesian s(about_x.rotate(Coords::Cartesian::Uy, angle));
 
-    EXPECT_DOUBLE_EQ(Coords::cartesian::Uz.x(), s.x());
-    EXPECT_NEAR(Coords::cartesian::Uz.y(), s.y(), Coords::epsilon);
-    EXPECT_DOUBLE_EQ(Coords::cartesian::Uz.z(), s.z());
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Uz.x(), s.x());
+    EXPECT_NEAR(Coords::Cartesian::Uz.y(), s.y(), Coords::epsilon);
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Uz.z(), s.z());
 
   }
 
   TEST(YRotationTest, Negative90AboutZ) {
 
     double angle(Coords::Angle::deg2rad(-90));
-    Coords::rotator about_z(Coords::cartesian::Uz);
+    Coords::rotator about_z(Coords::Cartesian::Uz);
 
-    Coords::cartesian s(about_z.rotate(Coords::cartesian::Uy, angle));
+    Coords::Cartesian s(about_z.rotate(Coords::Cartesian::Uy, angle));
 
-    EXPECT_DOUBLE_EQ(Coords::cartesian::Ux.x(), s.x());
-    EXPECT_NEAR(Coords::cartesian::Ux.y(), s.y(), Coords::epsilon);
-    EXPECT_DOUBLE_EQ(Coords::cartesian::Ux.z(), s.z());
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Ux.x(), s.x());
+    EXPECT_NEAR(Coords::Cartesian::Ux.y(), s.y(), Coords::epsilon);
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Ux.z(), s.z());
 
   }
 
@@ -551,26 +551,26 @@ namespace {
   TEST(ZRotationTest, Positive90AboutY) {
 
     double angle(Coords::Angle::deg2rad(90));
-    Coords::rotator about_y(Coords::cartesian::Uy);
+    Coords::rotator about_y(Coords::Cartesian::Uy);
 
-    Coords::cartesian s(about_y.rotate(Coords::cartesian::Uz, angle));
+    Coords::Cartesian s(about_y.rotate(Coords::Cartesian::Uz, angle));
 
-    EXPECT_DOUBLE_EQ(Coords::cartesian::Ux.x(), s.x());
-    EXPECT_DOUBLE_EQ(Coords::cartesian::Ux.y(), s.y());
-    EXPECT_NEAR(Coords::cartesian::Ux.z(), s.z(), Coords::epsilon);
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Ux.x(), s.x());
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Ux.y(), s.y());
+    EXPECT_NEAR(Coords::Cartesian::Ux.z(), s.z(), Coords::epsilon);
 
   }
 
   TEST(ZRotationTest, Negative90AboutX) {
 
     double angle(Coords::Angle::deg2rad(-90));
-    Coords::rotator about_x(Coords::cartesian::Ux);
+    Coords::rotator about_x(Coords::Cartesian::Ux);
 
-    Coords::cartesian s(about_x.rotate(Coords::cartesian::Uz, angle));
+    Coords::Cartesian s(about_x.rotate(Coords::Cartesian::Uz, angle));
 
-    EXPECT_DOUBLE_EQ(Coords::cartesian::Uy.x(), s.x());
-    EXPECT_DOUBLE_EQ(Coords::cartesian::Uy.y(), s.y());
-    EXPECT_NEAR(Coords::cartesian::Uy.z(), s.z(), Coords::epsilon);
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Uy.x(), s.x());
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Uy.y(), s.y());
+    EXPECT_NEAR(Coords::Cartesian::Uy.z(), s.z(), Coords::epsilon);
 
   }
 

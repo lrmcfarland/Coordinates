@@ -28,9 +28,9 @@ RANLIB   = ranlib -s
 
 # targets
 
-INCLUDES = angle.h cartesian.h spherical.h utils.h
-SOURCES = angle.cpp cartesian.cpp spherical.cpp utils.cpp
-OBJECTS = angle.o cartesian.o spherical.o utils.o
+INCLUDES = angle.h Cartesian.h spherical.h utils.h
+SOURCES = angle.cpp Cartesian.cpp spherical.cpp utils.cpp
+OBJECTS = angle.o Cartesian.o spherical.o utils.o
 
 TARGET_A = libCoords.a
 
@@ -64,9 +64,9 @@ $(TARGET_D): $(OBJECTS) $(INCLUDES) $(SOURCES)
 	-$(LN) $(TARGET_D) $(TARGET_D2)
 
 
-test: angle_unittest cartesian_unittest spherical_unittest
+test: angle_unittest Cartesian_unittest spherical_unittest
 	./angle_unittest.sh
-	./cartesian_unittest.sh
+	./Cartesian_unittest.sh
 	./spherical_unittest.sh
 
 
@@ -76,11 +76,11 @@ angle_unittest: angle_unittest.o $(TARGET_D)
 angle_unittest.o: angle_unittest.cpp
 	g++ -I$(GTEST_DIR)/include -I . -g -c angle_unittest.cpp
 
-cartesian_unittest: cartesian_unittest.o $(TARGET_D)
-	g++ -L$(GTEST_DIR) -lgtest -L. -lCoords cartesian_unittest.o -o cartesian_unittest
+Cartesian_unittest: Cartesian_unittest.o $(TARGET_D)
+	g++ -L$(GTEST_DIR) -lgtest -L. -lCoords Cartesian_unittest.o -o Cartesian_unittest
 
-cartesian_unittest.o: cartesian_unittest.cpp
-	g++ -I$(GTEST_DIR)/include -I . -g -c cartesian_unittest.cpp
+Cartesian_unittest.o: Cartesian_unittest.cpp
+	g++ -I$(GTEST_DIR)/include -I . -g -c Cartesian_unittest.cpp
 
 spherical_unittest: spherical_unittest.o $(TARGET_D)
 	g++ -L$(GTEST_DIR) -lgtest -L. -lCoords spherical_unittest.o -o spherical_unittest
@@ -98,8 +98,8 @@ mepsilon: mepsilon.c
 clean:
 	-$(RM) angle_unittest
 	-$(RM) angle_unittest.o
-	-$(RM) cartesian_unittest
-	-$(RM) cartesian_unittest.o
+	-$(RM) Cartesian_unittest
+	-$(RM) Cartesian_unittest.o
 	-$(RM) spherical_unittest
 	-$(RM) spherical_unittest.o
 	-$(RM) mepsilon
