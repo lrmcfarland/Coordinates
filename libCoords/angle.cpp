@@ -21,8 +21,6 @@
 //  along with Orbits.  If not, see <http://www.gnu.org/licenses/>.
 // ==================================================================
 
-#include <iomanip> // for std::setw() and std::setfill()
-
 #include <angle.h>
 #include <utils.h>
 
@@ -166,56 +164,5 @@ void Coords::angle::normalize() {
   // bring back into 0-360 range
   while (m_value > 360)
     m_value -= 360;
-}
-
-
-// -----------------------------
-// ----- output operator<< -----
-// -----------------------------
-
-void Coords::value2DMSString(const double& a_value, std::stringstream& a_string) {
-
-  // output as degrees minutes seconds
-  
-  bool isNegative(false);
-  
-  if (a_value < 0)
-    isNegative = true;
-  
-  double degrees = fabs(a_value);
-  double minutes = 60 * (degrees - floor(degrees));
-  double seconds = 60 * (minutes - floor(minutes));
-  
-  if (isNegative)
-    degrees = -1 * floor(degrees);
-  else
-    degrees = floor(degrees);
-  
-  a_string << degrees << "* " << floor(minutes) << "\' " << seconds << "\"";
-  
-}
-
-void Coords::value2HMSString(const double& a_value, std::stringstream& a_string) {
-
-  // output as time 00:00:00
-  
-  bool isNegative(false);
-  
-  if (a_value < 0)
-    isNegative = true;
-  
-  double degrees = fabs(a_value);
-  double minutes = 60 * (degrees - floor(degrees));
-  double seconds = 60 * (minutes - floor(minutes));
-  
-  if (isNegative)
-    degrees = -1 * floor(degrees);
-  else
-    degrees = floor(degrees);
-
-  a_string << std::setw(2) << std::setfill('0') << degrees 
-	   << ":" << std::setw(2) << std::setfill('0') << floor(minutes) 
-	   << ":" << std::setw(2) << std::setfill('0') << seconds;
-  
 }
 

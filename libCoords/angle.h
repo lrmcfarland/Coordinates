@@ -26,9 +26,10 @@
 #pragma once
 
 #include <cmath>
-#include <sstream>
 
 #include <utils.h>
+
+
 
 
 namespace Coords {
@@ -118,10 +119,6 @@ namespace Coords {
   // -------------------------------
   // ----- output operator<<() -----
   // -------------------------------
-
-  // output operator<<
-  void value2DMSString(const double& a_value, std::stringstream& a_string);
-  void value2HMSString(const double& a_value, std::stringstream& a_string);
 
   // inline for boost. Use hpp instead?
   inline std::ostream& operator<< (std::ostream& os, const Coords::angle& a) {
