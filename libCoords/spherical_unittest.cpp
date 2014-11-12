@@ -207,8 +207,7 @@ namespace {
     EXPECT_DOUBLE_EQ(c_z/sin(atan(c_z/1.0)), c.r());
 
     // theta, the angle to the z-axis, is:
-    EXPECT_DOUBLE_EQ(Coords::angle(90).value() - Coords::angle::rad2deg(atan(c_z/1.0)),
-		     c.theta().value());
+    EXPECT_DOUBLE_EQ(Coords::angle::rad2deg(atan(1.0/c_z)), c.theta().value());
 
     EXPECT_DOUBLE_EQ(Coords::angle(0.0).value(), c.phi().value());
 
