@@ -70,12 +70,12 @@ namespace {
   }
 
   TEST(FixedSpherical, Equivalence) {
-    EXPECT_TRUE(Coords::spherical(1, Coords::Angle(2), Coords::Angle(3)) == 
+    EXPECT_TRUE(Coords::spherical(1, Coords::Angle(2), Coords::Angle(3)) ==
 		Coords::spherical(1.0, Coords::Angle(2.0), Coords::Angle(3.0)));
 
     EXPECT_FALSE(Coords::spherical(1, Coords::Angle(2), Coords::Angle(3)) ==
 		 Coords::spherical(1.1, Coords::Angle(2.0), Coords::Angle(3.0)));
-    EXPECT_FALSE(Coords::spherical(1, Coords::Angle(2), Coords::Angle(3)) == 
+    EXPECT_FALSE(Coords::spherical(1, Coords::Angle(2), Coords::Angle(3)) ==
 		 Coords::spherical(1.0, Coords::Angle(2.1), Coords::Angle(3.0)));
     EXPECT_FALSE(Coords::spherical(1, Coords::Angle(2), Coords::Angle(3)) ==
 		 Coords::spherical(1.0, Coords::Angle(2.0), Coords::Angle(3.1)));
@@ -191,8 +191,35 @@ namespace {
     EXPECT_DOUBLE_EQ(Coords::Angle(60.0).value(), c.phi().value());
   }
 
+  TEST(FixedSpherical, Add_1) {
+    Coords::spherical a(1, Coords::Angle(45), Coords::Angle(45));
+    Coords::spherical b(1, Coords::Angle(45), Coords::Angle(-45));
+    Coords::spherical c;
+    c = a + b;
 
-  // TODO non-trivial add tests
+    // a and b are both sin(45) high along z axis
+    // +0.5 along x axis (1.0 total)
+    // and +/- 0.5 along the y axis (0.0 total)
+
+    double c_z = 2.0*sin(Coords::Angle::deg2rad(45));
+
+    // r is hypotenuse, z total/asin(z total/x total):
+    EXPECT_DOUBLE_EQ(c_z/sin(atan(c_z/1.0)), c.r());
+
+    // theta, the angle to the z-axis, is:
+    EXPECT_DOUBLE_EQ(Coords::Angle(90).value() - Coords::Angle::rad2deg(atan(c_z/1.0)),
+		     c.theta().value());
+
+    EXPECT_DOUBLE_EQ(Coords::Angle(0.0).value(), c.phi().value());
+
+    Coords::cartesian cart_c(c);
+    EXPECT_DOUBLE_EQ(1.0, cart_c.x()); // 0.5 + 0.5 projection in xy plane
+    EXPECT_DOUBLE_EQ(0.0, cart_c.y()); // 0.5 - 0.5 projection in xy plane
+    EXPECT_NEAR(c_z, cart_c.z(), Coords::epsilon*10);
+
+  }
+
+  // TODO more non-trivial add tests
 
 
   TEST(FixedSpherical, Subtract_inplace_trivial_1) {
@@ -225,9 +252,24 @@ namespace {
   }
 
 
+  TEST(FixedSpherical, Subtract_1) {
+    Coords::spherical a(1, Coords::Angle(45), Coords::Angle(45));
+    Coords::spherical b(1, Coords::Angle(45), Coords::Angle(-45));
+    Coords::spherical c;
+    c = a - b;
+    EXPECT_DOUBLE_EQ(1.0, c.r());
+    EXPECT_DOUBLE_EQ(Coords::Angle(90.0).value(), c.theta().value());
+    EXPECT_DOUBLE_EQ(Coords::Angle(0.0).value(), c.phi().value());
 
-  // TODO non-trivial subtract tests
+    Coords::cartesian cart_c(c);
+    EXPECT_DOUBLE_EQ(1.0, cart_c.x());
+    EXPECT_DOUBLE_EQ(0.0, cart_c.y());
+    EXPECT_NEAR(0.0, cart_c.z(), Coords::epsilon);
 
+  }
+
+
+  // TODO more non-trivial subtract tests
 
 
   TEST(FixedSpherical, Multiply_inplace_1) {
