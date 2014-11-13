@@ -131,9 +131,9 @@ namespace {
 
   }
 
+  // conversion constructors
 
-
-  TEST(FixedSpherical, ConstructFromCartesian_x) {
+  TEST(FixedSpherical, ConstructFromCartesian_x_1) {
     // all x
     Coords::Cartesian a(1);
     Coords::spherical b(a);
@@ -143,7 +143,17 @@ namespace {
     EXPECT_EQ(Coords::angle(0.0), b.phi());
   }
 
-  TEST(FixedSpherical, ConstructFromCartesian_y) {
+  TEST(FixedSpherical, ConstructFromCartesian_x_2) {
+    // all -x
+    Coords::Cartesian a(-1);
+    Coords::spherical b(a);
+
+    EXPECT_DOUBLE_EQ(1.0, b.r());
+    EXPECT_EQ(Coords::angle(90.0), b.theta());
+    EXPECT_EQ(Coords::angle(180.0), b.phi());
+  }
+
+  TEST(FixedSpherical, ConstructFromCartesian_y_1) {
     // all y
     Coords::Cartesian a(0, 1);
     Coords::spherical b(a);
@@ -157,7 +167,21 @@ namespace {
     EXPECT_EQ(Coords::angle(0.0), b.phi());
   }
 
-  TEST(FixedSpherical, ConstructFromCartesian_z) {
+  TEST(FixedSpherical, ConstructFromCartesian_y_2) {
+    // all -y
+    Coords::Cartesian a(0, -1);
+    Coords::spherical b(a);
+
+    EXPECT_DOUBLE_EQ(1.0, b.r());
+
+    EXPECT_DOUBLE_EQ(90.0, b.theta().value());
+    EXPECT_EQ(Coords::angle(90.0), b.theta());
+
+    EXPECT_DOUBLE_EQ(-90.0, b.phi().value());
+    EXPECT_EQ(Coords::angle(-90.0), b.phi());
+  }
+
+  TEST(FixedSpherical, ConstructFromCartesian_z_1) {
     // all z
     Coords::Cartesian a(0, 0, 1);
     Coords::spherical b(a);
@@ -167,8 +191,18 @@ namespace {
     EXPECT_EQ(Coords::angle(0.0), b.phi());
   }
 
+  TEST(FixedSpherical, ConstructFromCartesian_z_2) {
+    // all -z
+    Coords::Cartesian a(0, 0, -1);
+    Coords::spherical b(a);
+
+    EXPECT_DOUBLE_EQ(1.0, b.r());
+    EXPECT_EQ(Coords::angle(180.0), b.theta());
+    EXPECT_EQ(Coords::angle(0.0), b.phi());
+  }
 
 
+  // add
 
   TEST(FixedSpherical, Add_inplace_trivial_1) {
     Coords::spherical a(1, Coords::angle(30), Coords::angle(60));
@@ -220,6 +254,7 @@ namespace {
 
   // TODO more non-trivial add tests
 
+  // subtract
 
   TEST(FixedSpherical, Subtract_inplace_trivial_1) {
     Coords::spherical a(1, Coords::angle(30), Coords::angle(60));
@@ -270,6 +305,7 @@ namespace {
 
   // TODO more non-trivial subtract tests
 
+  // multiply
 
   TEST(FixedSpherical, Multiply_inplace_1) {
     Coords::spherical a(1, Coords::angle(30), Coords::angle(60));
@@ -298,6 +334,7 @@ namespace {
     EXPECT_EQ(Coords::angle(-60.0), b.phi());
   }
 
+  // divide
 
   TEST(FixedSpherical, Divide_inplace_1) {
     Coords::spherical a(1, Coords::angle(30), Coords::angle(60));

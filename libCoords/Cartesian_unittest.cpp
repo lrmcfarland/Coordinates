@@ -132,6 +132,75 @@ namespace {
   }
 
 
+  // conversion constructors
+
+  TEST(FixedCartesian, ConstructFromSpherical_x_1) {
+    // all x
+    Coords::spherical a(2.0, Coords::angle(90));
+    Coords::Cartesian b(a);
+    EXPECT_DOUBLE_EQ(2.0, b.x());
+    EXPECT_DOUBLE_EQ(0.0, b.y());
+    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10); // TODO meh?
+  }
+
+  TEST(FixedCartesian, ConstructFromSpherical_x_2) {
+    // all -x
+    Coords::spherical a(2.0, Coords::angle(-90));
+    Coords::Cartesian b(a);
+    EXPECT_DOUBLE_EQ(-2.0, b.x());
+    EXPECT_DOUBLE_EQ(0.0, b.y());
+    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10); // TODO meh?
+  }
+
+  TEST(FixedCartesian, ConstructFromSpherical_xz_1) {
+    // all x-z
+    Coords::angle rot(30);
+    Coords::spherical a(2.0, rot); // rotation wrong way, not right handed + == counter clockwise?
+    Coords::Cartesian b(a);
+    EXPECT_DOUBLE_EQ(2.0*sin(rot.radians()), b.x());
+    EXPECT_DOUBLE_EQ(0.0, b.y());
+    EXPECT_DOUBLE_EQ(2.0*cos(rot.radians()), b.z());
+  }
+
+  TEST(FixedCartesian, ConstructFromSpherical_xz_2) {
+    // all x-z
+    Coords::angle rot(-30);
+    Coords::spherical a(2.0, rot); // rotation wrong way, not right handed + == counter clockwise?
+    Coords::Cartesian b(a);
+    EXPECT_DOUBLE_EQ(2.0*sin(rot.radians()), b.x());
+    EXPECT_DOUBLE_EQ(0.0, b.y());
+    EXPECT_DOUBLE_EQ(2.0*cos(rot.radians()), b.z());
+  }
+
+
+
+  TEST(FixedCartesian, ConstructFromSpherical_y_1) {
+    // all y
+    Coords::spherical a(3.0, Coords::angle(90), Coords::angle(90));
+    Coords::Cartesian b(a);
+    EXPECT_NEAR(0.0, b.x(), Coords::epsilon*10);
+    EXPECT_DOUBLE_EQ(3.0, b.y());
+    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10);
+  }
+
+  TEST(FixedCartesian, ConstructFromSpherical_y_2) {
+    // all -y
+    Coords::spherical a(3.0, Coords::angle(90), Coords::angle(-90));
+    Coords::Cartesian b(a);
+    EXPECT_NEAR(0.0, b.x(), Coords::epsilon*10);
+    EXPECT_DOUBLE_EQ(-3.0, b.y());
+    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10);
+  }
+
+
+  TEST(FixedCartesian, ConstructFromSpherical_y_q1) {
+    // all xy first quadrant
+    Coords::spherical a(10.0, Coords::angle(-90), Coords::angle(45));
+    Coords::Cartesian b(a);
+    EXPECT_DOUBLE_EQ(-7.0710678118654755, b.x());
+    EXPECT_DOUBLE_EQ(-7.0710678118654755, b.y());
+    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10);
+  }
 
 
   TEST(FixedCartesian, ConstructFromSpherical_z) {
@@ -143,32 +212,6 @@ namespace {
     EXPECT_DOUBLE_EQ(1.0, b.z());
   }
 
-  TEST(FixedCartesian, ConstructFromSpherical_x) {
-    // all x
-    Coords::spherical a(2.0, Coords::angle(90));
-    Coords::Cartesian b(a);
-    EXPECT_DOUBLE_EQ(2.0, b.x());
-    EXPECT_DOUBLE_EQ(0.0, b.y());
-    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10); // TODO meh?
-  }
-
-
-  TEST(FixedCartesian, ConstructFromSpherical_y_1) {
-    // all y
-    Coords::spherical a(3.0, Coords::angle(90), Coords::angle(90));
-    Coords::Cartesian b(a);
-    EXPECT_NEAR(0.0, b.x(), Coords::epsilon*10); // TODO meh?
-    EXPECT_DOUBLE_EQ(3.0, b.y());
-    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10); // TODO meh?
-  }
-
-  TEST(FixedCartesian, ConstructFromSpherical_y_2) {
-    Coords::spherical a(10.0, Coords::angle(-90), Coords::angle(45));
-    Coords::Cartesian b(a);
-    EXPECT_DOUBLE_EQ(-7.0710678118654755, b.x());
-    EXPECT_DOUBLE_EQ(-7.0710678118654755, b.y());
-    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10); // TODO meh?
-  }
 
 
   TEST(FixedCartesian, ConstructFromSpherical_theta45_1) {
@@ -488,7 +531,8 @@ namespace {
   // ----------------------------
 
 
-  TEST(XRotationTest, Positive90AboutZ) {
+  TEST(XRotationTest, UxAboutUztoUy) {
+    // Ux counter clockwise about Uz to Uy
 
     Coords::angle an_angle(90);
     Coords::rotator about_z(Coords::Cartesian::Uz);
@@ -501,7 +545,8 @@ namespace {
 
   }
 
-  TEST(XRotationTest, Negative90AboutY) {
+  TEST(XRotationTest, UxAboutUytoUz) {
+    // Ux clockwise about Uy to Uz
 
     Coords::angle an_angle(-90);
     Coords::rotator about_y(Coords::Cartesian::Uy);
@@ -518,7 +563,8 @@ namespace {
   // ----- Y Rotation tests -----
   // ----------------------------
 
-  TEST(YRotationTest, Positive90AboutX) {
+  TEST(YRotationTest, UyAboutUxtoUz) {
+    // Uy counter clockwise about Ux to Uz
 
     Coords::angle an_angle(90);
     Coords::rotator about_x(Coords::Cartesian::Ux);
@@ -531,7 +577,8 @@ namespace {
 
   }
 
-  TEST(YRotationTest, Negative90AboutZ) {
+  TEST(YRotationTest, UyAboutUztoUx) {
+    // Uy clockwise about Uz to Ux
 
     Coords::angle an_angle(-90);
     Coords::rotator about_z(Coords::Cartesian::Uz);
@@ -548,7 +595,8 @@ namespace {
   // ----- Z Rotation tests -----
   // ----------------------------
 
-  TEST(ZRotationTest, Positive90AboutY) {
+  TEST(ZRotationTest, UzAboutUytoUx) {
+    // Uz counter clockwise about Uy to Ux
 
     Coords::angle an_angle(90);
     Coords::rotator about_y(Coords::Cartesian::Uy);
@@ -561,7 +609,8 @@ namespace {
 
   }
 
-  TEST(ZRotationTest, Negative90AboutX) {
+  TEST(ZRotationTest, UzAboutUxtoUy) {
+    // Uz clockwise about Ux to Uy
 
     Coords::angle an_angle(-90);
     Coords::rotator about_x(Coords::Cartesian::Ux);
@@ -573,6 +622,86 @@ namespace {
     EXPECT_NEAR(Coords::Cartesian::Uy.z(), s.z(), Coords::epsilon);
 
   }
+
+
+
+
+  // ---------------------------------
+  // ----- non-trivial rotations -----
+  // ---------------------------------
+
+  TEST(RotationTest, FirstDiagonal_0) {
+
+    // spin about same axis
+
+    Coords::angle an_angle(90);
+    Coords::Cartesian first_diagonal(1, 1, 1);
+
+    Coords::rotator about_diagonal(first_diagonal);
+
+    Coords::Cartesian opposite_diagonal(-1, -1, -1);
+    Coords::Cartesian s(about_diagonal.rotate(opposite_diagonal, an_angle));
+
+    EXPECT_DOUBLE_EQ(-1.0, s.x());
+    EXPECT_DOUBLE_EQ(-1.0, s.y());
+    EXPECT_DOUBLE_EQ(-1.0, s.z());
+
+  }
+
+  TEST(RotationTest, FirstDiagonal_1) {
+
+    // full circle
+
+    Coords::angle an_angle(360);
+    Coords::Cartesian first_diagonal(1, 1, 1);
+
+    Coords::rotator about_diagonal(first_diagonal);
+
+    Coords::Cartesian opposite_diagonal(-1, -1, 1);
+    Coords::Cartesian s(about_diagonal.rotate(opposite_diagonal, an_angle));
+
+    EXPECT_DOUBLE_EQ(-1.0, s.x());
+    EXPECT_DOUBLE_EQ(-1.0, s.y());
+    EXPECT_DOUBLE_EQ(1.0, s.z());
+
+  }
+
+  TEST(DISABLED_RotationTest, FirstDiagonal_2) {
+
+    // half circle
+
+    Coords::angle an_angle(180);
+    Coords::Cartesian first_diagonal(1, 1, 1);
+
+    Coords::spherical sph_fd(first_diagonal); // TODO rm
+    std::cout << "first diagonal" << sph_fd << std::endl; // TODO rm
+
+    Coords::rotator about_diagonal(first_diagonal);
+
+    Coords::Cartesian opposite_diagonal(-1, -1, 1);
+
+    Coords::spherical sph_od(opposite_diagonal); // TODO rm
+    std::cout << "opposite diagonal" << sph_od << std::endl; // TODO rm
+
+    // TODO spherical problem: sph_fd and sph_od are the same? r, yes; theta, yes; phi, no should be 225 or -135
+
+
+    Coords::Cartesian s(about_diagonal.rotate(opposite_diagonal, an_angle));
+    std::cout << s << std::endl; // TODO rm
+
+    Coords::spherical sph_rod(s); // TODO rm
+    std::cout << "rotated diagonal" << sph_rod << std::endl; // TODO rm
+
+    EXPECT_DOUBLE_EQ(-1.0, s.x());
+    EXPECT_DOUBLE_EQ(-1.0, s.y());
+    EXPECT_DOUBLE_EQ(1.0, s.z());
+
+  }
+
+
+
+
+
 
 } // end anonymous namespace
 
