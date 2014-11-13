@@ -212,18 +212,18 @@ Coords::Cartesian Coords::cross(const Coords::Cartesian& a,
 // ----- class rotator -----
 // -------------------------
 
-Coords::rotator::rotator(const Coords::Cartesian& a_axis) :
+Coords::rotator::rotator(const Coords::Cartesian& an_axis) :
   m_axis(Coords::Cartesian::Uo),
   m_rotation_matrix(3, std::vector<double>(3, 0)),
   m_is_new_axis(true),
   m_current_angle(0.0) {
-  axis(a_axis);
+  axis(an_axis);
 }
 
 
-void Coords::rotator::axis(const Coords::Cartesian& a_axis) {
-  if (a_axis != m_axis) {
-    m_axis = a_axis.normalized();
+void Coords::rotator::axis(const Coords::Cartesian& an_axis) {
+  if (an_axis != m_axis) {
+    m_axis = an_axis.normalized();
     m_is_new_axis = true;
   }
 }
