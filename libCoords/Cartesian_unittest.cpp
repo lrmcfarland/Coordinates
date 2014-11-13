@@ -731,76 +731,98 @@ namespace {
   // ----- non-trivial rotations -----
   // ---------------------------------
 
-  TEST(RotationTest, FirstDiagonal_0) {
+  TEST(RotationTest, Diagonal_yz_180) {
 
-    // spin about same axis
+    // half circle in yz plane
 
-    Coords::angle an_angle(90);
-    Coords::Cartesian first_diagonal(1, 1, 1);
+    Coords::Cartesian axis(0, 1, 1);
+    Coords::spherical axis_sph(axis);
 
-    Coords::rotator about_diagonal(first_diagonal);
+    Coords::rotator about_axis(axis);
 
-    Coords::Cartesian opposite_diagonal(-1, -1, -1);
-    Coords::Cartesian s(about_diagonal.rotate(opposite_diagonal, an_angle));
+    Coords::Cartesian some_point(0, -1, 1);
+    Coords::spherical some_point_sph(some_point);
 
-    EXPECT_DOUBLE_EQ(-1.0, s.x());
-    EXPECT_DOUBLE_EQ(-1.0, s.y());
-    EXPECT_DOUBLE_EQ(-1.0, s.z());
+    Coords::angle an_angle(180);
+    Coords::Cartesian rotated_point(about_axis.rotate(some_point, an_angle));
+    Coords::spherical rotate_point_sph(rotated_point);
+
+    EXPECT_DOUBLE_EQ(axis_sph.r(), rotate_point_sph.r());
+    EXPECT_DOUBLE_EQ(135, rotate_point_sph.theta().value());
+    EXPECT_NEAR(axis_sph.phi().value(), rotate_point_sph.phi().value(),
+		Coords::epsilon*1000); // accumulated rounding error!?!
+
+    EXPECT_NEAR(0.0, rotated_point.x(), Coords::epsilon*10);
+    EXPECT_DOUBLE_EQ(1.0, rotated_point.y());
+    EXPECT_DOUBLE_EQ(-1.0, rotated_point.z());
 
   }
 
-  TEST(RotationTest, FirstDiagonal_1) {
+  // rotations not suppressing a Cartesian dimension
+
+  TEST(RotationTest, Diagonal_xyz_0) {
+
+    // spin about axis
+
+    Coords::Cartesian axis(1, 1, 1);
+    Coords::rotator about_axis(axis);
+
+    Coords::Cartesian some_point(-1, -1, -1); // co-axial
+    Coords::angle an_angle(90); // could be anything.
+    Coords::Cartesian rotated_point(about_axis.rotate(some_point, an_angle));
+
+    EXPECT_DOUBLE_EQ(some_point.x(), rotated_point.x());
+    EXPECT_DOUBLE_EQ(some_point.y(), rotated_point.y());
+    EXPECT_DOUBLE_EQ(some_point.z(), rotated_point.z());
+  }
+
+  TEST(RotationTest, Diagonal_xyz_360) {
 
     // full circle
 
+    Coords::Cartesian axis(1, 1, 1);
+    Coords::rotator about_axis(axis);
+
+    Coords::Cartesian some_point(-1, -1, 1);
     Coords::angle an_angle(360);
-    Coords::Cartesian first_diagonal(1, 1, 1);
+    Coords::Cartesian rotated_point(about_axis.rotate(some_point, an_angle));
 
-    Coords::rotator about_diagonal(first_diagonal);
-
-    Coords::Cartesian opposite_diagonal(-1, -1, 1);
-    Coords::Cartesian s(about_diagonal.rotate(opposite_diagonal, an_angle));
-
-    EXPECT_DOUBLE_EQ(-1.0, s.x());
-    EXPECT_DOUBLE_EQ(-1.0, s.y());
-    EXPECT_DOUBLE_EQ(1.0, s.z());
-
+    EXPECT_DOUBLE_EQ(some_point.x(), rotated_point.x());
+    EXPECT_DOUBLE_EQ(some_point.y(), rotated_point.y());
+    EXPECT_DOUBLE_EQ(some_point.z(), rotated_point.z());
   }
 
-  TEST(DISABLED_RotationTest, FirstDiagonal_2) {
+  TEST(DISABLED_RotationTest, Diagonal_xyz_180) {
 
     // half circle
 
     Coords::angle an_angle(180);
-    Coords::Cartesian first_diagonal(1, 1, 1);
+    Coords::Cartesian axis(1, 1, 1);
+    Coords::spherical axis_sph(axis);
 
-    Coords::spherical sph_fd(first_diagonal); // TODO rm
-    std::cout << "first diagonal" << sph_fd << std::endl; // TODO rm
+    std::cout << "axis: " << axis_sph << std::endl; // TODO rm
 
-    Coords::rotator about_diagonal(first_diagonal);
+    Coords::rotator about_axis(axis);
+    Coords::Cartesian some_point(-1, -1, 1);
+    Coords::spherical some_point_sph(some_point);
 
-    Coords::Cartesian opposite_diagonal(-1, -1, 1);
+    std::cout << "some point: " << some_point << std::endl; // TODO rm
+    std::cout << "some point: " << some_point_sph << std::endl; // TODO rm
 
-    Coords::spherical sph_od(opposite_diagonal); // TODO rm
-    std::cout << "opposite diagonal" << sph_od << std::endl; // TODO rm
+    Coords::Cartesian rotated_point(about_axis.rotate(some_point, an_angle));
+    Coords::spherical rotate_point_sph(rotated_point);
 
+    std::cout << "rotated point: " << rotated_point << std::endl; // TODO rm
+    std::cout << "rotated point: " << rotate_point_sph << std::endl; // TODO rm
 
-    Coords::Cartesian s(about_diagonal.rotate(opposite_diagonal, an_angle));
-    std::cout << s << std::endl; // TODO rm
+    EXPECT_DOUBLE_EQ(axis_sph.r(), rotate_point_sph.r());
+    EXPECT_NEAR(axis_sph.phi().value(), rotate_point_sph.phi().value(), Coords::epsilon*1000); // accumulated rounding error!?!
 
-    Coords::spherical sph_rod(s); // TODO rm
-    std::cout << "rotated diagonal" << sph_rod << std::endl; // TODO rm
-
-    EXPECT_DOUBLE_EQ(sph_fd.r(), sph_rod.r());
-    EXPECT_NEAR(sph_fd.phi().value(), sph_rod.phi().value(), Coords::epsilon*1000); // accumulated rounding error!?!
-
-
-    EXPECT_DOUBLE_EQ(1.0, s.x());
-    EXPECT_DOUBLE_EQ(1.0, s.y());
-    EXPECT_DOUBLE_EQ(-1.0, s.z());
+    EXPECT_DOUBLE_EQ(1.0, rotated_point.x());
+    EXPECT_DOUBLE_EQ(1.0, rotated_point.y());
+    EXPECT_DOUBLE_EQ(-1.0, rotated_point.z());
 
   }
-
 
 
 
