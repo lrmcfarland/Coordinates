@@ -45,17 +45,10 @@ Coords::spherical::spherical(const std::string& a,
 
 Coords::spherical::spherical(const Coords::Cartesian& a)
   : m_r(0), m_theta(0), m_phi(0) {
-
   r(a.magnitude());
-
-  if (a.x() != 0)
-    phi(Coords::angle(Coords::angle::rad2deg(atan(a.y()/a.x()))));
-
+  phi(Coords::angle(Coords::angle::rad2deg(atan2(a.y(), a.x()))));
   double r_xy(sqrt(a.x()*a.x() + a.y()*a.y()));
-
-  if (r())
-    theta(Coords::angle(Coords::angle::rad2deg(asin(r_xy/r()))));
-
+  theta(Coords::angle(Coords::angle::rad2deg(atan2(r_xy, a.z()))));
 }
 
 
