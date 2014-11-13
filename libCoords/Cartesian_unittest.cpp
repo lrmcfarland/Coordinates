@@ -784,8 +784,6 @@ namespace {
     Coords::spherical sph_od(opposite_diagonal); // TODO rm
     std::cout << "opposite diagonal" << sph_od << std::endl; // TODO rm
 
-    // TODO spherical problem: sph_fd and sph_od are the same? r, yes; theta, yes; phi, no should be 225 or -135
-
 
     Coords::Cartesian s(about_diagonal.rotate(opposite_diagonal, an_angle));
     std::cout << s << std::endl; // TODO rm
@@ -793,9 +791,13 @@ namespace {
     Coords::spherical sph_rod(s); // TODO rm
     std::cout << "rotated diagonal" << sph_rod << std::endl; // TODO rm
 
-    EXPECT_DOUBLE_EQ(-1.0, s.x());
-    EXPECT_DOUBLE_EQ(-1.0, s.y());
-    EXPECT_DOUBLE_EQ(1.0, s.z());
+    EXPECT_DOUBLE_EQ(sph_fd.r(), sph_rod.r());
+    EXPECT_NEAR(sph_fd.phi().value(), sph_rod.phi().value(), Coords::epsilon*1000); // accumulated rounding error!?!
+
+
+    EXPECT_DOUBLE_EQ(1.0, s.x());
+    EXPECT_DOUBLE_EQ(1.0, s.y());
+    EXPECT_DOUBLE_EQ(-1.0, s.z());
 
   }
 
