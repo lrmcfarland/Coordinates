@@ -88,8 +88,16 @@ namespace Coords {
     // ----- data members -----
 
     double m_r;     // Radius: Euclidean distance from the origin (O) to point (P).
-    angle  m_theta; // Inclination: The angle between the zenith direction and the line segment OP
-    angle  m_phi;   // Azimuth: The angle between the x-axis and the projection of OP into the xy plane.
+
+    angle  m_theta; // Inclination: The angle between the zenith
+		    // direction and the line segment OP. This ranges
+		    // from 0 (+Z axis) to -180 (-Z axis) degrees
+
+    angle  m_phi;   // Azimuth: The angle between the x-axis and the
+		    // projection of OP into the xy plane. This ranges
+		    // from: 180 to -180 degrees. Counter clockwise
+		    // about the z-axis is positive rotation (right
+		    // hand rule).
 
   };
 

@@ -132,22 +132,22 @@ namespace {
   }
 
 
+  // conversion constructors
 
-
-  TEST(FixedCartesian, ConstructFromSpherical_z) {
-    // all z
-    Coords::spherical a(1.0);
-    Coords::Cartesian b(a);
-    EXPECT_DOUBLE_EQ(0.0, b.x());
-    EXPECT_DOUBLE_EQ(0.0, b.y());
-    EXPECT_DOUBLE_EQ(1.0, b.z());
-  }
-
-  TEST(FixedCartesian, ConstructFromSpherical_x) {
+  TEST(FixedCartesian, ConstructFromSpherical_x_1) {
     // all x
     Coords::spherical a(2.0, Coords::angle(90));
     Coords::Cartesian b(a);
     EXPECT_DOUBLE_EQ(2.0, b.x());
+    EXPECT_DOUBLE_EQ(0.0, b.y());
+    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10); // TODO meh?
+  }
+
+  TEST(FixedCartesian, ConstructFromSpherical_x_2) {
+    // all -x
+    Coords::spherical a(2.0, Coords::angle(-90));
+    Coords::Cartesian b(a);
+    EXPECT_DOUBLE_EQ(-2.0, b.x());
     EXPECT_DOUBLE_EQ(0.0, b.y());
     EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10); // TODO meh?
   }
@@ -157,17 +157,161 @@ namespace {
     // all y
     Coords::spherical a(3.0, Coords::angle(90), Coords::angle(90));
     Coords::Cartesian b(a);
-    EXPECT_NEAR(0.0, b.x(), Coords::epsilon*10); // TODO meh?
+    EXPECT_NEAR(0.0, b.x(), Coords::epsilon*10);
     EXPECT_DOUBLE_EQ(3.0, b.y());
-    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10); // TODO meh?
+    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10);
   }
 
   TEST(FixedCartesian, ConstructFromSpherical_y_2) {
-    Coords::spherical a(10.0, Coords::angle(-90), Coords::angle(45));
+    // all -y
+    Coords::spherical a(3.0, Coords::angle(90), Coords::angle(-90));
     Coords::Cartesian b(a);
-    EXPECT_DOUBLE_EQ(-7.0710678118654755, b.x());
-    EXPECT_DOUBLE_EQ(-7.0710678118654755, b.y());
-    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10); // TODO meh?
+    EXPECT_NEAR(0.0, b.x(), Coords::epsilon*10);
+    EXPECT_DOUBLE_EQ(-3.0, b.y());
+    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10);
+  }
+
+
+  TEST(FixedCartesian, ConstructFromSpherical_z_1) {
+    // all z
+    Coords::spherical a(1.0);
+    Coords::Cartesian b(a);
+    EXPECT_DOUBLE_EQ(0.0, b.x());
+    EXPECT_DOUBLE_EQ(0.0, b.y());
+    EXPECT_DOUBLE_EQ(1.0, b.z());
+  }
+
+  TEST(FixedCartesian, ConstructFromSpherical_z_2) {
+    // all -z
+    Coords::spherical a(1.0, Coords::angle(180));
+    Coords::Cartesian b(a);
+    EXPECT_NEAR(0.0, b.x(), Coords::epsilon*10);
+    EXPECT_DOUBLE_EQ(0.0, b.y());
+    EXPECT_DOUBLE_EQ(-1.0, b.z());
+  }
+
+
+  TEST(FixedCartesian, ConstructFromSpherical_xy_1) {
+    // xy first quadrant
+    Coords::angle phi(30);
+    Coords::spherical a(1.0, Coords::angle(90), phi);
+    Coords::Cartesian b(a);
+    EXPECT_DOUBLE_EQ(cos(phi.radians()), b.x());
+    EXPECT_DOUBLE_EQ(sin(phi.radians()), b.y());
+    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10);
+  }
+
+  TEST(FixedCartesian, ConstructFromSpherical_xy_2) {
+    // xy second quadrant
+    Coords::angle phi(90);
+    Coords::spherical a(1.0, Coords::angle(90), phi);
+    Coords::Cartesian b(a);
+    EXPECT_DOUBLE_EQ(cos(phi.radians()), b.x());
+    EXPECT_DOUBLE_EQ(sin(phi.radians()), b.y());
+    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10);
+  }
+
+  TEST(FixedCartesian, ConstructFromSpherical_xy_3) {
+    // xy third quadrant
+    Coords::angle phi(190);
+    Coords::spherical a(1.0, Coords::angle(90), phi);
+    Coords::Cartesian b(a);
+    EXPECT_DOUBLE_EQ(cos(phi.radians()), b.x());
+    EXPECT_DOUBLE_EQ(sin(phi.radians()), b.y());
+    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10);
+  }
+
+  TEST(FixedCartesian, ConstructFromSpherical_xy_4) {
+    // xy fourth quadrant
+    Coords::angle phi(-60);
+    Coords::spherical a(1.0, Coords::angle(90), phi);
+    Coords::Cartesian b(a);
+    EXPECT_DOUBLE_EQ(cos(phi.radians()), b.x());
+    EXPECT_DOUBLE_EQ(sin(phi.radians()), b.y());
+    EXPECT_NEAR(0.0, b.z(), Coords::epsilon*10);
+  }
+
+
+  TEST(FixedCartesian, ConstructFromSpherical_yz_1) {
+    // yz first quadrant
+    Coords::angle theta(30);
+    Coords::spherical a(1.0, theta, Coords::angle(90));
+    Coords::Cartesian b(a);
+    EXPECT_NEAR(0.0, b.x(), Coords::epsilon*10);
+    EXPECT_DOUBLE_EQ(sin(theta.radians()), b.y());
+    EXPECT_DOUBLE_EQ(cos(theta.radians()), b.z());
+  }
+
+  TEST(FixedCartesian, ConstructFromSpherical_yz_2) {
+    // yz second quadrant
+    Coords::angle theta(60);
+    Coords::spherical a(1.0, theta, Coords::angle(-90));
+    Coords::Cartesian b(a);
+    EXPECT_NEAR(0.0, b.x(), Coords::epsilon*10);
+    EXPECT_DOUBLE_EQ(-sin(theta.radians()), b.y());
+    EXPECT_DOUBLE_EQ(cos(theta.radians()), b.z());
+  }
+
+
+  TEST(FixedCartesian, ConstructFromSpherical_yz_3) {
+    // yz third quadrant
+    Coords::angle theta(100);
+    Coords::spherical a(1.0, theta, Coords::angle(-90));
+    Coords::Cartesian b(a);
+    EXPECT_NEAR(0.0, b.x(), Coords::epsilon*10);
+    EXPECT_DOUBLE_EQ(-sin(theta.radians()), b.y());
+    EXPECT_DOUBLE_EQ(cos(theta.radians()), b.z());
+  }
+
+  TEST(FixedCartesian, ConstructFromSpherical_yz_4) {
+    // yz fourth quadrant
+    Coords::angle theta(160);
+    Coords::spherical a(1.0, theta, Coords::angle(90));
+    Coords::Cartesian b(a);
+    EXPECT_NEAR(0.0, b.x(), Coords::epsilon*10);
+    EXPECT_DOUBLE_EQ(sin(theta.radians()), b.y());
+    EXPECT_DOUBLE_EQ(cos(theta.radians()), b.z());
+  }
+
+
+  TEST(FixedCartesian, ConstructFromSpherical_xz_1) {
+    // xz first quadrant
+    Coords::angle theta(30);
+    Coords::spherical a(1.0, theta);
+    Coords::Cartesian b(a);
+    EXPECT_DOUBLE_EQ(sin(theta.radians()), b.x());
+    EXPECT_DOUBLE_EQ(0.0, b.y());
+    EXPECT_DOUBLE_EQ(cos(theta.radians()), b.z());
+  }
+
+  TEST(FixedCartesian, ConstructFromSpherical_xz_2) {
+    // xz second quadrant
+    Coords::angle theta(-30);
+    Coords::spherical a(1.0, theta);
+    Coords::Cartesian b(a);
+    EXPECT_DOUBLE_EQ(sin(theta.radians()), b.x());
+    EXPECT_DOUBLE_EQ(0.0, b.y());
+    EXPECT_DOUBLE_EQ(cos(theta.radians()), b.z());
+  }
+
+  TEST(FixedCartesian, ConstructFromSpherical_xz_3) {
+    // xz third quadrant
+    Coords::angle theta(-100);
+    Coords::spherical a(1.0, theta);
+    Coords::Cartesian b(a);
+    EXPECT_DOUBLE_EQ(sin(theta.radians()), b.x());
+    EXPECT_DOUBLE_EQ(0.0, b.y());
+    EXPECT_DOUBLE_EQ(cos(theta.radians()), b.z());
+  }
+
+  TEST(FixedCartesian, ConstructFromSpherical_xz_4) {
+    // xz fourth quadrant
+    Coords::angle theta(120);
+    Coords::spherical a(1.0, theta);
+    Coords::Cartesian b(a);
+    EXPECT_DOUBLE_EQ(sin(theta.radians()), b.x());
+    EXPECT_DOUBLE_EQ(0.0, b.y());
+    EXPECT_DOUBLE_EQ(cos(theta.radians()), b.z());
   }
 
 
@@ -488,12 +632,13 @@ namespace {
   // ----------------------------
 
 
-  TEST(XRotationTest, Positive90AboutZ) {
+  TEST(XRotationTest, UxAboutUztoUy) {
+    // Ux counter clockwise about Uz to Uy
 
-    double angle(Coords::angle::deg2rad(90));
+    Coords::angle an_angle(90);
     Coords::rotator about_z(Coords::Cartesian::Uz);
 
-    Coords::Cartesian s(about_z.rotate(Coords::Cartesian::Ux, angle));
+    Coords::Cartesian s(about_z.rotate(Coords::Cartesian::Ux, an_angle));
 
     EXPECT_NEAR(Coords::Cartesian::Uy.x(), s.x(), Coords::epsilon);
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Uy.y(), s.y());
@@ -501,12 +646,13 @@ namespace {
 
   }
 
-  TEST(XRotationTest, Negative90AboutY) {
+  TEST(XRotationTest, UxAboutUytoUz) {
+    // Ux clockwise about Uy to Uz
 
-    double angle(Coords::angle::deg2rad(-90));
+    Coords::angle an_angle(-90);
     Coords::rotator about_y(Coords::Cartesian::Uy);
 
-    Coords::Cartesian s(about_y.rotate(Coords::Cartesian::Ux, angle));
+    Coords::Cartesian s(about_y.rotate(Coords::Cartesian::Ux, an_angle));
 
     EXPECT_NEAR(Coords::Cartesian::Uz.x(), s.x(), Coords::epsilon);
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Uz.y(), s.y());
@@ -518,12 +664,13 @@ namespace {
   // ----- Y Rotation tests -----
   // ----------------------------
 
-  TEST(YRotationTest, Positive90AboutX) {
+  TEST(YRotationTest, UyAboutUxtoUz) {
+    // Uy counter clockwise about Ux to Uz
 
-    double angle(Coords::angle::deg2rad(90));
+    Coords::angle an_angle(90);
     Coords::rotator about_x(Coords::Cartesian::Ux);
 
-    Coords::Cartesian s(about_x.rotate(Coords::Cartesian::Uy, angle));
+    Coords::Cartesian s(about_x.rotate(Coords::Cartesian::Uy, an_angle));
 
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Uz.x(), s.x());
     EXPECT_NEAR(Coords::Cartesian::Uz.y(), s.y(), Coords::epsilon);
@@ -531,12 +678,13 @@ namespace {
 
   }
 
-  TEST(YRotationTest, Negative90AboutZ) {
+  TEST(YRotationTest, UyAboutUztoUx) {
+    // Uy clockwise about Uz to Ux
 
-    double angle(Coords::angle::deg2rad(-90));
+    Coords::angle an_angle(-90);
     Coords::rotator about_z(Coords::Cartesian::Uz);
 
-    Coords::Cartesian s(about_z.rotate(Coords::Cartesian::Uy, angle));
+    Coords::Cartesian s(about_z.rotate(Coords::Cartesian::Uy, an_angle));
 
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Ux.x(), s.x());
     EXPECT_NEAR(Coords::Cartesian::Ux.y(), s.y(), Coords::epsilon);
@@ -548,12 +696,13 @@ namespace {
   // ----- Z Rotation tests -----
   // ----------------------------
 
-  TEST(ZRotationTest, Positive90AboutY) {
+  TEST(ZRotationTest, UzAboutUytoUx) {
+    // Uz counter clockwise about Uy to Ux
 
-    double angle(Coords::angle::deg2rad(90));
+    Coords::angle an_angle(90);
     Coords::rotator about_y(Coords::Cartesian::Uy);
 
-    Coords::Cartesian s(about_y.rotate(Coords::Cartesian::Uz, angle));
+    Coords::Cartesian s(about_y.rotate(Coords::Cartesian::Uz, an_angle));
 
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Ux.x(), s.x());
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Ux.y(), s.y());
@@ -561,18 +710,101 @@ namespace {
 
   }
 
-  TEST(ZRotationTest, Negative90AboutX) {
+  TEST(ZRotationTest, UzAboutUxtoUy) {
+    // Uz clockwise about Ux to Uy
 
-    double angle(Coords::angle::deg2rad(-90));
+    Coords::angle an_angle(-90);
     Coords::rotator about_x(Coords::Cartesian::Ux);
 
-    Coords::Cartesian s(about_x.rotate(Coords::Cartesian::Uz, angle));
+    Coords::Cartesian s(about_x.rotate(Coords::Cartesian::Uz, an_angle));
 
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Uy.x(), s.x());
     EXPECT_DOUBLE_EQ(Coords::Cartesian::Uy.y(), s.y());
     EXPECT_NEAR(Coords::Cartesian::Uy.z(), s.z(), Coords::epsilon);
 
   }
+
+
+
+
+  // ---------------------------------
+  // ----- non-trivial rotations -----
+  // ---------------------------------
+
+  TEST(RotationTest, FirstDiagonal_0) {
+
+    // spin about same axis
+
+    Coords::angle an_angle(90);
+    Coords::Cartesian first_diagonal(1, 1, 1);
+
+    Coords::rotator about_diagonal(first_diagonal);
+
+    Coords::Cartesian opposite_diagonal(-1, -1, -1);
+    Coords::Cartesian s(about_diagonal.rotate(opposite_diagonal, an_angle));
+
+    EXPECT_DOUBLE_EQ(-1.0, s.x());
+    EXPECT_DOUBLE_EQ(-1.0, s.y());
+    EXPECT_DOUBLE_EQ(-1.0, s.z());
+
+  }
+
+  TEST(RotationTest, FirstDiagonal_1) {
+
+    // full circle
+
+    Coords::angle an_angle(360);
+    Coords::Cartesian first_diagonal(1, 1, 1);
+
+    Coords::rotator about_diagonal(first_diagonal);
+
+    Coords::Cartesian opposite_diagonal(-1, -1, 1);
+    Coords::Cartesian s(about_diagonal.rotate(opposite_diagonal, an_angle));
+
+    EXPECT_DOUBLE_EQ(-1.0, s.x());
+    EXPECT_DOUBLE_EQ(-1.0, s.y());
+    EXPECT_DOUBLE_EQ(1.0, s.z());
+
+  }
+
+  TEST(DISABLED_RotationTest, FirstDiagonal_2) {
+
+    // half circle
+
+    Coords::angle an_angle(180);
+    Coords::Cartesian first_diagonal(1, 1, 1);
+
+    Coords::spherical sph_fd(first_diagonal); // TODO rm
+    std::cout << "first diagonal" << sph_fd << std::endl; // TODO rm
+
+    Coords::rotator about_diagonal(first_diagonal);
+
+    Coords::Cartesian opposite_diagonal(-1, -1, 1);
+
+    Coords::spherical sph_od(opposite_diagonal); // TODO rm
+    std::cout << "opposite diagonal" << sph_od << std::endl; // TODO rm
+
+
+    Coords::Cartesian s(about_diagonal.rotate(opposite_diagonal, an_angle));
+    std::cout << s << std::endl; // TODO rm
+
+    Coords::spherical sph_rod(s); // TODO rm
+    std::cout << "rotated diagonal" << sph_rod << std::endl; // TODO rm
+
+    EXPECT_DOUBLE_EQ(sph_fd.r(), sph_rod.r());
+    EXPECT_NEAR(sph_fd.phi().value(), sph_rod.phi().value(), Coords::epsilon*1000); // accumulated rounding error!?!
+
+
+    EXPECT_DOUBLE_EQ(1.0, s.x());
+    EXPECT_DOUBLE_EQ(1.0, s.y());
+    EXPECT_DOUBLE_EQ(-1.0, s.z());
+
+  }
+
+
+
+
+
 
 } // end anonymous namespace
 

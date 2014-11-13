@@ -53,7 +53,7 @@ Coords::Cartesian::Cartesian(const std::string& a,
 // ----- conversion constructor to build from spherical coords ----
 Coords::Cartesian::Cartesian(const Coords::spherical& a)
   : m_x(0), m_y(0), m_z(0) {
-  
+
   // ASSUMES: theta is the angle between z and r.
   z(a.r() * cos(a.theta().radians()));
   double r_xy(a.r() * sin(a.theta().radians())); // r projection in xy plane.
@@ -213,76 +213,59 @@ Coords::Cartesian Coords::cross(const Coords::Cartesian& a,
 // -------------------------
 
 Coords::rotator::rotator(const Coords::Cartesian& a_axis) :
-  m_axis(a_axis),
+  m_axis(Coords::Cartesian::Uo),
   m_rotation_matrix(3, std::vector<double>(3, 0)),
   m_is_new_axis(true),
-  m_old_radians(0.0)
-{}
-
-
-Coords::rotator::rotator(const Coords::rotator& rhs) :
-  m_axis(rhs.axis()),
-  m_rotation_matrix(rhs.m_rotation_matrix),
-  m_is_new_axis(rhs.m_is_new_axis)
-{} // TBD test this
-
-Coords::rotator&
-Coords::rotator::operator=(const Coords::rotator& rhs) {
-  if (this == &rhs) return *this;
-  axis(rhs.axis());
-  m_rotation_matrix = rhs.m_rotation_matrix;
-  m_is_new_axis = rhs.m_is_new_axis;
-  return *this;
-} // TBD test this
-
+  m_current_angle(0.0) {
+  axis(a_axis);
+}
 
 
 void Coords::rotator::axis(const Coords::Cartesian& a_axis) {
   if (a_axis != m_axis) {
-    m_axis = a_axis;
+    m_axis = a_axis.normalized();
     m_is_new_axis = true;
   }
 }
 
 Coords::Cartesian Coords::rotator::rotate(const Coords::Cartesian& a_heading,
-					  const double& a_radians) {
-  
-  if (m_is_new_axis || m_old_radians != a_radians) {
-    
-    double c(cos(a_radians));
-    double s(sin(a_radians));
-    
-    Coords::Cartesian normal(axis().normalized());
-    
+					  const Coords::angle& an_angle) {
+
+  // Quaternion-derived rotation matrix
+  if (m_is_new_axis || m_current_angle != an_angle) {
+
+    double c(cos(an_angle.radians()));
+    double s(sin(an_angle.radians()));
+
     double t(1-c);
-    
-    m_rotation_matrix[0][0] = c + normal.x()*normal.x()*t;
-    m_rotation_matrix[1][1] = c + normal.y()*normal.y()*t;
-    m_rotation_matrix[2][2] = c + normal.z()*normal.z()*t;
-    
-    double t1(normal.x()*normal.y()*t);
-    double t2(normal.z()*s);
-    
+
+    m_rotation_matrix[0][0] = c + axis().x()*axis().x()*t;
+    m_rotation_matrix[1][1] = c + axis().y()*axis().y()*t;
+    m_rotation_matrix[2][2] = c + axis().z()*axis().z()*t;
+
+    double t1(axis().x()*axis().y()*t);
+    double t2(axis().z()*s);
+
     m_rotation_matrix[1][0] = t1 + t2;
     m_rotation_matrix[0][1] = t1 - t2;
-    
-    t1 = normal.x()*normal.z()*t;
-    t2 = normal.y()*s;
-    
+
+    t1 = axis().x()*axis().z()*t;
+    t2 = axis().y()*s;
+
     m_rotation_matrix[2][0] = t1 - t2;
     m_rotation_matrix[0][2] = t1 + t2;
-    
-    t1 = normal.y()*normal.z()*t;
-    t2 = normal.x()*s;
-    
+
+    t1 = axis().y()*axis().z()*t;
+    t2 = axis().x()*s;
+
     m_rotation_matrix[2][1] = t1 + t2;
     m_rotation_matrix[1][2] = t1 - t2;
-    
+
     m_is_new_axis = false;
-    m_old_radians = a_radians;
-    
+    m_current_angle = an_angle;
+
   }
-  
+
   Coords::Cartesian tmp(m_rotation_matrix[0][0]*a_heading.x() +
 			m_rotation_matrix[0][1]*a_heading.y() +
 			m_rotation_matrix[0][2]*a_heading.z(),
@@ -292,9 +275,9 @@ Coords::Cartesian Coords::rotator::rotate(const Coords::Cartesian& a_heading,
 			m_rotation_matrix[2][0]*a_heading.x() +
 			m_rotation_matrix[2][1]*a_heading.y() +
 			m_rotation_matrix[2][2]*a_heading.z());
-  
+
   return tmp;
-  
+
 }
 
 
@@ -331,31 +314,31 @@ void Coords::CartesianRecorder::push(Coords::Cartesian a) {
 
 // output compatible for R frames <- read.table(flnm)
 void Coords::CartesianRecorder::write2R(const std::string& flnm, bool skip_Uo) {
-  
+
   std::ofstream ssfile(flnm.c_str());
-  
+
   if (!ssfile.is_open()) {
     std::stringstream err;
     err << "Error: unable to open file \"" << flnm << "\"";
     throw Coords::CartesianRecorderIOError(err.str());
   }
-  
+
   ssfile << "# Formated for R frames <- read.table(" << flnm << ")"
 	 << std::endl;
   ssfile << "x y z" << std::endl;
-  
+
   for (unsigned int k = 0; k < m_data.size(); ++k) {
-    
+
     // skip zero points from partially filled buffer.
     if (skip_Uo and m_data[k] == Coords::Cartesian::Uo)
       continue;
-    
+
     ssfile << k << " "
 	   << m_data[k].x() << " "
 	   << m_data[k].y() << " "
 	   << m_data[k].z() << std::endl;
   }
-  
+
   ssfile.close();
-  
+
 }
