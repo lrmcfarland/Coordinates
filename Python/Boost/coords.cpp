@@ -11,6 +11,8 @@
 #include <boost/python.hpp>
 
 #include "angle.h"
+#include "Cartesian.h"
+#include "spherical.h"
 
 using namespace boost::python;
 
@@ -20,6 +22,9 @@ using namespace boost::python;
 void (Coords::angle::*setangleValue)(const double&) = &Coords::angle::setValue;
 void (Coords::angle::*setangleRadians)(const double&) = &Coords::angle::setRadians;
 
+void (Coords::Cartesian::*setx)(const double&) = &Coords::Cartesian::x;
+void (Coords::Cartesian::*sety)(const double&) = &Coords::Cartesian::y;
+void (Coords::Cartesian::*setz)(const double&) = &Coords::Cartesian::z;
 
 
 BOOST_PYTHON_MODULE(coords) {
@@ -71,5 +76,71 @@ BOOST_PYTHON_MODULE(coords) {
     .def(self_ns::str(self_ns::self))
 
     ; // end of angle class_
+
+
+
+
+
+
+  class_<Coords::Cartesian>("Cartesian")
+
+    // static members
+    .def_readonly("Uo", &Coords::Cartesian::Uo)
+    .def_readonly("Ux", &Coords::Cartesian::Ux)
+    .def_readonly("Uy", &Coords::Cartesian::Uy)
+    .def_readonly("Uz", &Coords::Cartesian::Uz)
+
+    // constructors
+    .def(init<>()) // default
+    .def(init<Coords::Cartesian>()) // copy
+
+    .def(init<double>()) // x
+    .def(init<double, double>()) // x, y
+    .def(init<double, double, double>()) // x, y, z
+
+    // accessors
+    .def("getX", &Coords::Cartesian::getX)
+    .def("setX", setx)
+    .add_property("x", &Coords::Cartesian::getX, setx)
+
+    .def("getY", &Coords::Cartesian::getY)
+    .def("setY", sety)
+    .add_property("y", &Coords::Cartesian::getY, sety)
+
+    .def("getZ", &Coords::Cartesian::getZ)
+    .def("setZ", setz)
+    .add_property("z", &Coords::Cartesian::getZ, setz)
+
+    // operator<<(), str not repr
+    .def(self_ns::str(self_ns::self))
+
+    // operators
+    .def(self + Coords::Cartesian())
+    .def(Coords::Cartesian() + self)
+
+    .def(self - Coords::Cartesian())
+    .def(Coords::Cartesian() - self)
+
+    .def(self * Coords::Cartesian())
+    .def(Coords::Cartesian() * self)
+
+    .def(self / double()) // scale
+
+    // other methods
+    .def("magnitude", &Coords::Cartesian::magnitude)
+    .def("normalized", &Coords::Cartesian::normalized)
+
+
+    ; // end of class_
+
+  // functions
+  def("cross", Coords::cross);
+  def("dot", Coords::dot);
+
+
+
+
+
+
 
 };
