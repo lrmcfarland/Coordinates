@@ -22,3 +22,9 @@ libCoords/angle_unittest
 libCoords/cartesian_unittest
 libCoords/spherical_unittest
 
+libCoords/example1
+libCoords/mepsilon
+
+# Boost
+python/Boost/build
+
