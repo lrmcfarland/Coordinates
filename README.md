@@ -5,7 +5,7 @@
 This repo contains C++ classes with Python wrappers of
 [Cartesian](http://en.wikipedia.org/wiki/Cartesian_coordinate_system)
 and
-[Spherical](http://en.wikipedia.org/wiki/Spherical_coordinate_system)
+[spherical](http://en.wikipedia.org/wiki/Spherical_coordinate_system)
 coordinate systems for use in physics applications. The objects are
 [overloaded](http://en.wikipedia.org/wiki/Operator_overloading) to
 support the basic arithmetic operators of + and -. Multiplying or
