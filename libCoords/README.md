@@ -1,6 +1,45 @@
 # Coordinates library
 
-To debug with gdb (or lldb on OS X) using the gtest filter, use the
+## To Build
+
+The build is done using make on the command line. There are targets for
+build and test. See the Makefile for details.
+
+
+## To run
+
+On OS X, libCoords.dylib needs to be on the DYLD_LIBRARY_PATH along
+with libgtest.a described above.
+
+setenv.sh will use COORDS_ROOT to find these or assume they are
+relative to this directory.
+
+example1.sh uses this to set up its runtime environment for the
+example1 executable.
+
+## To test
+
+### [googletest](https://code.google.com/p/googletest/)
+
+The C++ library uses [googletest](https://code.google.com/p/googletest/) to
+run the unit tests. I have downloaded and built it in /usr/local using
+following the instructions in the gtest README
+
+```
+[root gtest-1.7.0]# export GTEST_DIR=/usr/local/gtest-1.7.0
+[root gtest-1.7.0]# g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
+
+[root gtest-1.7.0]# ar -rv libgtest.a gtest-all.o
+ar: creating archive libgtest.a
+a - gtest-all.o
+```
+
+libCoords/Makefile sets its GTEST_DIR to /usr/local/gtest-1.7.0 and picks
+up libgtest.a from there.
+
+### To debug
+
+With gdb (or lldb on OS X) using the gtest filter, use the
 full method name (in this example Coords::rotator::rotate) to set
 the break point and --gtest_filter with the GTEST name
 (XRotationTest.Positive90AboutZ) to only run that test.
