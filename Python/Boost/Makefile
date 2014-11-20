@@ -12,7 +12,7 @@ all: build
 build: setup.py coords.cpp
 	${OSXFLAGS} python setup.py build
 
-test: build test_coords.py
+test: build test_angle.py test_Cartesian.py test_spherical.py
 	./test_coords.sh -v
 
 clean:
