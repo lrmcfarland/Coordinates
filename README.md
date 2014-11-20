@@ -120,7 +120,7 @@ c (<Cartesian><x>1</x><y>0</y><z>1.41421</z></Cartesian>)
 
 ### Python
 
-Here I use the spherical coordinates with the radius of the earth, the
+Here I use the spherical coordinates with the radius of the earth (in kilometers), the
 latitude (which needs to be converted to the theta angle from the
 positive z axis), and longitude of two locations to calculate the
 distance between them.
