@@ -2,10 +2,11 @@
 # Filename:    Makefile
 # Description: Makefile to run build, test commands
 # Author:      L.R. McFarland
-# Created:     2014nov13
+# Created:     2014 Nov 13
 # ===============================================================
 
 OSXFLAGS = env ARCHFLAGS="-arch x86_64"
+RM       = rm -rf
 
 all: build
 
@@ -16,7 +17,7 @@ test: build test_angle.py test_Cartesian.py test_spherical.py
 	./test_coords.sh -v
 
 clean:
-	rm -rf build
+	-$(RM) build
 
 clobber: clean
-	rm *~
+	-$(RM) *~
