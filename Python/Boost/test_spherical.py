@@ -112,15 +112,6 @@ class Testspherical(unittest.TestCase):
         self.assertSpacesAreEqual(a, b)
         self.assertEqual(4, b.r)
 
-    @unittest.skip('Not available in boost')
-    def test_copy_assign_3(self):
-        """Test copy assignment operator can use deep copy"""
-        import copy
-        a = coords.spherical(1,2,3)
-        b = copy.deepcopy(a)
-        b.r = 4.0
-        self.assertEqual(1, a.r)
-        self.assertEqual(4, b.r)
 
     def test_string_constructor_exception(self):
         """Test string constructor exception"""

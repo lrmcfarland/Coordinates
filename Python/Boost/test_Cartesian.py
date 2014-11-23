@@ -115,16 +115,6 @@ class TestCartesian(unittest.TestCase):
         self.assertSpacesAreEqual(a, b)
         self.assertEqual(4, b.x)
 
-    @unittest.skip('Not available in boost')
-    def test_copy_assign_3(self):
-        """Test copy assignment operator can use deep copy"""
-        import copy
-        a = coords.Cartesian(1,2,3)
-        b = copy.deepcopy(a)
-        b.x = 4.0
-        self.assertEqual(1, a.x)
-        self.assertEqual(4, b.x)
-
 
     def test_string_constructor_exception(self):
         """Test string constructor exception"""

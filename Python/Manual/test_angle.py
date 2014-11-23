@@ -150,12 +150,6 @@ class TestAngle(unittest.TestCase):
         another_angle = an_angle
         self.assertAlmostEqual(self.rd1, another_angle.value, self.places)
 
-    @unittest.skip('TODO Not available in boost, or manual')
-    def test_deep_copy(self):
-        """Test deep copy"""
-        an_angle = coords.angle(self.rd1)
-        another_angle = copy.deepcopy(an_angle)
-        self.assertAlmostEqual(self.rd1, another_angle.value, self.places)
 
     def test_default_constructor(self):
         """Test default constructor"""
