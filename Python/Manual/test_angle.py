@@ -136,7 +136,6 @@ class TestAngle(unittest.TestCase):
     # constructors
 
 
-    @unittest.skip('TODO manual copy constructor')
     def test_copy_constructor(self):
         """Test copy constructor"""
         an_angle = coords.angle(self.rd1)

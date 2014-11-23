@@ -81,14 +81,55 @@ static PyObject* Angle_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 
 static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
 
-  double degrees(0);
-  double minutes(0);
-  double seconds(0);
-
   static char* kwlist[] = {sDegreeStr, sMinuteStr, sSecondStr, NULL};
 
-  if (! PyArg_ParseTupleAndKeywords(args, kwds, "|ddd", kwlist, &degrees, &minutes, &seconds))
+  double degrees(0); // default value
+  double minutes(0); // default value
+  double seconds(0); // default value
+
+  PyObject* arg0(NULL);
+  PyObject* arg1(NULL);
+  PyObject* arg2(NULL);
+
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOO", kwlist, &arg0, &arg1, &arg2))
     return -1;
+
+  // TODO support converting valid double strings?
+  if (arg0 && PyString_Check(arg0)) {
+    PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+    return -1;
+  }
+
+  if (arg1 && PyString_Check(arg1)) {
+    PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+    return -1;
+  }
+
+  if (arg2 && PyString_Check(arg2)) {
+    PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+    return -1;
+  }
+
+  // copy constructor
+  if (arg0 && is_AngleType(arg0)) {
+    self->m_angle.value(((Angle*)arg0)->m_angle.value());
+    return 0;
+  }
+
+  // from doubles constructor
+
+  if (arg0 && (PyFloat_Check(arg0) || PyInt_Check(arg0))) {
+    degrees = PyFloat_AsDouble(arg0);
+  }
+
+  if (arg1 && (PyFloat_Check(arg1) || PyInt_Check(arg1))) {
+    minutes = PyFloat_AsDouble(arg1);
+  }
+
+  if (arg2 && (PyFloat_Check(arg2) || PyInt_Check(arg2))) {
+    seconds = PyFloat_AsDouble(arg2);
+  }
 
   // value initialized to 0 by new.
   self->m_angle.value(Coords::degrees2seconds(degrees, minutes, seconds)/3600);
@@ -583,17 +624,17 @@ static int Cartesian_init(Cartesian* self, PyObject* args, PyObject* kwds) {
 
   // TODO support converting valid double strings?
   if (arg0 && PyString_Check(arg0)) {
-    PyErr_SetString(sCoordsException, "direct conversion from strings not supported.");
+    PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
     return -1;
   }
 
   if (arg1 && PyString_Check(arg1)) {
-    PyErr_SetString(sCoordsException, "direct conversion from strings not supported.");
+    PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
     return -1;
   }
 
   if (arg2 && PyString_Check(arg2)) {
-    PyErr_SetString(sCoordsException, "direct conversion from strings not supported.");
+    PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
     return -1;
   }
 
