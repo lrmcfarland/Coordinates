@@ -303,7 +303,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         a2 = coords.angle(0)
         self.assertRaises(coords.Error, lambda a, b: a / b, a1, a2)
-        # Note: different from Boost picking up RuntimeError
+        # Note: different from Boost catching RuntimeError
 
 
    # strings

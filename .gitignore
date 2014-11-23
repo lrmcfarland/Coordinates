@@ -26,5 +26,7 @@ libCoords/example1
 libCoords/mepsilon
 
 # Boost
-python/Boost/build
+Python/Boost/build
 
+# Manual
+Python/Manual/build
