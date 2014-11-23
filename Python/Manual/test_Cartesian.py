@@ -93,7 +93,6 @@ class TestCartesian(unittest.TestCase):
         self.assertSpacesAreEqual(self.p1, a)
 
 
-    @unittest.skip('TODO Not available')
     def test_copy_constructor_1(self):
         """Test copy constructor"""
         a = coords.Cartesian(self.p1)
@@ -129,9 +128,9 @@ class TestCartesian(unittest.TestCase):
     def test_string_constructor_exception(self):
         """Test string constructor exception"""
 
-        self.assertRaises(TypeError, lambda a: coords.Cartesian(a), 'some_string')
-        self.assertRaises(TypeError, lambda a: coords.Cartesian(1, a), 'some_string')
-        self.assertRaises(TypeError, lambda a: coords.Cartesian(1, -1, a), 'some_string')
+        self.assertRaises(coords.Error, lambda a: coords.Cartesian(a), 'some_string')
+        self.assertRaises(coords.Error, lambda a: coords.Cartesian(1, a), 'some_string')
+        self.assertRaises(coords.Error, lambda a: coords.Cartesian(1, -1, a), 'some_string')
 
 
     def test_string_assignment_exception(self):
