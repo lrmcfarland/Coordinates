@@ -567,20 +567,70 @@ static PyObject* Cartesian_new(PyTypeObject* type, PyObject* args, PyObject* kwd
 
 static int Cartesian_init(Cartesian* self, PyObject* args, PyObject* kwds) {
 
-  double x(0);
-  double y(0);
-  double z(0);
+  static char* kwlist[] = {sXstr, sYstr, sZstr, NULL}; // TODO
 
-  static char* kwlist[] = {sXstr, sYstr, sZstr, NULL};
+  double x(0); // default value
+  double y(0); // default value
+  double z(0); // default value
 
-  if (! PyArg_ParseTupleAndKeywords(args, kwds, "|ddd", kwlist, &x, &y, &z))
+  PyObject* arg0(NULL);
+  PyObject* arg1(NULL);
+  PyObject* arg2(NULL);
+
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOO", kwlist, &arg0, &arg1, &arg2))
     return -1;
 
-  self->m_Cartesian.x(x);
-  self->m_Cartesian.y(y);
-  self->m_Cartesian.z(z);
+  // TODO support converting valid double strings?
+  if (arg0 && PyString_Check(arg0)) {
+    PyErr_SetString(sCoordsException, "direct conversion from strings not supported.");
+    return -1;
+  }
+
+  if (arg1 && PyString_Check(arg1)) {
+    PyErr_SetString(sCoordsException, "direct conversion from strings not supported.");
+    return -1;
+  }
+
+  if (arg2 && PyString_Check(arg2)) {
+    PyErr_SetString(sCoordsException, "direct conversion from strings not supported.");
+    return -1;
+  }
+
+  // copy constructor
+  if (arg0 && is_CartesianType(arg0)) {
+    self->m_Cartesian.x(((Cartesian*)arg0)->m_Cartesian.x());
+    self->m_Cartesian.y(((Cartesian*)arg0)->m_Cartesian.y());
+    self->m_Cartesian.z(((Cartesian*)arg0)->m_Cartesian.z());
+    return 0;
+  }
+
+
+  // TODO from spherical conversion constructor
+
+
+  // from doubles constructor
+
+  if (arg0 && (PyFloat_Check(arg0) || PyInt_Check(arg0))) {
+    self->m_Cartesian.x(PyFloat_AsDouble(arg0));
+  } else {
+    self->m_Cartesian.x(x);
+  }
+
+  if (arg1 && (PyFloat_Check(arg1) || PyInt_Check(arg1))) {
+    self->m_Cartesian.y(PyFloat_AsDouble(arg1));
+  } else {
+    self->m_Cartesian.y(y);
+  }
+
+  if (arg2 && (PyFloat_Check(arg2) || PyInt_Check(arg2))) {
+    self->m_Cartesian.z(PyFloat_AsDouble(arg2));
+  } else {
+    self->m_Cartesian.z(z);
+  }
 
   return 0;
+
 }
 
 static void Cartesian_dealloc(Cartesian* self) {
@@ -603,9 +653,9 @@ PyObject* Cartesian_repr(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << "("
-         << a_Cartesian.x() << ", "
-         << a_Cartesian.y() << ", "
-         << a_Cartesian.z() << ")";
+	 << a_Cartesian.x() << ", "
+	 << a_Cartesian.y() << ", "
+	 << a_Cartesian.z() << ")";
   return PyString_FromString(result.str().c_str());
 }
 
@@ -1213,5 +1263,3 @@ PyMODINIT_FUNC initcoords(void) {
 
 
 }
-
-
