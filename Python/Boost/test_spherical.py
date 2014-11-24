@@ -254,7 +254,7 @@ class Testspherical(unittest.TestCase):
 
     def test_space_plus_double(self):
         """Test space + double"""
-        # no python conversion constructor for this implementation of space
+        # c++ explicit conversion constructor not defined for double
         self.assertRaises(TypeError, lambda: self.p1 + self.p2.r)
 
 
@@ -295,7 +295,7 @@ class Testspherical(unittest.TestCase):
 
     def test_space_minus_double(self):
         """Test space - double"""
-        # no python conversion constructor for this implementation of space
+        # c++ explicit conversion constructor not defined for double
         self.assertRaises(TypeError, lambda: self.p1 - self.p2.r)
 
 
