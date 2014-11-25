@@ -4,6 +4,5 @@
 
 python test_angle.py "$@"
 python test_Cartesian.py "$@"
-
-# python test_spherical.py "$@"
+python test_spherical.py "$@"
 

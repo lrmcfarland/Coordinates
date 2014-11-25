@@ -68,8 +68,16 @@ static char sZstr[] = "z";
 // ----- spherical -----
 // ---------------------
 
-// TODO spherical
+// object definition.
+typedef struct {
+  PyObject_HEAD
+  Coords::spherical m_spherical;
+} spherical;
 
+// char* kwlist[] init strings
+static char sRstr[] = "r";
+static char sThetaStr[] = "theta";
+static char sPhiStr[] = "phi";
 
 // =================
 // ===== Angle =====
@@ -1228,6 +1236,596 @@ static PyObject* normalized(PyObject* self, PyObject *args) {
 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =====================
+// ===== spherical =====
+// =====================
+
+// ------------------------
+// ----- constructors -----
+// ------------------------
+
+// Forward declarations for as_number methods. Wraps sphericalType definition.
+static void new_sphericalType(spherical** a_spherical);
+static int is_sphericalType(PyObject* a_spherical);
+
+
+static PyObject* spherical_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
+  spherical* self(NULL);
+  self = (spherical*)type->tp_alloc(type, 0);
+  return (PyObject*)self;
+}
+
+static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
+
+  static char* kwlist[] = {sRstr, sThetaStr, sPhiStr, NULL};
+
+  double        r(0);
+  Coords::angle theta;
+  Coords::angle phi;
+
+  PyObject* arg0(NULL);
+  PyObject* arg1(NULL);
+  PyObject* arg2(NULL);
+
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOO", kwlist, &arg0, &arg1, &arg2))
+    return -1;
+
+  if (arg0) {
+
+    if (is_sphericalType(arg0)) {
+
+      // copy constructor
+      self->m_spherical.r(((spherical*)arg0)->m_spherical.r());
+      self->m_spherical.theta(((spherical*)arg0)->m_spherical.theta());
+      self->m_spherical.phi(((spherical*)arg0)->m_spherical.phi());
+      return 0;
+
+    } else if ((PyFloat_Check(arg0) || PyInt_Check(arg0))) {
+      r = PyFloat_AsDouble(arg0);
+
+    } else if (PyString_Check(arg0)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      return -1;
+
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      return -1;
+    }
+
+  }
+
+  if (arg1) {
+
+    if (is_AngleType(arg1)) {
+      theta = ((Angle*)arg1)->m_angle;
+
+    } else if (PyString_Check(arg1)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      return -1;
+
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg1 type");
+      return -1;
+    }
+
+  }
+
+  if (arg2) {
+
+    if (is_AngleType(arg2)) {
+      phi = ((Angle*)arg2)->m_angle;
+
+    } else if (PyString_Check(arg2)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      return -1;
+
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg2 type");
+      return -1;
+    }
+
+  }
+
+  self->m_spherical.r(r);
+  self->m_spherical.theta(theta);
+  self->m_spherical.phi(phi);
+
+  return 0;
+
+}
+
+static void spherical_dealloc(spherical* self) {
+  self->ob_type->tp_free((PyObject*)self);
+}
+
+// -----------------
+// ----- print -----
+// -----------------
+
+PyObject* spherical_str(PyObject* self) {
+  std::stringstream result;
+  result.precision(sPrintPrecision);
+  result << ((spherical*)self)->m_spherical;
+  return PyString_FromString(result.str().c_str());
+}
+
+PyObject* spherical_repr(PyObject* self) {
+  const Coords::spherical& a_spherical(((spherical*)self)->m_spherical);
+  std::stringstream result;
+  result.precision(sPrintPrecision);
+  result << "("
+	 << a_spherical.r() << ", "
+	 << a_spherical.theta() << ", "
+	 << a_spherical.phi() << ")";
+  return PyString_FromString(result.str().c_str());
+}
+
+// -------------------------------
+// ----- getters and setters -----
+// -------------------------------
+
+// ----- R -----
+
+static PyObject* spherical_getR(spherical* self, void* closure) {
+  return PyFloat_FromDouble(self->m_spherical.r());
+}
+
+static int spherical_setR(spherical* self, PyObject* value, void* closure) {
+
+  if (value == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete r");
+    return 0;
+  }
+
+  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+    PyErr_SetString(sCoordsException, "r must be a float");
+    return 0;
+  }
+
+  self->m_spherical.r(PyFloat_AsDouble(value));
+
+  return 0;
+}
+
+// ----- theta -----
+
+static PyObject* spherical_getTheta(spherical* self, void* closure) {
+
+  Angle* a_theta(NULL);
+  new_AngleType(&a_theta);
+
+  if (a_theta == NULL) {
+    PyErr_SetString(sCoordsException, "get theta failed to create coord.angle");
+    return NULL;
+  }
+
+  a_theta->m_angle = self->m_spherical.theta();
+
+  return (PyObject*) a_theta;
+
+}
+
+static int spherical_setTheta(spherical* self, PyObject* value, void* closure) {
+
+  if (value == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete theta");
+    return -1;
+  }
+
+  if (!is_AngleType(value)) {
+    PyErr_SetString(sCoordsException, "theta must be an angle");
+    return -1;
+  }
+
+  self->m_spherical.theta(((Angle*)value)->m_angle);
+
+  return 0;
+}
+
+// ----- phi -----
+
+static PyObject* spherical_getPhi(spherical* self, void* closure) {
+
+  Angle* a_phi(NULL);
+  new_AngleType(&a_phi);
+
+  if (a_phi == NULL) {
+    PyErr_SetString(sCoordsException, "get phi failed to create coord.angle");
+    return NULL;
+  }
+
+  a_phi->m_angle = self->m_spherical.phi();
+
+  return (PyObject*) a_phi;
+}
+
+static int spherical_setPhi(spherical* self, PyObject* value, void* closure) {
+
+  if (value == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete phi");
+    return -1;
+  }
+
+  if (!is_AngleType(value)) {
+    PyErr_SetString(sCoordsException, "phi must be an angle");
+    return -1; // TODO return -1?
+  }
+
+  self->m_spherical.phi(((Angle*)value)->m_angle);
+
+  return 0;
+}
+
+// --------------------------
+// ----- number methods -----
+// --------------------------
+
+
+static PyObject* spherical_nb_add(PyObject* o1, PyObject* o2) {
+
+  if (!is_sphericalType(o1) || !is_sphericalType(o2)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  spherical* result_spherical(NULL);
+
+  new_sphericalType(&result_spherical);
+
+  if (result_spherical == NULL) {
+    PyErr_SetString(sCoordsException, "add failed to create coord.spherical");
+    return NULL;
+  }
+
+  Coords::spherical the_sum(((spherical*)o1)->m_spherical + ((spherical*)o2)->m_spherical);
+
+  result_spherical->m_spherical = the_sum;
+
+  return (PyObject*) result_spherical;
+
+}
+
+
+static PyObject* spherical_nb_subtract(PyObject* o1, PyObject* o2) {
+
+  if (!is_sphericalType(o1) || !is_sphericalType(o2)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  spherical* result_spherical(NULL);
+
+  new_sphericalType(&result_spherical);
+
+  if (result_spherical == NULL) {
+    PyErr_SetString(sCoordsException, "subtract failed to create coord.spherical");
+    return NULL;
+  }
+
+  Coords::spherical the_difference(((spherical*)o1)->m_spherical - ((spherical*)o2)->m_spherical);
+
+  result_spherical->m_spherical = the_difference;
+
+  return (PyObject*) result_spherical;
+
+}
+
+
+static PyObject* spherical_nb_negative(PyObject* o1) {
+  // Unitary minus
+
+  if (!is_sphericalType(o1)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  spherical* result_spherical(NULL);
+
+  new_sphericalType(&result_spherical);
+
+  if (result_spherical == NULL) {
+    PyErr_SetString(sCoordsException, "negative failed to create coord.spherical");
+    return NULL;
+  }
+
+  Coords::spherical the_inverse = -((spherical*)o1)->m_spherical;
+
+  result_spherical->m_spherical = the_inverse;
+
+  return (PyObject*) result_spherical;
+}
+
+
+static PyObject* spherical_nb_multiply(PyObject* o1, PyObject* o2) {
+
+  // Returns a scaled version of o1 or o2 if one is spherical and the
+  // other double or int. Returns not implemented otherwise.
+
+  // TODO dot product?
+
+  spherical* result_spherical(NULL);
+  new_sphericalType(&result_spherical);
+
+  if (result_spherical == NULL) {
+    PyErr_SetString(sCoordsException, "divide failed to create coord.spherical");
+    return NULL;
+  }
+
+  if (is_sphericalType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+    result_spherical->m_spherical = ((spherical*)o1)->m_spherical * PyFloat_AsDouble(o2);
+    return (PyObject*) result_spherical;
+  }
+
+  if ((PyFloat_Check(o1) || PyInt_Check(o1)) && is_sphericalType(o2)) {
+    result_spherical->m_spherical = PyFloat_AsDouble(o1) * ((spherical*)o2)->m_spherical;
+    return (PyObject*) result_spherical;
+
+  }
+
+  Py_INCREF(Py_NotImplemented);
+  return Py_NotImplemented;
+
+}
+
+
+static PyObject* spherical_nb_divide(PyObject* o1, PyObject* o2) {
+  // This returns a spherical object scaled by the divisor.  o1 must be
+  // sphericalType, o2 a float or int otherwise this will raise a
+  // NotImplemented error.
+
+  spherical* result_spherical(NULL);
+  new_sphericalType(&result_spherical);
+
+  if (result_spherical == NULL) {
+    PyErr_SetString(sCoordsException, "divide failed to create coord.spherical");
+    return NULL;
+  }
+
+  if (is_sphericalType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+
+    try {
+      result_spherical->m_spherical = ((spherical*)o1)->m_spherical / PyFloat_AsDouble(o2);
+    } catch (Coords::DivideByZeroError& err) {
+      Py_DECREF(result_spherical);
+      PyErr_SetString(sCoordsException, "divide attempted divide by zero");
+      return NULL;
+    }
+
+  } else {
+    Py_DECREF(result_spherical);
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  return (PyObject*) result_spherical;
+}
+
+
+static PyObject* spherical_tp_richcompare(PyObject* o1, PyObject* o2, int op) {
+
+  if (!is_sphericalType(o1) || !is_sphericalType(o2)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  if (op == Py_EQ) {
+
+    if (((spherical*)o1)->m_spherical == ((spherical*)o2)->m_spherical)
+      return Py_True;
+    else
+      return Py_False;
+
+  } else if (op == Py_NE) {
+
+    if (((spherical*)o1)->m_spherical != ((spherical*)o2)->m_spherical)
+      return Py_True;
+    else
+      return Py_False;
+
+  } else {
+
+    PyErr_SetString(PyExc_TypeError, "richcompare op not supported");
+    return NULL;
+
+  }
+
+}
+
+// ---------------------------
+// ----- inplace methods -----
+// ---------------------------
+
+static PyObject* spherical_nb_inplace_add(PyObject* o1, PyObject* o2) {
+  // TODO can this be implement directly using spherical::operator+=()?
+  // problem with refence going out of scope, segfault.
+  return spherical_nb_add(o1, o2);
+}
+
+static PyObject* spherical_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
+  // TOOD implement directly?
+  return spherical_nb_subtract(o1, o2);
+}
+
+static PyObject* spherical_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
+  // TOOD implement directly?
+  return spherical_nb_multiply(o1, o2);
+}
+
+static PyObject* spherical_nb_inplace_divide(PyObject* o1, PyObject* o2) {
+  // TOOD implement directly?
+  return spherical_nb_divide(o1, o2);
+}
+
+// --------------------------
+// ----- Python structs -----
+// --------------------------
+
+static PyMethodDef spherical_methods[] = {
+  {NULL}  /* Sentinel */
+};
+
+
+static PyMemberDef spherical_members[] = {
+  {NULL}  /* Sentinel */
+};
+
+
+static PyGetSetDef spherical_getseters[] = {
+  {sRstr, (getter)spherical_getR, (setter)spherical_setR, sRstr, NULL},
+  {sThetaStr, (getter)spherical_getTheta, (setter)spherical_setTheta, sThetaStr, NULL},
+  {sPhiStr, (getter)spherical_getPhi, (setter)spherical_setPhi, sPhiStr, NULL},
+  {NULL}  /* Sentinel */
+};
+
+// see http://docs.python.org/c-api/typeobj.html
+static PyNumberMethods spherical_as_number = {
+  (binaryfunc) spherical_nb_add,
+  (binaryfunc) spherical_nb_subtract,
+  (binaryfunc) spherical_nb_multiply,
+  (binaryfunc) spherical_nb_divide,
+  (binaryfunc) 0,  // nb_remainder
+  (binaryfunc) 0,  // nb_divmod
+  (ternaryfunc) 0, // nb_power
+  (unaryfunc) spherical_nb_negative,
+  (unaryfunc) 0,   // nb_positive
+  (unaryfunc) 0,   // nb_absolute
+  (inquiry) 0,     // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,   // nb_invert
+  (binaryfunc) 0,  // nb_lshift
+  (binaryfunc) 0,  // nb_rshift
+  (binaryfunc) 0,  // nb_and
+  (binaryfunc) 0,  // nb_xor
+  (binaryfunc) 0,  // nb_or
+  (coercion) 0,    // Used by the coerce() function
+  (unaryfunc) 0,   // nb_int
+  (unaryfunc) 0,   // nb_long
+  (unaryfunc) 0,   // nb_float
+  (unaryfunc) 0,   // nb_oct
+  (unaryfunc) 0,   // nb_hex
+
+  // added in release 2.0
+
+  (binaryfunc) spherical_nb_inplace_add,
+  (binaryfunc) spherical_nb_inplace_subtract,
+  (binaryfunc) spherical_nb_inplace_multiply,
+  (binaryfunc) spherical_nb_inplace_divide,
+  (binaryfunc) 0,  // nb_inplace_remainder
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  // added in release 2.2
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) 0,  // nb_true_divide
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+};
+
+
+PyTypeObject sphericalType = {
+  PyObject_HEAD_INIT(NULL)
+  0,                                        /* ob_size */
+  "spherical",                              /* tp_name */
+  sizeof(spherical),                        /* tp_basicsize */
+  0,                                        /* tp_itemsize */
+  (destructor) spherical_dealloc,           /* tp_dealloc */
+  0,                                        /* tp_print */
+  0,                                        /* tp_getattr */
+  0,                                        /* tp_setattr */
+  0,                                        /* tp_compare */
+  spherical_repr,                           /* tp_repr */
+  &spherical_as_number,                     /* tp_as_number */
+  0,                                        /* tp_as_sequence */
+  0,                                        /* tp_as_mapping */
+  0,                                        /* tp_hash */
+  0,                                        /* tp_call */
+  spherical_str,                            /* tp_str */
+  0,                                        /* tp_getattro */
+  0,                                        /* tp_setattro */
+  0,                                        /* tp_as_buffer */
+  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  "spherical objects",                      /* tp_doc */
+  0,                                        /* tp_traverse */
+  0,                                        /* tp_clear */
+  spherical_tp_richcompare,                 /* tp_richcompare */
+  0,                                        /* tp_weaklistoffset */
+  0,                                        /* tp_iter */
+  0,                                        /* tp_iternext */
+  spherical_methods,                        /* tp_methods */
+  spherical_members,                        /* tp_members */
+  spherical_getseters,                      /* tp_getset */
+  0,                                        /* tp_base */
+  0,                                        /* tp_dict */
+  0,                                        /* tp_descr_get */
+  0,                                        /* tp_descr_set */
+  0,                                        /* tp_dictoffset */
+  (initproc)spherical_init,                 /* tp_init */
+  0,                                        /* tp_alloc */
+  spherical_new,                            /* tp_new */
+};
+
+// ------------------------------------------
+// ----- implement forward declarations -----
+// ------------------------------------------
+
+static void new_sphericalType(spherical** a_spherical) {
+  *a_spherical = PyObject_New(spherical, &sphericalType); // alloc and inits?
+}
+
+static int is_sphericalType(PyObject* a_spherical) {
+  //wrapper for type check
+  return PyObject_TypeCheck(a_spherical, &sphericalType);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// --------------------------
+// ----- module methods -----
+// --------------------------
+
+
+// -----------------------
+// ----- method list -----
+// -----------------------
+
+PyMethodDef coords_module_methods[] = {
+  {NULL, NULL}  /* Sentinel */
+};
+
+
+
+
 // ----------------------------
 // ----- module constants -----
 // ----------------------------
@@ -1290,8 +1888,18 @@ PyMODINIT_FUNC initcoords(void) {
   Py_INCREF(&CartesianType);
   PyModule_AddObject(m, "Cartesian", (PyObject *)&CartesianType);
 
+  // spherical
 
-  // constants
+  sphericalType.tp_new = PyType_GenericNew;
+  if (PyType_Ready(&sphericalType) < 0)
+    return;
+
+  Py_INCREF(&sphericalType);
+  PyModule_AddObject(m, "spherical", (PyObject *)&sphericalType);
+
+
+  // module unit vector constants
+
   PyObject* Cartesian_Uo(NULL);
   Cartesian_Uo = Cartesian_create(Coords::Cartesian::Uo);
   Py_INCREF(Cartesian_Uo);
