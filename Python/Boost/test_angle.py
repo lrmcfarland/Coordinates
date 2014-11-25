@@ -209,7 +209,7 @@ class TestAngle(unittest.TestCase):
         self.assertAlmostEqual(a.value, b.value, self.places)
 
 
-        
+
     @unittest.skip('TODO')
     def test_string_constructor_exception(self):
         """Test string constructor exception"""
