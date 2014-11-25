@@ -126,7 +126,7 @@ static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
       degrees = PyFloat_AsDouble(arg0);
 
     } else if (PyString_Check(arg0)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
     } else {
@@ -142,11 +142,11 @@ static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
       minutes = PyFloat_AsDouble(arg1);
 
     } else if (PyString_Check(arg1)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
     } else {
-      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      PyErr_SetString(sCoordsException, "unsupported arg1 type");
       return -1;
     }
 
@@ -158,10 +158,10 @@ static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
       seconds = PyFloat_AsDouble(arg2);
 
     } else if (PyString_Check(arg2)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
     } else {
-      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      PyErr_SetString(sCoordsException, "unsupported arg1 type");
       return -1;
     }
 
@@ -382,9 +382,6 @@ static PyObject* Angle_tp_richcompare(PyObject* o1, PyObject* o2, int op) {
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
   }
-
-
-  // TODO >, >=, <, <=
 
   if (op == Py_LT) {
 
@@ -665,7 +662,7 @@ static int Cartesian_init(Cartesian* self, PyObject* args, PyObject* kwds) {
       x = PyFloat_AsDouble(arg0);
 
     } else if (PyString_Check(arg0)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
     } else {
@@ -681,7 +678,7 @@ static int Cartesian_init(Cartesian* self, PyObject* args, PyObject* kwds) {
       y = PyFloat_AsDouble(arg1);
 
     } else if (PyString_Check(arg1)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
     } else {
       PyErr_SetString(sCoordsException, "unsupported arg1 type");
@@ -696,7 +693,7 @@ static int Cartesian_init(Cartesian* self, PyObject* args, PyObject* kwds) {
       z = PyFloat_AsDouble(arg2);
 
     } else if (PyString_Check(arg2)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
     } else {
       PyErr_SetString(sCoordsException, "unsupported arg2 type");
@@ -882,7 +879,7 @@ static PyObject* Cartesian_nb_negative(PyObject* o1) {
   new_CartesianType(&result_Cartesian);
 
   if (result_Cartesian == NULL) {
-    PyErr_SetString(sCoordsException, "negative failed to create coord.Cartesian");
+    PyErr_SetString(sCoordsException, "unitary minus failed to create coord.Cartesian");
     return NULL;
   }
 
@@ -910,7 +907,7 @@ static PyObject* Cartesian_nb_multiply(PyObject* o1, PyObject* o2) {
   new_CartesianType(&result_Cartesian);
 
   if (result_Cartesian == NULL) {
-    PyErr_SetString(sCoordsException, "divide failed to create coord.Cartesian");
+    PyErr_SetString(sCoordsException, "multiply failed to create coord.Cartesian");
     return NULL;
   }
 
@@ -950,7 +947,7 @@ static PyObject* Cartesian_nb_divide(PyObject* o1, PyObject* o2) {
       result_Cartesian->m_Cartesian = ((Cartesian*)o1)->m_Cartesian / PyFloat_AsDouble(o2);
     } catch (Coords::DivideByZeroError& err) {
       Py_DECREF(result_Cartesian);
-      PyErr_SetString(sCoordsException, "divide attempted divide by zero");
+      PyErr_SetString(sCoordsException, err.what());
       return NULL;
     }
 
@@ -1145,11 +1142,10 @@ PyTypeObject CartesianType = {
 // ------------------------------------------
 
 static void new_CartesianType(Cartesian** a_Cartesian) {
-  *a_Cartesian = PyObject_New(Cartesian, &CartesianType); // alloc and inits?
+  *a_Cartesian = PyObject_New(Cartesian, &CartesianType);
 }
 
 static int is_CartesianType(PyObject* a_Cartesian) {
-  //wrapper for type check
   return PyObject_TypeCheck(a_Cartesian, &CartesianType);
 }
 
@@ -1188,7 +1184,6 @@ static PyObject* dot(PyObject* self, PyObject *args) {
   // O is borrowed reference
   if (!PyArg_ParseTuple(args, "OO", &first_Cartesian, &second_Cartesian))
     return NULL;
-
 
   double a_dot_product(Coords::dot(first_Cartesian->m_Cartesian, second_Cartesian->m_Cartesian));
 
@@ -1235,19 +1230,6 @@ static PyObject* normalized(PyObject* self, PyObject *args) {
   return (PyObject*) result_Cartesian;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // =====================
 // ===== spherical =====
@@ -1298,7 +1280,7 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
       r = PyFloat_AsDouble(arg0);
 
     } else if (PyString_Check(arg0)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
     } else {
@@ -1314,7 +1296,7 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
       theta = ((Angle*)arg1)->m_angle;
 
     } else if (PyString_Check(arg1)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
     } else {
@@ -1330,7 +1312,7 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
       phi = ((Angle*)arg2)->m_angle;
 
     } else if (PyString_Check(arg2)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
     } else {
@@ -1462,7 +1444,7 @@ static int spherical_setPhi(spherical* self, PyObject* value, void* closure) {
 
   if (!is_AngleType(value)) {
     PyErr_SetString(sCoordsException, "phi must be an angle");
-    return -1; // TODO return -1?
+    return -1;
   }
 
   self->m_spherical.phi(((Angle*)value)->m_angle);
@@ -1473,7 +1455,6 @@ static int spherical_setPhi(spherical* self, PyObject* value, void* closure) {
 // --------------------------
 // ----- number methods -----
 // --------------------------
-
 
 static PyObject* spherical_nb_add(PyObject* o1, PyObject* o2) {
 
@@ -1538,7 +1519,7 @@ static PyObject* spherical_nb_negative(PyObject* o1) {
   new_sphericalType(&result_spherical);
 
   if (result_spherical == NULL) {
-    PyErr_SetString(sCoordsException, "negative failed to create coord.spherical");
+    PyErr_SetString(sCoordsException, "unitary minus failed to create coord.spherical");
     return NULL;
   }
 
@@ -1561,7 +1542,7 @@ static PyObject* spherical_nb_multiply(PyObject* o1, PyObject* o2) {
   new_sphericalType(&result_spherical);
 
   if (result_spherical == NULL) {
-    PyErr_SetString(sCoordsException, "divide failed to create coord.spherical");
+    PyErr_SetString(sCoordsException, "multiply failed to create coord.spherical");
     return NULL;
   }
 
@@ -1601,7 +1582,7 @@ static PyObject* spherical_nb_divide(PyObject* o1, PyObject* o2) {
       result_spherical->m_spherical = ((spherical*)o1)->m_spherical / PyFloat_AsDouble(o2);
     } catch (Coords::DivideByZeroError& err) {
       Py_DECREF(result_spherical);
-      PyErr_SetString(sCoordsException, "divide attempted divide by zero");
+      PyErr_SetString(sCoordsException, err.what());
       return NULL;
     }
 
@@ -1787,27 +1768,12 @@ PyTypeObject sphericalType = {
 // ------------------------------------------
 
 static void new_sphericalType(spherical** a_spherical) {
-  *a_spherical = PyObject_New(spherical, &sphericalType); // alloc and inits?
+  *a_spherical = PyObject_New(spherical, &sphericalType);
 }
 
 static int is_sphericalType(PyObject* a_spherical) {
-  //wrapper for type check
   return PyObject_TypeCheck(a_spherical, &sphericalType);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // --------------------------
@@ -1824,10 +1790,8 @@ PyMethodDef coords_module_methods[] = {
 };
 
 
-
-
 // ----------------------------
-// ----- module constants -----
+// ----- module utilities -----
 // ----------------------------
 
 PyObject* Cartesian_create(const Coords::Cartesian& a_Cartesian) {
@@ -1852,8 +1816,6 @@ PyObject* Cartesian_create(const Coords::Cartesian& a_Cartesian) {
 
   return (PyObject*) py_Cartesian;
 }
-
-
 
 // ------------------------------
 // ----- init coords module -----
