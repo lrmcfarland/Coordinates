@@ -131,14 +131,13 @@ class TestCartesian(unittest.TestCase):
         self.assertRaises(TypeError, self.p1.z, 'some_string')
 
 
-    @unittest.skip('TODO conversion')
     def test_construct_from_spherical(self):
         """Test spherical conversion constructor"""
         a = coords.spherical(1, coords.angle(45), coords.angle(45))
         b = coords.Cartesian(a)
         self.assertAlmostEqual(0.5, b.x)
         self.assertAlmostEqual(0.5, b.y)
-        self.assertAlmostEqual(math.sin(coords.angle.deg2rad(45)), b.z)
+        self.assertAlmostEqual(math.sin(coords.angle().deg2rad(45)), b.z)
 
     # --------------------------------
     # ----- test unitary methods -----

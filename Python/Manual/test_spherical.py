@@ -155,7 +155,7 @@ class TestSpherical(unittest.TestCase):
         self.assertRaises(TypeError, self.p1.theta, 'some_string')
         self.assertRaises(TypeError, self.p1.phi, 'some_string')
 
-    @unittest.skip('TODO')
+
     def test_construct_from_cartesian(self):
         """Test cartesian conversion constructor"""
         a = coords.Cartesian(1, 1, 1)
@@ -342,61 +342,6 @@ class TestSpherical(unittest.TestCase):
         scale = 0.5
         a = scale * a
         self.assertSpacesAreEqual(result, a)
-
-
-    @unittest.skip('TODO spherical dot product?')
-    def test_space_times_space(self):
-        """Test space * space dot product"""
-        result = self.p1.r * self.p2.r + self.p1.theta * self.p2.theta + self.p1.phi * self.p2.phi
-        a = self.p1 * self.p2
-        self.assertAlmostEqual(result, a, self.places)
-
-
-    @unittest.skip('TODO spherical dot product?')
-    def test_inplace_multiply(self):
-        """Test space *= dot product"""
-        result = self.p1.r * self.p2.r + self.p1.theta * self.p2.theta + self.p1.phi * self.p2.phi
-        a = self.p1
-        a *= self.p2
-        self.assertAlmostEqual(result, a, self.places)
-
-
-    @unittest.skip('TODO spherical cross product?')
-    def test_dot_product(self):
-        """Test space dot product function"""
-        result = self.p1.r * self.p2.r + self.p1.theta * self.p2.theta + self.p1.phi * self.p2.phi
-        a = coords.dot(self.p1, self.p2)
-        self.assertEqual(result, a)
-
-
-    @unittest.skip('TODO spherical cross product?')
-    def test_x_cross_y(self):
-        """Test x cross y is z"""
-        a = coords.cross(coords.spherical.Ux, coords.spherical.Uy)
-        self.assertSpacesAreEqual(coords.spherical.Uz, a)
-
-
-    @unittest.skip('TODO spherical cross product?')
-    def test_y_cross_z(self):
-        """Test x cross y is z"""
-        a = coords.cross(coords.spherical.Uy, coords.spherical.Uz)
-        self.assertSpacesAreEqual(coords.spherical.Ux, a)
-
-
-    @unittest.skip('TODO spherical cross product?')
-    def test_z_cross_x(self):
-        """Test x cross y is z"""
-        a = coords.cross(coords.spherical.Uz, coords.spherical.Ux)
-        self.assertSpacesAreEqual(coords.spherical.Uy, a)
-
-
-    @unittest.skip('TODO spherical cross product?')
-    def test_cross_1(self):
-        """Test more arbitrary cross product"""
-        a = coords.spherical(1, 1, 1)
-        b = coords.spherical(0, 0, 0.5)
-        c = coords.cross(a, b)
-        self.assertSpacesAreEqual(coords.spherical(0.5, -0.5, 0), c)
 
 
     def test_divide(self):

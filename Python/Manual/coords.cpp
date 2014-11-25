@@ -34,12 +34,6 @@ static const unsigned int sPrintPrecision(12); // matches defaut %s precision fo
 // ----- Angle -----
 // -----------------
 
-// object definition.
-typedef struct {
-  PyObject_HEAD
-  Coords::angle m_angle;
-} Angle;
-
 // char* kwlist[] init strings
 static char sDegreeStr[] = "degees";
 static char sMinuteStr[] = "minutes";
@@ -48,9 +42,24 @@ static char sSecondStr[] = "seconds";
 static char sValueStr[] = "value";
 static char sRadiansStr[] = "radians";
 
+// object definition.
+typedef struct {
+  PyObject_HEAD
+  Coords::angle m_angle;
+} Angle;
+
+// Forward declarations for as_number methods. Wraps Type definition.
+static void new_AngleType(Angle** an_angle);
+static int is_AngleType(PyObject* an_angle);
+
 // ---------------------
 // ----- Cartesian -----
 // ---------------------
+
+// char* kwlist[] init strings
+static char sXstr[] = "x";
+static char sYstr[] = "y";
+static char sZstr[] = "z";
 
 // object definition.
 typedef struct {
@@ -58,15 +67,23 @@ typedef struct {
   Coords::Cartesian m_Cartesian;
 } Cartesian;
 
+// Forward declarations for as_number methods. Wraps CartesianType definition.
+static void new_CartesianType(Cartesian** a_Cartesian);
+static int is_CartesianType(PyObject* a_Cartesian);
 
-// char* kwlist[] init strings
-static char sXstr[] = "x";
-static char sYstr[] = "y";
-static char sZstr[] = "z";
+static PyObject* Cartesian_cross(PyObject* self, PyObject *args);
+static PyObject* Cartesian_dot(PyObject* self, PyObject *args);
+static PyObject* Cartesian_magnitude(PyObject* self, PyObject *args);
+static PyObject* Cartesian_normalized(PyObject* self, PyObject *args);
 
 // ---------------------
 // ----- spherical -----
 // ---------------------
+
+// char* kwlist[] init strings
+static char sRstr[] = "r";
+static char sThetaStr[] = "theta";
+static char sPhiStr[] = "phi";
 
 // object definition.
 typedef struct {
@@ -74,10 +91,10 @@ typedef struct {
   Coords::spherical m_spherical;
 } spherical;
 
-// char* kwlist[] init strings
-static char sRstr[] = "r";
-static char sThetaStr[] = "theta";
-static char sPhiStr[] = "phi";
+// Forward declarations for as_number methods. Wraps sphericalType definition.
+static void new_sphericalType(spherical** a_spherical);
+static int is_sphericalType(PyObject* a_spherical);
+
 
 // =================
 // ===== Angle =====
@@ -87,17 +104,11 @@ static char sPhiStr[] = "phi";
 // ----- constructors -----
 // ------------------------
 
-// Forward declarations for as_number methods. Wraps Type definition.
-static void new_AngleType(Angle** an_angle);
-static int is_AngleType(PyObject* an_angle);
-
-
 static PyObject* Angle_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
   Angle* self(NULL);
   self = (Angle*)type->tp_alloc(type, 0);
   return (PyObject*)self;
 }
-
 
 static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
 
@@ -110,7 +121,6 @@ static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
   PyObject* arg0(NULL);
   PyObject* arg1(NULL);
   PyObject* arg2(NULL);
-
 
   if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOO", kwlist, &arg0, &arg1, &arg2))
     return -1;
@@ -178,7 +188,6 @@ static void Angle_dealloc(Angle* self) {
   self->ob_type->tp_free((PyObject*)self);
 }
 
-
 // -----------------
 // ----- print -----
 // -----------------
@@ -199,7 +208,6 @@ PyObject* Angle_repr(PyObject* self) {
   result << ((Angle*)self)->m_angle;
   return PyString_FromString(result.str().c_str());
 }
-
 
 // -------------------------------
 // ----- getters and setters -----
@@ -617,16 +625,6 @@ static int is_AngleType(PyObject* an_angle) {
 // ----- constructors -----
 // ------------------------
 
-// Forward declarations for as_number methods. Wraps CartesianType definition.
-static void new_CartesianType(Cartesian** a_Cartesian);
-static int is_CartesianType(PyObject* a_Cartesian);
-
-static PyObject* cross(PyObject* self, PyObject *args);
-static PyObject* dot(PyObject* self, PyObject *args);
-static PyObject* magnitude(PyObject* self, PyObject *args);
-static PyObject* normalized(PyObject* self, PyObject *args);
-
-
 static PyObject* Cartesian_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
   Cartesian* self(NULL);
   self = (Cartesian*)type->tp_alloc(type, 0);
@@ -651,11 +649,19 @@ static int Cartesian_init(Cartesian* self, PyObject* args, PyObject* kwds) {
 
   if (arg0) {
 
-    // copy constructor
     if (is_CartesianType(arg0)) {
+      // copy constructor
       self->m_Cartesian.x(((Cartesian*)arg0)->m_Cartesian.x());
       self->m_Cartesian.y(((Cartesian*)arg0)->m_Cartesian.y());
       self->m_Cartesian.z(((Cartesian*)arg0)->m_Cartesian.z());
+      return 0;
+
+    } else if (is_sphericalType(arg0)) {
+      // spherical conversion constructor
+      Coords::Cartesian from_spherical(((spherical*)arg0)->m_spherical);
+      self->m_Cartesian.x(from_spherical.x());
+      self->m_Cartesian.y(from_spherical.y());
+      self->m_Cartesian.z(from_spherical.z());
       return 0;
 
     } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
@@ -1026,10 +1032,10 @@ PyDoc_STRVAR(Cartesian_magnitude__doc__, "Returns the magnitude of the Cartesian
 PyDoc_STRVAR(Cartesian_normalized__doc__, "Returns the normalized version of the Cartesian object");
 
 static PyMethodDef Cartesian_methods[] = {
-  {"cross", (PyCFunction) cross, METH_VARARGS, Cartesian_cross__doc__},
-  {"dot", (PyCFunction) dot, METH_VARARGS, Cartesian_dot__doc__},
-  {"magnitude", (PyCFunction) magnitude, METH_VARARGS, Cartesian_magnitude__doc__},
-  {"normalized", (PyCFunction) normalized, METH_VARARGS, Cartesian_normalized__doc__},
+  {"cross", (PyCFunction) Cartesian_cross, METH_VARARGS, Cartesian_cross__doc__},
+  {"dot", (PyCFunction) Cartesian_dot, METH_VARARGS, Cartesian_dot__doc__},
+  {"magnitude", (PyCFunction) Cartesian_magnitude, METH_VARARGS, Cartesian_magnitude__doc__},
+  {"normalized", (PyCFunction) Cartesian_normalized, METH_VARARGS, Cartesian_normalized__doc__},
   {NULL}  /* Sentinel */
 };
 
@@ -1149,8 +1155,8 @@ static int is_CartesianType(PyObject* a_Cartesian) {
   return PyObject_TypeCheck(a_Cartesian, &CartesianType);
 }
 
-// ----- cross product -----
-static PyObject* cross(PyObject* self, PyObject *args) {
+// ----- Cartesian_cross product -----
+static PyObject* Cartesian_cross(PyObject* self, PyObject *args) {
 
   Cartesian* first_Cartesian(NULL);
   Cartesian* second_Cartesian(NULL);
@@ -1175,8 +1181,8 @@ static PyObject* cross(PyObject* self, PyObject *args) {
 
 }
 
-// ----- dot product -----
-static PyObject* dot(PyObject* self, PyObject *args) {
+// ----- Cartesian_dot product -----
+static PyObject* Cartesian_dot(PyObject* self, PyObject *args) {
 
   Cartesian* first_Cartesian(NULL);
   Cartesian* second_Cartesian(NULL);
@@ -1191,8 +1197,8 @@ static PyObject* dot(PyObject* self, PyObject *args) {
 
 }
 
-// ----- magnitude -----
-static PyObject* magnitude(PyObject* self, PyObject *args) {
+// ----- Cartesian_magnitude -----
+static PyObject* Cartesian_magnitude(PyObject* self, PyObject *args) {
 
   Cartesian* a_Cartesian(NULL);
 
@@ -1206,8 +1212,8 @@ static PyObject* magnitude(PyObject* self, PyObject *args) {
 
 }
 
-// ----- normalized -----
-static PyObject* normalized(PyObject* self, PyObject *args) {
+// ----- Cartesian_normalized -----
+static PyObject* Cartesian_normalized(PyObject* self, PyObject *args) {
 
   Cartesian* a_Cartesian(NULL);
   Cartesian* result_Cartesian(NULL);
@@ -1239,11 +1245,6 @@ static PyObject* normalized(PyObject* self, PyObject *args) {
 // ----- constructors -----
 // ------------------------
 
-// Forward declarations for as_number methods. Wraps sphericalType definition.
-static void new_sphericalType(spherical** a_spherical);
-static int is_sphericalType(PyObject* a_spherical);
-
-
 static PyObject* spherical_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
   spherical* self(NULL);
   self = (spherical*)type->tp_alloc(type, 0);
@@ -1269,11 +1270,18 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
   if (arg0) {
 
     if (is_sphericalType(arg0)) {
-
       // copy constructor
       self->m_spherical.r(((spherical*)arg0)->m_spherical.r());
       self->m_spherical.theta(((spherical*)arg0)->m_spherical.theta());
       self->m_spherical.phi(((spherical*)arg0)->m_spherical.phi());
+      return 0;
+
+    } else if (is_CartesianType(arg0)) {
+      // Cartesian conversion constructor
+      Coords::spherical from_cartesian(((Cartesian*)arg0)->m_Cartesian);
+      self->m_spherical.r(from_cartesian.r());
+      self->m_spherical.theta(from_cartesian.theta());
+      self->m_spherical.phi(from_cartesian.phi());
       return 0;
 
     } else if ((PyFloat_Check(arg0) || PyInt_Check(arg0))) {
