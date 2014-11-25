@@ -77,8 +77,7 @@ class TestCartesian(unittest.TestCase):
         a = coords.Cartesian(self.p1.x, self.p1.y, self.p1.z)
         self.assertSpacesAreEqual(self.p1, a)
 
-
-    @unittest.skip('Not available in boost')
+    @unittest.skip('TODO Boost')
     def test_xyz_constructor2(self):
         """Test xyz constructor by named args"""
         a = coords.Cartesian(z=self.p1.z, x=self.p1.x, y=self.p1.y)
@@ -138,7 +137,7 @@ class TestCartesian(unittest.TestCase):
         b = coords.Cartesian(a)
         self.assertAlmostEqual(0.5, b.x)
         self.assertAlmostEqual(0.5, b.y)
-        self.assertAlmostEqual(math.sin(coords.angle.deg2rad(45)), b.z)
+        self.assertAlmostEqual(math.sin(coords.angle().deg2rad(45)), b.z)
 
     # --------------------------------
     # ----- test unitary methods -----
@@ -151,8 +150,7 @@ class TestCartesian(unittest.TestCase):
         a_str = '<Cartesian><x>1.23</x><y>-4.56</y><z>7.89</z></Cartesian>'
         self.assertEqual(a_str, str(a_point))
 
-
-    @unittest.skip('Not available in boost')
+    @unittest.skip('TODO Boost')
     def test_repr(self):
         """Test repr"""
 
@@ -184,17 +182,15 @@ class TestCartesian(unittest.TestCase):
     # ----- test richcompare -----
     # ----------------------------
 
-    @unittest.skip('TODO boost wrap operator==()')
+    @unittest.skip('TODO Boost')
     def test_space_eq_space(self):
         """Test space == space"""
-        result = coords.Cartesian(self.p1.x + self.p2.x,
-                                  self.p1.y + self.p2.y,
-                                  self.p1.z + self.p2.z)
-        a = self.p1 + self.p2
+        result = coords.Cartesian(self.p1.x, self.p1.y, self.p1.z)
+        a = coords.Cartesian(self.p1.x, self.p1.y, self.p1.z)
         self.assertTrue(result == a)
 
 
-    @unittest.skip('TODO boost wrap operator==()')
+    @unittest.skip('TODO Boost')
     def test_space_ne_space(self):
         """Test space != space"""
         a = coords.Cartesian(1, 2, 3)
@@ -202,7 +198,7 @@ class TestCartesian(unittest.TestCase):
         self.assertTrue(a != b) # True because comparing memory addresses not value.
 
 
-    @unittest.skip('TODO boost wrap operator==()')
+    @unittest.skip('TODO Boost')
     def test_space_eq_space1(self):
         """Test space == space"""
         a = coords.Cartesian(1, 2, 3)
@@ -210,7 +206,7 @@ class TestCartesian(unittest.TestCase):
         self.assertTrue(a == b)
 
 
-    @unittest.skip('TODO boost wrap operator==()')
+    @unittest.skip('TODO Boost')
     def test_space_eq_space2(self):
         """Test space == space"""
         a = coords.Cartesian(1, 2, 3)
@@ -218,7 +214,7 @@ class TestCartesian(unittest.TestCase):
         self.assertFalse(a == b)
 
 
-    @unittest.skip('TODO boost wrap operator!=()')
+    @unittest.skip('TODO Boost')
     def test_space_ne_space1(self):
         """Test space != space"""
         a = coords.Cartesian(1, 2, 3)
@@ -226,7 +222,7 @@ class TestCartesian(unittest.TestCase):
         self.assertTrue(a != b)
 
 
-    @unittest.skip('TODO boost wrap operator!=()')
+    @unittest.skip('TODO Boost')
     def test_space_ne_space2(self):
         """Test space != space"""
         a = coords.Cartesian(1, 2, 3)
@@ -234,7 +230,7 @@ class TestCartesian(unittest.TestCase):
         self.assertFalse(a != b)
 
 
-    @unittest.skip('TODO boost wrap richcompare operators')
+    @unittest.skip('TODO Boost')
     def test_space_noop_richcompare_space(self):
         """Test space >, >=, <, <= space"""
         a = coords.Cartesian(1, 2, 3)
@@ -292,8 +288,7 @@ class TestCartesian(unittest.TestCase):
         self.assertSpacesAreEqual(result, a)
 
 
-
-    @unittest.skip('TODO boost unitary minus?')
+    @unittest.skip('TODO Boost')
     def test_unitary_minus(self):
         """Test space = -space"""
         result = coords.Cartesian(-self.p1.x,
@@ -354,25 +349,25 @@ class TestCartesian(unittest.TestCase):
     def test_dot_product(self):
         """Test space dot product function"""
         result = self.p1.x * self.p2.x + self.p1.y * self.p2.y + self.p1.z * self.p2.z
-        a = coords.dot(self.p1, self.p2)
+        a = coords.Cartesian.dot(self.p1, self.p2)
         self.assertEqual(result, a)
 
 
     def test_x_cross_y(self):
         """Test x cross y is z"""
-        a = coords.cross(coords.Cartesian.Ux, coords.Cartesian.Uy)
+        a = coords.Cartesian.cross(coords.Cartesian.Ux, coords.Cartesian.Uy)
         self.assertSpacesAreEqual(coords.Cartesian.Uz, a)
 
 
     def test_y_cross_z(self):
         """Test x cross y is z"""
-        a = coords.cross(coords.Cartesian.Uy, coords.Cartesian.Uz)
+        a = coords.Cartesian.cross(coords.Cartesian.Uy, coords.Cartesian.Uz)
         self.assertSpacesAreEqual(coords.Cartesian.Ux, a)
 
 
     def test_z_cross_x(self):
         """Test x cross y is z"""
-        a = coords.cross(coords.Cartesian.Uz, coords.Cartesian.Ux)
+        a = coords.Cartesian.cross(coords.Cartesian.Uz, coords.Cartesian.Ux)
         self.assertSpacesAreEqual(coords.Cartesian.Uy, a)
 
 
@@ -380,7 +375,7 @@ class TestCartesian(unittest.TestCase):
         """Test more arbitrary cross product"""
         a = coords.Cartesian(1, 1, 1)
         b = coords.Cartesian(0, 0, 0.5)
-        c = coords.cross(a, b)
+        c = coords.Cartesian.cross(a, b)
         self.assertSpacesAreEqual(coords.Cartesian(0.5, -0.5, 0), c)
 
 
@@ -407,6 +402,7 @@ class TestCartesian(unittest.TestCase):
         """Test space / 0"""
         a1 = self.p1
         self.assertRaises(RuntimeError, lambda a: a / 0, a1)
+        # Note: different from Boost catching RuntimeError
 
 
 if __name__ == '__main__':

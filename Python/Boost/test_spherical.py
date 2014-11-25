@@ -14,7 +14,7 @@ import unittest
 
 import coords
 
-class Testspherical(unittest.TestCase):
+class TestSpherical(unittest.TestCase):
 
     def setUp(self):
 
@@ -38,7 +38,6 @@ class Testspherical(unittest.TestCase):
 
     def assertSpacesAreEqual(self, lhs_space, rhs_space):
         """Space assert helper method."""
-        # TODO wrap operator==()
         self.assertAlmostEqual(lhs_space.r, rhs_space.r, places=self.places)
         self.assertAlmostEqual(lhs_space.theta.value, rhs_space.theta.value, places=self.places)
         self.assertAlmostEqual(lhs_space.phi.value, rhs_space.phi.value, places=self.places)
@@ -77,10 +76,10 @@ class Testspherical(unittest.TestCase):
         self.assertSpacesAreEqual(self.p1, a)
 
 
-    @unittest.skip('Not available in boost')
+    @unittest.skip('TODO Boost')
     def test_r_theta_phi_constructor2(self):
         """Test r theta phi constructor by named args"""
-        a = coords.spherical(z=self.p1.phi, x=self.p1.r, y=self.p1.theta)
+        a = coords.spherical(phi=self.p1.phi, r=self.p1.r, theta=self.p1.theta)
         self.assertSpacesAreEqual(self.p1, a)
 
 
@@ -97,6 +96,7 @@ class Testspherical(unittest.TestCase):
         """Test copy constructor"""
         a = coords.spherical(self.p1)
         self.assertSpacesAreEqual(self.p1, a)
+
 
     def test_copy_assign_1(self):
         """Test copy assignment operator.
@@ -120,12 +120,44 @@ class Testspherical(unittest.TestCase):
         self.assertRaises(TypeError, lambda a: coords.spherical(1, a), 'some_string')
         self.assertRaises(TypeError, lambda a: coords.spherical(1, -1, a), 'some_string')
 
+
+    def test_angle_float_constructor_exception(self):
+        """Test angle as float constructor exception"""
+        self.assertRaises(TypeError, lambda a: coords.spherical(1, a), 1.23)
+        self.assertRaises(TypeError, lambda a: coords.spherical(1, -1, a), 3.45)
+
+
+    @unittest.skip('TODO Boost.Python.ArgumentError')
+    def test_angle_theta_float_assignment_exception(self):
+        """Test theta as float assignment exception"""
+
+        try:
+            a1 = coords.spherical()
+            a1.theta = 1.23
+            self.assertTrue(False) # correct behavior skips this line
+        except Boost.Python.ArgumentError, err:
+            self.assertTrue(RuntimeError == type(err))
+
+
+    @unittest.skip('TODO Boost.Python.ArgumentError')
+    def test_angle_phi_float_assignment_exception(self):
+        """Test phi as float assignment exception"""
+
+        try:
+            a1 = coords.spherical()
+            a1.phi = 1.23
+            self.assertTrue(False) # correct behavior skips this line
+        except ArgumentError, err:
+            self.assertTrue(RuntimeError == type(err))
+
+
     def test_string_assignment_exception(self):
         """Test string assignment exception"""
 
         self.assertRaises(TypeError, self.p1.r, 'some_string')
         self.assertRaises(TypeError, self.p1.theta, 'some_string')
         self.assertRaises(TypeError, self.p1.phi, 'some_string')
+
 
     def test_construct_from_cartesian(self):
         """Test cartesian conversion constructor"""
@@ -147,7 +179,7 @@ class Testspherical(unittest.TestCase):
         self.assertEqual(a_str, str(a_point))
 
 
-    @unittest.skip('Not available in boost')
+    @unittest.skip('TODO Boost')
     def test_repr(self):
         """Test repr"""
 
@@ -162,61 +194,56 @@ class Testspherical(unittest.TestCase):
     # ----- test richcompare -----
     # ----------------------------
 
-    @unittest.skip('TODO boost wrap operator==()')
+    @unittest.skip('TODO Boost')
     def test_space_eq_space(self):
         """Test space == space"""
-        result = coords.spherical(self.p1.r + self.p2.r,
-                                  self.p1.theta + self.p2.theta,
-                                  self.p1.phi + self.p2.phi)
-        a = self.p1 + self.p2
+        result = coords.spherical(self.p1.r, self.p1.theta, self.p1.phi)
+        a = coords.spherical(self.p1.r, self.p1.theta, self.p1.phi)
         self.assertTrue(result == a)
 
 
-    @unittest.skip('TODO boost wrap operator==()')
+    @unittest.skip('TODO Boost')
     def test_space_ne_space(self):
         """Test space != space"""
-        a = coords.spherical(1, 2, 3)
-        b = coords.spherical(-1, 2, 3)
+        a = coords.spherical(1, coords.angle(2), coords.angle(3))
+        b = coords.spherical(-1, coords.angle(2), coords.angle(3))
         self.assertTrue(a != b) # True because comparing memory addresses not value.
 
 
-    @unittest.skip('TODO boost wrap operator==()')
+    @unittest.skip('TODO Boost')
     def test_space_eq_space1(self):
         """Test space == space"""
-        a = coords.spherical(1, 2, 3)
-        b = coords.spherical(1, 2, 3)
+        a = coords.spherical(1, coords.angle(2), coords.angle(3))
+        b = coords.spherical(1, coords.angle(2), coords.angle(3))
         self.assertTrue(a == b)
 
-
-    @unittest.skip('TODO boost wrap operator==()')
+    @unittest.skip('TODO Boost')
     def test_space_eq_space2(self):
         """Test space == space"""
-        a = coords.spherical(1, 2, 3)
-        b = coords.spherical(-1, 2, 3)
+        a = coords.spherical(1, coords.angle(2), coords.angle(3))
+        b = coords.spherical(-1, coords.angle(2), coords.angle(3))
         self.assertFalse(a == b)
 
-
-    @unittest.skip('TODO boost wrap operator!=()')
+    @unittest.skip('TODO Boost')
     def test_space_ne_space1(self):
         """Test space != space"""
-        a = coords.spherical(1, 2, 3)
-        b = coords.spherical(-1, 2, 3)
+        a = coords.spherical(1, coords.angle(2), coords.angle(3))
+        b = coords.spherical(-1, coords.angle(2), coords.angle(3))
         self.assertTrue(a != b)
 
 
-    @unittest.skip('TODO boost wrap operator!=()')
+    @unittest.skip('TODO Boost')
     def test_space_ne_space2(self):
         """Test space != space"""
-        a = coords.spherical(1, 2, 3)
-        b = coords.spherical(1, 2, 3)
+        a = coords.spherical(1, coords.angle(2), coords.angle(3))
+        b = coords.spherical(1, coords.angle(2), coords.angle(3))
         self.assertFalse(a != b)
 
-
-    @unittest.skip('TODO boost wrap richcompare operators')
+    @unittest.skip('TODO Boost')
     def test_space_noop_richcompare_space(self):
         """Test space >, >=, <, <= space"""
-        a = coords.spherical(1, 2, 3)
-        b = coords.spherical(4, 5, 5)
+        a = coords.spherical(1, coords.angle(2), coords.angle(3))
+        b = coords.spherical(4, coords.angle(5), coords.angle(5))
         self.assertRaises(TypeError, lambda a, b: a > b)
         self.assertRaises(TypeError, lambda a, b: a >= b)
         self.assertRaises(TypeError, lambda a, b: a < b)
@@ -228,8 +255,8 @@ class Testspherical(unittest.TestCase):
 
     def test_space_plus_space(self):
         """Test space + space"""
-        r1 = coords.Cartesian(self.p1)
-        r2 = coords.Cartesian(self.p2)
+        r1 = coords.spherical(self.p1)
+        r2 = coords.spherical(self.p2)
         r12 = r1 + r2
         result = coords.spherical(r12)
 
@@ -241,8 +268,8 @@ class Testspherical(unittest.TestCase):
     def test_inplace_add(self):
         """Test space +="""
 
-        r1 = coords.Cartesian(self.p1)
-        r2 = coords.Cartesian(self.p2)
+        r1 = coords.spherical(self.p1)
+        r2 = coords.spherical(self.p2)
         r12 = r1 + r2
         result = coords.spherical(r12)
 
@@ -254,14 +281,14 @@ class Testspherical(unittest.TestCase):
 
     def test_space_plus_double(self):
         """Test space + double"""
-        # c++ explicit conversion constructor not defined for double
+        # c++ explicit conversion constructor not definded for double
         self.assertRaises(TypeError, lambda: self.p1 + self.p2.r)
 
 
     def test_space_minus_space(self):
         """Test space - space"""
-        r1 = coords.Cartesian(self.p1)
-        r2 = coords.Cartesian(self.p2)
+        r1 = coords.spherical(self.p1)
+        r2 = coords.spherical(self.p2)
         r12 = r1 - r2
         result = coords.spherical(r12)
 
@@ -272,8 +299,8 @@ class Testspherical(unittest.TestCase):
 
     def test_inplace_subtract(self):
         """Test space -="""
-        r1 = coords.Cartesian(self.p1)
-        r2 = coords.Cartesian(self.p2)
+        r1 = coords.spherical(self.p1)
+        r2 = coords.spherical(self.p2)
         r12 = r1 - r2
         result = coords.spherical(r12)
 
@@ -282,8 +309,7 @@ class Testspherical(unittest.TestCase):
 
         self.assertSpacesAreEqual(result, a)
 
-
-    @unittest.skip('TODO boost unitary minus?')
+    @unittest.skip('TODO Boost')
     def test_unitary_minus(self):
         """Test space = -space"""
         result = coords.spherical(-self.p1.r,
@@ -295,7 +321,7 @@ class Testspherical(unittest.TestCase):
 
     def test_space_minus_double(self):
         """Test space - double"""
-        # c++ explicit conversion constructor not defined for double
+        # c++ explicit conversion constructor not definded for double
         self.assertRaises(TypeError, lambda: self.p1 - self.p2.r)
 
 
@@ -326,61 +352,6 @@ class Testspherical(unittest.TestCase):
         self.assertSpacesAreEqual(result, a)
 
 
-    @unittest.skip('TODO spherical dot product?')
-    def test_space_times_space(self):
-        """Test space * space dot product"""
-        result = self.p1.r * self.p2.r + self.p1.theta * self.p2.theta + self.p1.phi * self.p2.phi
-        a = self.p1 * self.p2
-        self.assertAlmostEqual(result, a, self.places)
-
-
-    @unittest.skip('TODO spherical dot product?')
-    def test_inplace_multiply(self):
-        """Test space *= dot product"""
-        result = self.p1.r * self.p2.r + self.p1.theta * self.p2.theta + self.p1.phi * self.p2.phi
-        a = self.p1
-        a *= self.p2
-        self.assertAlmostEqual(result, a, self.places)
-
-
-    @unittest.skip('TODO spherical cross product?')
-    def test_dot_product(self):
-        """Test space dot product function"""
-        result = self.p1.r * self.p2.r + self.p1.theta * self.p2.theta + self.p1.phi * self.p2.phi
-        a = coords.dot(self.p1, self.p2)
-        self.assertEqual(result, a)
-
-
-    @unittest.skip('TODO spherical cross product?')
-    def test_x_cross_y(self):
-        """Test x cross y is z"""
-        a = coords.cross(coords.spherical.Ux, coords.spherical.Uy)
-        self.assertSpacesAreEqual(coords.spherical.Uz, a)
-
-
-    @unittest.skip('TODO spherical cross product?')
-    def test_y_cross_z(self):
-        """Test x cross y is z"""
-        a = coords.cross(coords.spherical.Uy, coords.spherical.Uz)
-        self.assertSpacesAreEqual(coords.spherical.Ux, a)
-
-
-    @unittest.skip('TODO spherical cross product?')
-    def test_z_cross_x(self):
-        """Test x cross y is z"""
-        a = coords.cross(coords.spherical.Uz, coords.spherical.Ux)
-        self.assertSpacesAreEqual(coords.spherical.Uy, a)
-
-
-    @unittest.skip('TODO spherical cross product?')
-    def test_cross_1(self):
-        """Test more arbitrary cross product"""
-        a = coords.spherical(1, 1, 1)
-        b = coords.spherical(0, 0, 0.5)
-        c = coords.cross(a, b)
-        self.assertSpacesAreEqual(coords.spherical(0.5, -0.5, 0), c)
-
-
     def test_divide(self):
         """Test divide (scale)"""
         result = coords.spherical(self.p1.r / 2.0,
@@ -404,7 +375,7 @@ class Testspherical(unittest.TestCase):
         """Test space / 0"""
         a1 = self.p1
         self.assertRaises(RuntimeError, lambda a: a / 0, a1)
-
+        # Note: different from Boost catching RuntimeError
 
 # end spherical
 

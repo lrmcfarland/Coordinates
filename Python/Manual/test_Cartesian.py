@@ -258,7 +258,7 @@ class TestCartesian(unittest.TestCase):
 
     def test_space_plus_double(self):
         """Test space + double"""
-        # c++ explicit conversion constructor not definded for double
+        # c++ explicit conversion constructor not defined for double
         self.assertRaises(TypeError, lambda: self.p1 + self.p2.x)
 
 
@@ -292,7 +292,7 @@ class TestCartesian(unittest.TestCase):
 
     def test_space_minus_double(self):
         """Test space - double"""
-        # c++ explicit conversion constructor not definded for double
+        # c++ explicit conversion constructor not defined for double
         self.assertRaises(TypeError, lambda: self.p1 - self.p2.x)
 
 

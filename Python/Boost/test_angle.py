@@ -228,12 +228,33 @@ class TestAngle(unittest.TestCase):
         self.assertEqual(90, an_angle.value)
         self.assertEqual(math.pi/2.0, an_angle.radians)
 
+    @unittest.skip('TODO Boost.Python.ArgumentError')
+    def test_accessors_1b(self):
+        """Test value accessor exception"""
+        try:
+            an_angle = coords.angle()
+            an_angle.value = 'foo'
+            self.assertRaises(False) # correct behavior skips this
+        except RuntimeError, err:
+            self.assertTrue(RuntimeError == type(err))
+
+
     def test_accessors_2(self):
         """Test radians accessor negative"""
         an_angle = coords.angle()
         an_angle.radians = -math.pi/2.0
         self.assertEqual(-90, an_angle.value)
         self.assertEqual(-math.pi/2.0, an_angle.radians)
+
+    @unittest.skip('TODO Boost.Python.ArgumentError')
+    def test_accessors_2a(self):
+        """Test radians accessor exception"""
+        try:
+            an_angle = coords.angle()
+            an_angle.radians = 'foo'
+            self.assertRaises(False) # correct behavior skips this
+        except RuntimeError, err:
+            self.assertTrue(RuntimeError == type(err))
 
     # operators
 
@@ -321,7 +342,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         a2 = coords.angle(0)
         self.assertRaises(RuntimeError, lambda a, b: a / b, a1, a2)
-
+        # Note: different from Manual catching coords.Error
 
    # strings
 
