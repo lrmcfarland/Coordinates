@@ -185,10 +185,8 @@ class TestCartesian(unittest.TestCase):
 
     def test_space_eq_space(self):
         """Test space == space"""
-        result = coords.Cartesian(self.p1.x + self.p2.x,
-                                  self.p1.y + self.p2.y,
-                                  self.p1.z + self.p2.z)
-        a = self.p1 + self.p2
+        result = coords.Cartesian(self.p1.x, self.p1.y, self.p1.z)
+        a = coords.Cartesian(self.p1.x, self.p1.y, self.p1.z)
         self.assertTrue(result == a)
 
 
@@ -261,7 +259,7 @@ class TestCartesian(unittest.TestCase):
 
     def test_space_plus_double(self):
         """Test space + double"""
-        # no python conversion constructor for this implementation of space
+        # c++ explicit conversion constructor not definded for double
         self.assertRaises(TypeError, lambda: self.p1 + self.p2.x)
 
 
@@ -295,7 +293,7 @@ class TestCartesian(unittest.TestCase):
 
     def test_space_minus_double(self):
         """Test space - double"""
-        # no python conversion constructor for this implementation of space
+        # c++ explicit conversion constructor not definded for double
         self.assertRaises(TypeError, lambda: self.p1 - self.p2.x)
 
 

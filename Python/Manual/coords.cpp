@@ -30,7 +30,15 @@ static PyObject* sCoordsException; // exception holder
 // TODO: make precision configuralble on build, not hardcoded.
 static const unsigned int sPrintPrecision(12); // matches defaut %s precision for unit test
 
-// Angle
+// -----------------
+// ----- Angle -----
+// -----------------
+
+// object definition.
+typedef struct {
+  PyObject_HEAD
+  Coords::angle m_angle;
+} Angle;
 
 // char* kwlist[] init strings
 static char sDegreeStr[] = "degees";
@@ -40,13 +48,25 @@ static char sSecondStr[] = "seconds";
 static char sValueStr[] = "value";
 static char sRadiansStr[] = "radians";
 
-// Cartesian
+// ---------------------
+// ----- Cartesian -----
+// ---------------------
+
+// object definition.
+typedef struct {
+  PyObject_HEAD
+  Coords::Cartesian m_Cartesian;
+} Cartesian;
+
 
 // char* kwlist[] init strings
 static char sXstr[] = "x";
 static char sYstr[] = "y";
 static char sZstr[] = "z";
 
+// ---------------------
+// ----- spherical -----
+// ---------------------
 
 // TODO spherical
 
@@ -58,14 +78,6 @@ static char sZstr[] = "z";
 // ------------------------
 // ----- constructors -----
 // ------------------------
-
-
-// Angle object definition.
-typedef struct {
-  PyObject_HEAD
-  Coords::angle m_angle;
-} Angle;
-
 
 // Forward declarations for as_number methods. Wraps Type definition.
 static void new_AngleType(Angle** an_angle);
@@ -95,46 +107,62 @@ static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
   if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOO", kwlist, &arg0, &arg1, &arg2))
     return -1;
 
-  // TODO support converting valid double strings?
-  if (arg0 && PyString_Check(arg0)) {
-    PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
-    return -1;
+  if (arg0) {
+
+    // copy constructor
+    if (is_AngleType(arg0)) {
+      self->m_angle.value(((Angle*)arg0)->m_angle.value());
+      return 0;
+
+    } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
+      degrees = PyFloat_AsDouble(arg0);
+
+    } else if (PyString_Check(arg0)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      return -1;
+
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      return -1;
+    }
+
   }
 
-  if (arg1 && PyString_Check(arg1)) {
-    PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
-    return -1;
+  if (arg1) {
+
+    if (PyFloat_Check(arg1) || PyInt_Check(arg1)) {
+      minutes = PyFloat_AsDouble(arg1);
+
+    } else if (PyString_Check(arg1)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      return -1;
+
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      return -1;
+    }
+
   }
 
-  if (arg2 && PyString_Check(arg2)) {
-    PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
-    return -1;
+  if (arg2) {
+
+    if (PyFloat_Check(arg2) || PyInt_Check(arg2)) {
+      seconds = PyFloat_AsDouble(arg2);
+
+    } else if (PyString_Check(arg2)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      return -1;
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      return -1;
+    }
+
   }
 
-  // copy constructor
-  if (arg0 && is_AngleType(arg0)) {
-    self->m_angle.value(((Angle*)arg0)->m_angle.value());
-    return 0;
-  }
-
-  // from doubles constructor
-
-  if (arg0 && (PyFloat_Check(arg0) || PyInt_Check(arg0))) {
-    degrees = PyFloat_AsDouble(arg0);
-  }
-
-  if (arg1 && (PyFloat_Check(arg1) || PyInt_Check(arg1))) {
-    minutes = PyFloat_AsDouble(arg1);
-  }
-
-  if (arg2 && (PyFloat_Check(arg2) || PyInt_Check(arg2))) {
-    seconds = PyFloat_AsDouble(arg2);
-  }
-
-  // value initialized to 0 by new.
   self->m_angle.value(Coords::degrees2seconds(degrees, minutes, seconds)/3600);
 
   return 0;
+
 }
 
 
@@ -146,6 +174,8 @@ static void Angle_dealloc(Angle* self) {
 // -----------------
 // ----- print -----
 // -----------------
+
+// TODO switch repr and str so repr is xml and str is (x, y, z)?
 
 PyObject* Angle_str(PyObject* self) {
   std::stringstream result;
@@ -176,13 +206,13 @@ static PyObject* Angle_getValue(Angle* self, void* closure) {
 static int Angle_setValue(Angle* self, PyObject* value, void* closure) {
 
   if (value == NULL) {
-    PyErr_SetString(sCoordsException, "Cannot delete value");
-    return 0;
+    PyErr_SetString(sCoordsException, "can not delete value");
+    return -1;
   }
 
   if (!PyFloat_Check(value) && !PyInt_Check(value)) {
     PyErr_SetString(sCoordsException, "value must be a float");
-    return 0;
+    return -1;
   }
 
   self->m_angle.value(PyFloat_AsDouble(value));
@@ -199,13 +229,13 @@ static PyObject* Angle_getRadians(Angle* self, void* closure) {
 static int Angle_setRadians(Angle* self, PyObject* radians, void* closure) {
 
   if (radians == NULL) {
-    PyErr_SetString(sCoordsException, "Cannot delete radians");
-    return 0;
+    PyErr_SetString(sCoordsException, "can not delete radians");
+    return -1;
   }
 
   if (!PyFloat_Check(radians) && !PyInt_Check(radians)) {
     PyErr_SetString(sCoordsException, "radians must be a float");
-    return 0;
+    return -1;
   }
 
   self->m_angle.radians(PyFloat_AsDouble(radians));
@@ -230,13 +260,12 @@ static PyObject* Angle_nb_add(PyObject* o1, PyObject* o2) {
   new_AngleType(&result_angle);
 
   if (result_angle == NULL) {
-    PyErr_SetString(sCoordsException, "add failed to create angle");
+    PyErr_SetString(sCoordsException, "add failed to create coord.angle");
     return NULL;
   }
 
   Coords::angle the_sum(((Angle*)o1)->m_angle + ((Angle*)o2)->m_angle);
 
-  // copy because m_angle constructor is TBD.
   result_angle->m_angle = the_sum;
 
   return (PyObject*) result_angle;
@@ -255,13 +284,12 @@ static PyObject* Angle_nb_subtract(PyObject* o1, PyObject* o2) {
   new_AngleType(&result_angle);
 
   if (result_angle == NULL) {
-    PyErr_SetString(sCoordsException, "subtract failed to create angle");
+    PyErr_SetString(sCoordsException, "subtract failed to create coord.angle");
     return NULL;
   }
 
   Coords::angle the_difference(((Angle*)o1)->m_angle - ((Angle*)o2)->m_angle);
 
-  // copy because m_angle constructor is TBD.
   result_angle->m_angle = the_difference;
 
   return (PyObject*) result_angle;
@@ -281,13 +309,12 @@ static PyObject* Angle_nb_negative(PyObject* o1) {
   new_AngleType(&result_angle);
 
   if (result_angle == NULL) {
-    PyErr_SetString(sCoordsException, "negative failed to create angle");
+    PyErr_SetString(sCoordsException, "negative failed to create coord.angle");
     return NULL;
   }
 
   Coords::angle the_inverse = -((Angle*)o1)->m_angle;
 
-  // copy because m_angle constructor is TBD.
   result_angle->m_angle = the_inverse;
 
   return (PyObject*) result_angle;
@@ -305,7 +332,7 @@ static PyObject* Angle_nb_multiply(PyObject* o1, PyObject* o2) {
   new_AngleType(&result_angle);
 
   if (result_angle == NULL) {
-    PyErr_SetString(sCoordsException, "multiply failed to create angle");
+    PyErr_SetString(sCoordsException, "multiply failed to create coord.angle");
     return NULL;
   }
 
@@ -326,7 +353,7 @@ static PyObject* Angle_nb_divide(PyObject* o1, PyObject* o2) {
   new_AngleType(&result_angle);
 
   if (result_angle == NULL) {
-    PyErr_SetString(sCoordsException, "divide failed to create angle");
+    PyErr_SetString(sCoordsException, "divide failed to create coord.angle");
     return NULL;
   }
 
@@ -564,9 +591,10 @@ PyTypeObject AngleType = {
   Angle_new,                         /* tp_new */
 };
 
+// ------------------------------------------
+// ----- implement forward declarations -----
+// ------------------------------------------
 
-// Create new objects with PyObject_New() for binary operators that
-// return a new instance of Angle, like add.
 static void new_AngleType(Angle** an_angle) {
   *an_angle = PyObject_New(Angle, &AngleType);
 }
@@ -583,12 +611,6 @@ static int is_AngleType(PyObject* an_angle) {
 // ------------------------
 // ----- constructors -----
 // ------------------------
-
-// Cartesian object definition.
-typedef struct {
-  PyObject_HEAD
-  Coords::Cartesian m_Cartesian;
-} Cartesian;
 
 // Forward declarations for as_number methods. Wraps CartesianType definition.
 static void new_CartesianType(Cartesian** a_Cartesian);
@@ -608,7 +630,7 @@ static PyObject* Cartesian_new(PyTypeObject* type, PyObject* args, PyObject* kwd
 
 static int Cartesian_init(Cartesian* self, PyObject* args, PyObject* kwds) {
 
-  static char* kwlist[] = {sXstr, sYstr, sZstr, NULL}; // TODO
+  static char* kwlist[] = {sXstr, sYstr, sZstr, NULL};
 
   double x(0); // default value
   double y(0); // default value
@@ -622,53 +644,62 @@ static int Cartesian_init(Cartesian* self, PyObject* args, PyObject* kwds) {
   if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOO", kwlist, &arg0, &arg1, &arg2))
     return -1;
 
-  // TODO support converting valid double strings?
-  if (arg0 && PyString_Check(arg0)) {
-    PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
-    return -1;
+  if (arg0) {
+
+    // copy constructor
+    if (is_CartesianType(arg0)) {
+      self->m_Cartesian.x(((Cartesian*)arg0)->m_Cartesian.x());
+      self->m_Cartesian.y(((Cartesian*)arg0)->m_Cartesian.y());
+      self->m_Cartesian.z(((Cartesian*)arg0)->m_Cartesian.z());
+      return 0;
+
+    } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
+      x = PyFloat_AsDouble(arg0);
+
+    } else if (PyString_Check(arg0)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      return -1;
+
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      return -1;
+    }
+
   }
 
-  if (arg1 && PyString_Check(arg1)) {
-    PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
-    return -1;
+  if (arg1) {
+
+    if (PyFloat_Check(arg1) || PyInt_Check(arg1)) {
+      y = PyFloat_AsDouble(arg1);
+
+    } else if (PyString_Check(arg1)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      return -1;
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg1 type");
+      return -1;
+    }
+
   }
 
-  if (arg2 && PyString_Check(arg2)) {
-    PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
-    return -1;
+  if (arg2) {
+
+    if (PyFloat_Check(arg2) || PyInt_Check(arg2)) {
+      z = PyFloat_AsDouble(arg2);
+
+    } else if (PyString_Check(arg2)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from strings not supported. Use float(arg).");
+      return -1;
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg2 type");
+      return -1;
+    }
+
   }
 
-  // copy constructor
-  if (arg0 && is_CartesianType(arg0)) {
-    self->m_Cartesian.x(((Cartesian*)arg0)->m_Cartesian.x());
-    self->m_Cartesian.y(((Cartesian*)arg0)->m_Cartesian.y());
-    self->m_Cartesian.z(((Cartesian*)arg0)->m_Cartesian.z());
-    return 0;
-  }
-
-
-  // TODO from spherical conversion constructor
-
-
-  // from doubles constructor
-
-  if (arg0 && (PyFloat_Check(arg0) || PyInt_Check(arg0))) {
-    self->m_Cartesian.x(PyFloat_AsDouble(arg0));
-  } else {
-    self->m_Cartesian.x(x);
-  }
-
-  if (arg1 && (PyFloat_Check(arg1) || PyInt_Check(arg1))) {
-    self->m_Cartesian.y(PyFloat_AsDouble(arg1));
-  } else {
-    self->m_Cartesian.y(y);
-  }
-
-  if (arg2 && (PyFloat_Check(arg2) || PyInt_Check(arg2))) {
-    self->m_Cartesian.z(PyFloat_AsDouble(arg2));
-  } else {
-    self->m_Cartesian.z(z);
-  }
+  self->m_Cartesian.x(x);
+  self->m_Cartesian.y(y);
+  self->m_Cartesian.z(z);
 
   return 0;
 
@@ -681,6 +712,8 @@ static void Cartesian_dealloc(Cartesian* self) {
 // -----------------
 // ----- print -----
 // -----------------
+
+// TODO switch repr and str so repr is xml and str is (x, y, z)?
 
 PyObject* Cartesian_str(PyObject* self) {
   std::stringstream result;
@@ -713,13 +746,13 @@ static PyObject* Cartesian_getx(Cartesian* self, void* closure) {
 static int Cartesian_setx(Cartesian* self, PyObject* value, void* closure) {
 
   if (value == NULL) {
-    PyErr_SetString(sCoordsException, "Cannot delete x");
-    return 0;
+    PyErr_SetString(sCoordsException, "can not delete x");
+    return -1;
   }
 
   if (!PyFloat_Check(value) && !PyInt_Check(value)) {
     PyErr_SetString(sCoordsException, "x must be a float");
-    return 0;
+    return -1;
   }
 
   self->m_Cartesian.x(PyFloat_AsDouble(value));
@@ -736,13 +769,13 @@ static PyObject* Cartesian_gety(Cartesian* self, void* closure) {
 static int Cartesian_sety(Cartesian* self, PyObject* value, void* closure) {
 
   if (value == NULL) {
-    PyErr_SetString(sCoordsException, "Cannot delete y");
-    return 0;
+    PyErr_SetString(sCoordsException, "can not delete y");
+    return -1;
   }
 
   if (!PyFloat_Check(value) && !PyInt_Check(value)) {
     PyErr_SetString(sCoordsException, "y must be a float");
-    return 0;
+    return -1;
   }
 
   self->m_Cartesian.y(PyFloat_AsDouble(value));
@@ -759,13 +792,13 @@ static PyObject* Cartesian_getz(Cartesian* self, void* closure) {
 static int Cartesian_setz(Cartesian* self, PyObject* value, void* closure) {
 
   if (value == NULL) {
-    PyErr_SetString(sCoordsException, "Cannot delete z");
-    return 0;
+    PyErr_SetString(sCoordsException, "can not delete z");
+    return -1;
   }
 
   if (!PyFloat_Check(value) && !PyInt_Check(value)) {
     PyErr_SetString(sCoordsException, "z must be a float");
-    return 0;
+    return -1;
   }
 
   self->m_Cartesian.z(PyFloat_AsDouble(value));
@@ -778,7 +811,7 @@ static int Cartesian_setz(Cartesian* self, PyObject* value, void* closure) {
 // --------------------------
 
 
-static PyObject* nb_add(PyObject* o1, PyObject* o2) {
+static PyObject* Cartesian_nb_add(PyObject* o1, PyObject* o2) {
 
   if (!is_CartesianType(o1) || !is_CartesianType(o2)) {
     Py_INCREF(Py_NotImplemented);
@@ -790,13 +823,12 @@ static PyObject* nb_add(PyObject* o1, PyObject* o2) {
   new_CartesianType(&result_Cartesian);
 
   if (result_Cartesian == NULL) {
-    PyErr_SetString(sCoordsException, "add failed to create Cartesian");
+    PyErr_SetString(sCoordsException, "add failed to create coord.Cartesian");
     return NULL;
   }
 
   Coords::Cartesian the_sum(((Cartesian*)o1)->m_Cartesian + ((Cartesian*)o2)->m_Cartesian);
 
-  // copy because m_Cartesian constructor has already run.
   result_Cartesian->m_Cartesian = the_sum;
 
   return (PyObject*) result_Cartesian;
@@ -804,7 +836,7 @@ static PyObject* nb_add(PyObject* o1, PyObject* o2) {
 }
 
 
-static PyObject* nb_subtract(PyObject* o1, PyObject* o2) {
+static PyObject* Cartesian_nb_subtract(PyObject* o1, PyObject* o2) {
 
   if (!is_CartesianType(o1) || !is_CartesianType(o2)) {
     Py_INCREF(Py_NotImplemented);
@@ -816,13 +848,12 @@ static PyObject* nb_subtract(PyObject* o1, PyObject* o2) {
   new_CartesianType(&result_Cartesian);
 
   if (result_Cartesian == NULL) {
-    PyErr_SetString(sCoordsException, "subtract failed to create Cartesian");
+    PyErr_SetString(sCoordsException, "subtract failed to create coord.Cartesian");
     return NULL;
   }
 
   Coords::Cartesian the_difference(((Cartesian*)o1)->m_Cartesian - ((Cartesian*)o2)->m_Cartesian);
 
-  // copy because m_Cartesian constructor has already run.
   result_Cartesian->m_Cartesian = the_difference;
 
   return (PyObject*) result_Cartesian;
@@ -830,7 +861,7 @@ static PyObject* nb_subtract(PyObject* o1, PyObject* o2) {
 }
 
 
-static PyObject* nb_negative(PyObject* o1) {
+static PyObject* Cartesian_nb_negative(PyObject* o1) {
   // Unitary minus
 
   if (!is_CartesianType(o1)) {
@@ -843,20 +874,19 @@ static PyObject* nb_negative(PyObject* o1) {
   new_CartesianType(&result_Cartesian);
 
   if (result_Cartesian == NULL) {
-    PyErr_SetString(sCoordsException, "negative failed to create Cartesian");
+    PyErr_SetString(sCoordsException, "negative failed to create coord.Cartesian");
     return NULL;
   }
 
   Coords::Cartesian the_inverse = -((Cartesian*)o1)->m_Cartesian;
 
-  // copy because m_Cartesian constructor has already run.
   result_Cartesian->m_Cartesian = the_inverse;
 
   return (PyObject*) result_Cartesian;
 }
 
 
-static PyObject* nb_multiply(PyObject* o1, PyObject* o2) {
+static PyObject* Cartesian_nb_multiply(PyObject* o1, PyObject* o2) {
 
   // This returns the dot product of the Cartesian vectors as a double
   // if o1 and o2 are both Cartesian. Returns a scaled version of o1
@@ -872,7 +902,7 @@ static PyObject* nb_multiply(PyObject* o1, PyObject* o2) {
   new_CartesianType(&result_Cartesian);
 
   if (result_Cartesian == NULL) {
-    PyErr_SetString(sCoordsException, "divide failed to create Cartesian");
+    PyErr_SetString(sCoordsException, "divide failed to create coord.Cartesian");
     return NULL;
   }
 
@@ -893,7 +923,7 @@ static PyObject* nb_multiply(PyObject* o1, PyObject* o2) {
 }
 
 
-static PyObject* nb_divide(PyObject* o1, PyObject* o2) {
+static PyObject* Cartesian_nb_divide(PyObject* o1, PyObject* o2) {
   // This returns a Cartesian object scaled by the divisor.  o1 must be
   // CartesianType, o2 a float or int otherwise this will raise a
   // NotImplemented error.
@@ -902,7 +932,7 @@ static PyObject* nb_divide(PyObject* o1, PyObject* o2) {
   new_CartesianType(&result_Cartesian);
 
   if (result_Cartesian == NULL) {
-    PyErr_SetString(sCoordsException, "divide failed to create Cartesian");
+    PyErr_SetString(sCoordsException, "divide failed to create coord.Cartesian");
     return NULL;
   }
 
@@ -926,7 +956,7 @@ static PyObject* nb_divide(PyObject* o1, PyObject* o2) {
 }
 
 
-static PyObject* tp_richcompare(PyObject* o1, PyObject* o2, int op) {
+static PyObject* Cartesian_tp_richcompare(PyObject* o1, PyObject* o2, int op) {
 
   if (!is_CartesianType(o1) || !is_CartesianType(o2)) {
     Py_INCREF(Py_NotImplemented);
@@ -960,25 +990,25 @@ static PyObject* tp_richcompare(PyObject* o1, PyObject* o2, int op) {
 // ----- inplace methods -----
 // ---------------------------
 
-static PyObject* nb_inplace_add(PyObject* o1, PyObject* o2) {
+static PyObject* Cartesian_nb_inplace_add(PyObject* o1, PyObject* o2) {
   // TODO can this be implement directly using Cartesian::operator+=()?
   // problem with refence going out of scope, segfault.
-  return nb_add(o1, o2);
+  return Cartesian_nb_add(o1, o2);
 }
 
-static PyObject* nb_inplace_subtract(PyObject* o1, PyObject* o2) {
+static PyObject* Cartesian_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
   // TOOD implement directly?
-  return nb_subtract(o1, o2);
+  return Cartesian_nb_subtract(o1, o2);
 }
 
-static PyObject* nb_inplace_multiply(PyObject* o1, PyObject* o2) {
+static PyObject* Cartesian_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
   // TOOD implement directly?
-  return nb_multiply(o1, o2);
+  return Cartesian_nb_multiply(o1, o2);
 }
 
-static PyObject* nb_inplace_divide(PyObject* o1, PyObject* o2) {
+static PyObject* Cartesian_nb_inplace_divide(PyObject* o1, PyObject* o2) {
   // TOOD implement directly?
-  return nb_divide(o1, o2);
+  return Cartesian_nb_divide(o1, o2);
 }
 
 // --------------------------
@@ -1013,14 +1043,14 @@ static PyGetSetDef Cartesian_getseters[] = {
 
 // see http://docs.python.org/c-api/typeobj.html
 static PyNumberMethods Cartesian_as_number = {
-  (binaryfunc) nb_add,
-  (binaryfunc) nb_subtract,
-  (binaryfunc) nb_multiply,
-  (binaryfunc) nb_divide,
+  (binaryfunc) Cartesian_nb_add,
+  (binaryfunc) Cartesian_nb_subtract,
+  (binaryfunc) Cartesian_nb_multiply,
+  (binaryfunc) Cartesian_nb_divide,
   (binaryfunc) 0,  // nb_remainder
   (binaryfunc) 0,  // nb_divmod
   (ternaryfunc) 0, // nb_power
-  (unaryfunc) nb_negative,
+  (unaryfunc) Cartesian_nb_negative,
   (unaryfunc) 0,   // nb_positive
   (unaryfunc) 0,   // nb_absolute
   (inquiry) 0,     // nb_nonzero. Used by PyObject_IsTrue.
@@ -1039,10 +1069,10 @@ static PyNumberMethods Cartesian_as_number = {
 
   // added in release 2.0
 
-  (binaryfunc) nb_inplace_add,
-  (binaryfunc) nb_inplace_subtract,
-  (binaryfunc) nb_inplace_multiply,
-  (binaryfunc) nb_inplace_divide,
+  (binaryfunc) Cartesian_nb_inplace_add,
+  (binaryfunc) Cartesian_nb_inplace_subtract,
+  (binaryfunc) Cartesian_nb_inplace_multiply,
+  (binaryfunc) Cartesian_nb_inplace_divide,
   (binaryfunc) 0,  // nb_inplace_remainder
   (ternaryfunc) 0, // nb_inplace_power
   (binaryfunc) 0,  // nb_inplace_lshift
@@ -1085,7 +1115,7 @@ PyTypeObject CartesianType = {
   "Cartesian objects",                      /* tp_doc */
   0,                                        /* tp_traverse */
   0,                                        /* tp_clear */
-  tp_richcompare,                           /* tp_richcompare */
+  Cartesian_tp_richcompare,                 /* tp_richcompare */
   0,                                        /* tp_weaklistoffset */
   0,                                        /* tp_iter */
   0,                                        /* tp_iternext */
@@ -1102,12 +1132,10 @@ PyTypeObject CartesianType = {
   Cartesian_new,                            /* tp_new */
 };
 
-// -------------------------------------------
-// ----- implement forward declairations -----
-// -------------------------------------------
+// ------------------------------------------
+// ----- implement forward declarations -----
+// ------------------------------------------
 
-// Create new objects with PyObject_New() for binary operators that
-// return a new instance of Cartesian, like add.
 static void new_CartesianType(Cartesian** a_Cartesian) {
   *a_Cartesian = PyObject_New(Cartesian, &CartesianType); // alloc and inits?
 }
@@ -1131,7 +1159,7 @@ static PyObject* cross(PyObject* self, PyObject *args) {
   result_Cartesian = PyObject_New(Cartesian, &CartesianType); // alloc and inits
 
   if (result_Cartesian == NULL) {
-    PyErr_SetString(sCoordsException, "cross failed to create Cartesian.");
+    PyErr_SetString(sCoordsException, "cross failed to create coord.Cartesian.");
     return NULL;
   }
 
@@ -1188,7 +1216,7 @@ static PyObject* normalized(PyObject* self, PyObject *args) {
   result_Cartesian = PyObject_New(Cartesian, &CartesianType); // alloc and inits
 
   if (result_Cartesian == NULL) {
-    PyErr_SetString(sCoordsException, "normalized failed to create Cartesian.");
+    PyErr_SetString(sCoordsException, "normalized failed to create coord.Cartesian.");
     return NULL;
   }
 
@@ -1216,7 +1244,7 @@ PyObject* Cartesian_create(const Coords::Cartesian& a_Cartesian) {
 
   // TODO exception handle this
   if (py_Cartesian == NULL){
-    PyErr_SetString(sCoordsException, "failed to create Cartesian.");
+    PyErr_SetString(sCoordsException, "failed to create coord.Cartesian.");
     return NULL;
   }
 
@@ -1227,19 +1255,6 @@ PyObject* Cartesian_create(const Coords::Cartesian& a_Cartesian) {
   return (PyObject*) py_Cartesian;
 }
 
-
-// --------------------------
-// ----- module methods -----
-// --------------------------
-
-
-// -----------------------
-// ----- method list -----
-// -----------------------
-
-PyMethodDef coords_module_methods[] = {
-  {NULL, NULL}  /* Sentinel */
-};
 
 
 // ------------------------------
@@ -1296,11 +1311,5 @@ PyMODINIT_FUNC initcoords(void) {
   Cartesian_Uz = Cartesian_create(Coords::Cartesian::Uz);
   Py_INCREF(Cartesian_Uz);
   PyModule_AddObject(m, "Uz", (PyObject*)Cartesian_Uz);
-
-
-
-
-
-
 
 }

@@ -195,6 +195,14 @@ class TestAngle(unittest.TestCase):
         b = coords.angle(-self.rd1/2, -self.rm1, -self.rs1)
         self.assertAlmostEqual(a.value, b.value, self.places)
 
+
+    def test_string_constructor_exception(self):
+        """Test string constructor exception"""
+        self.assertRaises(coords.Error, lambda a: coords.angle(a), 'some_string')
+        self.assertRaises(coords.Error, lambda a: coords.angle(1, a), 'some_string')
+        self.assertRaises(coords.Error, lambda a: coords.angle(1, -1, a), 'some_string')
+
+
     # accessors
 
     def test_accessors_1(self):
@@ -204,12 +212,31 @@ class TestAngle(unittest.TestCase):
         self.assertEqual(90, an_angle.value)
         self.assertEqual(math.pi/2.0, an_angle.radians)
 
+    def test_accessors_1b(self):
+        """Test value accessor exception"""
+        try:
+            an_angle = coords.angle()
+            an_angle.value = 'foo'
+            self.assertRaises(False) # correct behavior skips this
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+
     def test_accessors_2(self):
         """Test radians accessor negative"""
         an_angle = coords.angle()
         an_angle.radians = -math.pi/2.0
         self.assertEqual(-90, an_angle.value)
         self.assertEqual(-math.pi/2.0, an_angle.radians)
+
+    def test_accessors_2a(self):
+        """Test radians accessor exception"""
+        try:
+            an_angle = coords.angle()
+            an_angle.radians = 'foo'
+            self.assertRaises(False) # correct behavior skips this
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
 
     # operators
 
