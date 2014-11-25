@@ -208,6 +208,17 @@ class TestAngle(unittest.TestCase):
         b = coords.angle(-self.rd1/2, -self.rm1, -self.rs1)
         self.assertAlmostEqual(a.value, b.value, self.places)
 
+
+        
+    @unittest.skip('TODO')
+    def test_string_constructor_exception(self):
+        """Test string constructor exception"""
+
+        self.assertRaises(ArgumentError, lambda a: coords.angle(a), 'some_string')
+        self.assertRaises(ArgumentError, lambda a: coords.angle(1, a), 'some_string')
+        self.assertRaises(ArgumentError, lambda a: coords.angle(1, -1, a), 'some_string')
+
+
     # accessors
 
     def test_accessors_1(self):
