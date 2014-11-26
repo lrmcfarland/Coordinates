@@ -27,7 +27,7 @@ export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${CARTESIAN_LIBRARY_PATH}
 # ----- set python path -----
 # ---------------------------
 
-COORDS_PYTHON_ROOT=Python/Boost # TODO remove duplication with Manual
+COORDS_PYTHON_ROOT=Python/Manual # TODO remove duplication with Boost
 
 COORDS_SO=`find ${COORDS_ROOT}/${COORDS_PYTHON_ROOT} -name coords.so`
 

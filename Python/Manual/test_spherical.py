@@ -76,7 +76,6 @@ class TestSpherical(unittest.TestCase):
         self.assertSpacesAreEqual(self.p1, a)
 
 
-    @unittest.skip('TODO Boost')
     def test_r_theta_phi_constructor2(self):
         """Test r theta phi constructor by named args"""
         a = coords.spherical(phi=self.p1.phi, r=self.p1.r, theta=self.p1.theta)
@@ -116,18 +115,17 @@ class TestSpherical(unittest.TestCase):
     def test_string_constructor_exception(self):
         """Test string constructor exception"""
 
-        self.assertRaises(TypeError, lambda a: coords.spherical(a), 'some_string')
-        self.assertRaises(TypeError, lambda a: coords.spherical(1, a), 'some_string')
-        self.assertRaises(TypeError, lambda a: coords.spherical(1, -1, a), 'some_string')
+        self.assertRaises(coords.Error, lambda a: coords.spherical(a), 'some_string')
+        self.assertRaises(coords.Error, lambda a: coords.spherical(1, a), 'some_string')
+        self.assertRaises(coords.Error, lambda a: coords.spherical(1, -1, a), 'some_string')
 
 
     def test_angle_float_constructor_exception(self):
         """Test angle as float constructor exception"""
-        self.assertRaises(TypeError, lambda a: coords.spherical(1, a), 1.23)
-        self.assertRaises(TypeError, lambda a: coords.spherical(1, -1, a), 3.45)
+        self.assertRaises(coords.Error, lambda a: coords.spherical(1, a), 1.23)
+        self.assertRaises(coords.Error, lambda a: coords.spherical(1, -1, a), 3.45)
 
 
-    @unittest.skip('TODO Boost.Python.ArgumentError')
     def test_angle_theta_float_assignment_exception(self):
         """Test theta as float assignment exception"""
 
@@ -135,11 +133,10 @@ class TestSpherical(unittest.TestCase):
             a1 = coords.spherical()
             a1.theta = 1.23
             self.assertTrue(False) # correct behavior skips this line
-        except Boost.Python.ArgumentError, err:
-            self.assertTrue(RuntimeError == type(err))
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
 
 
-    @unittest.skip('TODO Boost.Python.ArgumentError')
     def test_angle_phi_float_assignment_exception(self):
         """Test phi as float assignment exception"""
 
@@ -147,8 +144,8 @@ class TestSpherical(unittest.TestCase):
             a1 = coords.spherical()
             a1.phi = 1.23
             self.assertTrue(False) # correct behavior skips this line
-        except ArgumentError, err:
-            self.assertTrue(RuntimeError == type(err))
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
 
 
     def test_string_assignment_exception(self):
@@ -179,7 +176,6 @@ class TestSpherical(unittest.TestCase):
         self.assertEqual(a_str, str(a_point))
 
 
-    @unittest.skip('TODO Boost')
     def test_repr(self):
         """Test repr"""
 
@@ -194,7 +190,6 @@ class TestSpherical(unittest.TestCase):
     # ----- test richcompare -----
     # ----------------------------
 
-    @unittest.skip('TODO Boost')
     def test_space_eq_space(self):
         """Test space == space"""
         result = coords.spherical(self.p1.r, self.p1.theta, self.p1.phi)
@@ -202,7 +197,6 @@ class TestSpherical(unittest.TestCase):
         self.assertTrue(result == a)
 
 
-    @unittest.skip('TODO Boost')
     def test_space_ne_space(self):
         """Test space != space"""
         a = coords.spherical(1, coords.angle(2), coords.angle(3))
@@ -210,21 +204,20 @@ class TestSpherical(unittest.TestCase):
         self.assertTrue(a != b) # True because comparing memory addresses not value.
 
 
-    @unittest.skip('TODO Boost')
     def test_space_eq_space1(self):
         """Test space == space"""
         a = coords.spherical(1, coords.angle(2), coords.angle(3))
         b = coords.spherical(1, coords.angle(2), coords.angle(3))
         self.assertTrue(a == b)
 
-    @unittest.skip('TODO Boost')
+
     def test_space_eq_space2(self):
         """Test space == space"""
         a = coords.spherical(1, coords.angle(2), coords.angle(3))
         b = coords.spherical(-1, coords.angle(2), coords.angle(3))
         self.assertFalse(a == b)
 
-    @unittest.skip('TODO Boost')
+
     def test_space_ne_space1(self):
         """Test space != space"""
         a = coords.spherical(1, coords.angle(2), coords.angle(3))
@@ -232,14 +225,13 @@ class TestSpherical(unittest.TestCase):
         self.assertTrue(a != b)
 
 
-    @unittest.skip('TODO Boost')
     def test_space_ne_space2(self):
         """Test space != space"""
         a = coords.spherical(1, coords.angle(2), coords.angle(3))
         b = coords.spherical(1, coords.angle(2), coords.angle(3))
         self.assertFalse(a != b)
 
-    @unittest.skip('TODO Boost')
+
     def test_space_noop_richcompare_space(self):
         """Test space >, >=, <, <= space"""
         a = coords.spherical(1, coords.angle(2), coords.angle(3))
@@ -309,7 +301,7 @@ class TestSpherical(unittest.TestCase):
 
         self.assertSpacesAreEqual(result, a)
 
-    @unittest.skip('TODO Boost')
+
     def test_unitary_minus(self):
         """Test space = -space"""
         result = coords.spherical(-self.p1.r,
@@ -374,7 +366,7 @@ class TestSpherical(unittest.TestCase):
     def test_divide_by_zero(self):
         """Test space / 0"""
         a1 = self.p1
-        self.assertRaises(RuntimeError, lambda a: a / 0, a1)
+        self.assertRaises(coords.Error, lambda a: a / 0, a1)
         # Note: different from Boost catching RuntimeError
 
 # end spherical

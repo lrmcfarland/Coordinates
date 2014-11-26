@@ -44,101 +44,89 @@ class TestAngle(unittest.TestCase):
 
     def test_deg2rad_1(self):
         """Test deg2rad"""
-        self.assertAlmostEqual(math.pi/2.0, coords.angle.deg2rad(90), self.places)
+        self.assertAlmostEqual(math.pi/2.0, coords.angle().deg2rad(90), self.places)
 
     def test_deg2rad_2(self):
         """Test deg2rad negative angle"""
-        self.assertAlmostEqual(-math.pi, coords.angle.deg2rad(-180), self.places)
+        self.assertAlmostEqual(-math.pi, coords.angle().deg2rad(-180), self.places)
 
 
     def test_rad2deg_1(self):
         """Test rad2deg 1"""
-        self.assertAlmostEqual(270, coords.angle.rad2deg(3.0*math.pi/2.0), self.places)
+        self.assertAlmostEqual(270, coords.angle().rad2deg(3.0*math.pi/2.0), self.places)
 
     def test_rad2deg_2(self):
         """Test rad2deg negative angle"""
-        self.assertAlmostEqual(-180, coords.angle.rad2deg(-math.pi), self.places)
+        self.assertAlmostEqual(-180, coords.angle().rad2deg(-math.pi), self.places)
 
     # booleans
 
-    @unittest.skip('TODO boost wrap operator==()')
     def test_angle1_lt_angle1(self):
         """Test richcompare operator<()"""
         a = coords.angle(10)
         b = coords.angle(20)
         self.assertTrue(a < b)
 
-    @unittest.skip('TODO boost wrap operator==()')
     def test_angle1_lt_angle2(self):
         """Test richcompare operator<()"""
         a = coords.angle(10)
         b = coords.angle(20)
         self.assertFalse(b < a)
 
-    @unittest.skip('TODO boost wrap operator==()')
     def test_angle1_le_angle1(self):
         """Test richcompare operator<=()"""
         a = coords.angle(10)
         b = coords.angle(10)
         self.assertTrue(a <= b)
 
-    @unittest.skip('TODO boost wrap operator==()')
     def test_angle1_le_angle2(self):
         """Test richcompare operator<=()"""
         a = coords.angle(20)
         b = coords.angle(20.6)
         self.assertFalse(b <= a)
 
-    @unittest.skip('TODO boost wrap operator==()')
     def test_angle1_eq_angle1(self):
         """Test richcompare operator==()"""
         an_angle = coords.angle(1)
         another_angle = coords.angle(1)
         self.assertTrue(an_angle == another_angle)
 
-    @unittest.skip('TODO boost wrap operator==()')
     def test_angle1_eq_angle2(self):
         """Test richcompare operator==()"""
         an_angle = coords.angle(1)
         another_angle = coords.angle(-1)
         self.assertFalse(an_angle == another_angle)
 
-    @unittest.skip('TODO boost wrap operator!=()')
     def test_angle1_ne_angle1(self):
         """Test richcompare operator!=()"""
         an_angle = coords.angle(1)
         another_angle = coords.angle(1)
         self.assertFalse(an_angle != another_angle)
 
-    @unittest.skip('TODO boost wrap operator!=()')
     def test_angle1_ne_angle2(self):
         """Test richcompare operator==()"""
         an_angle = coords.angle(1)
         another_angle = coords.angle(-1)
         self.assertTrue(an_angle != another_angle)
 
-    @unittest.skip('TODO boost wrap operator!=()')
     def test_angle1_gt_angle1(self):
         """Test richcompare operato>()"""
         a = coords.angle(30)
         b = coords.angle(20)
         self.assertTrue(a > b)
 
-    @unittest.skip('TODO boost wrap operator!=()')
     def test_angle1_gt_angle2(self):
         """Test richcompare operator>()"""
         a = coords.angle(30)
         b = coords.angle(20)
         self.assertFalse(b > a)
 
-    @unittest.skip('TODO boost wrap operator!=()')
     def test_angle1_ge_angle1(self):
         """Test richcompare operator>=()"""
         a = coords.angle(10)
         b = coords.angle(10)
         self.assertTrue(a >= b)
 
-    @unittest.skip('TODO boost wrap operator!=()')
     def test_angle1_ge_angle2(self):
         """Test richcompare operator>=()"""
         a = coords.angle(20.9)
@@ -153,7 +141,6 @@ class TestAngle(unittest.TestCase):
         an_angle = coords.angle(self.rd1)
         another_angle = coords.angle(an_angle)
         self.assertAlmostEqual(self.rd1, another_angle.value, self.places)
-
 
     def test_copy_assign(self):
         """Test copy assign
@@ -209,14 +196,11 @@ class TestAngle(unittest.TestCase):
         self.assertAlmostEqual(a.value, b.value, self.places)
 
 
-
-    @unittest.skip('TODO')
     def test_string_constructor_exception(self):
         """Test string constructor exception"""
-
-        self.assertRaises(ArgumentError, lambda a: coords.angle(a), 'some_string')
-        self.assertRaises(ArgumentError, lambda a: coords.angle(1, a), 'some_string')
-        self.assertRaises(ArgumentError, lambda a: coords.angle(1, -1, a), 'some_string')
+        self.assertRaises(coords.Error, lambda a: coords.angle(a), 'some_string')
+        self.assertRaises(coords.Error, lambda a: coords.angle(1, a), 'some_string')
+        self.assertRaises(coords.Error, lambda a: coords.angle(1, -1, a), 'some_string')
 
 
     # accessors
@@ -228,15 +212,14 @@ class TestAngle(unittest.TestCase):
         self.assertEqual(90, an_angle.value)
         self.assertEqual(math.pi/2.0, an_angle.radians)
 
-    @unittest.skip('TODO Boost.Python.ArgumentError')
     def test_accessors_1b(self):
         """Test value accessor exception"""
         try:
             an_angle = coords.angle()
             an_angle.value = 'foo'
             self.assertRaises(False) # correct behavior skips this
-        except RuntimeError, err:
-            self.assertTrue(RuntimeError == type(err))
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
 
 
     def test_accessors_2(self):
@@ -246,15 +229,14 @@ class TestAngle(unittest.TestCase):
         self.assertEqual(-90, an_angle.value)
         self.assertEqual(-math.pi/2.0, an_angle.radians)
 
-    @unittest.skip('TODO Boost.Python.ArgumentError')
     def test_accessors_2a(self):
         """Test radians accessor exception"""
         try:
             an_angle = coords.angle()
             an_angle.radians = 'foo'
             self.assertRaises(False) # correct behavior skips this
-        except RuntimeError, err:
-            self.assertTrue(RuntimeError == type(err))
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
 
     # operators
 
@@ -294,7 +276,6 @@ class TestAngle(unittest.TestCase):
         self.assertAlmostEqual(self.rd1 - self.rd2, a3.value, self.places)
 
 
-    @unittest.skip('TODO boost unitary minus?')
     def test_unitary_minus(self):
         """Test angle = -angle"""
         a1 = coords.angle(self.rd1)
@@ -341,8 +322,9 @@ class TestAngle(unittest.TestCase):
         """Test angle / 0"""
         a1 = coords.angle(self.rd1)
         a2 = coords.angle(0)
-        self.assertRaises(RuntimeError, lambda a, b: a / b, a1, a2)
-        # Note: different from Manual catching coords.Error
+        self.assertRaises(coords.Error, lambda a, b: a / b, a1, a2)
+        # Note: different from Boost catching RuntimeError
+
 
    # strings
 
@@ -353,7 +335,6 @@ class TestAngle(unittest.TestCase):
         self.assertEqual(a_str, str(an_angle))
 
 
-    @unittest.skip('Not available in boost')
     def test_repr(self):
         """Test repr"""
         an_angle = coords.angle()

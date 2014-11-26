@@ -53,7 +53,7 @@ class TestCartesian(unittest.TestCase):
         self.assertEqual(0, a.x)
         self.assertEqual(0, a.y)
         self.assertEqual(0, a.z)
-        self.assertSpacesAreEqual(coords.Cartesian.Uo, a)
+        self.assertSpacesAreEqual(coords.Uo, a)
 
 
     def test_x_constructor(self):
@@ -77,7 +77,7 @@ class TestCartesian(unittest.TestCase):
         a = coords.Cartesian(self.p1.x, self.p1.y, self.p1.z)
         self.assertSpacesAreEqual(self.p1, a)
 
-    @unittest.skip('TODO Boost')
+
     def test_xyz_constructor2(self):
         """Test xyz constructor by named args"""
         a = coords.Cartesian(z=self.p1.z, x=self.p1.x, y=self.p1.y)
@@ -118,9 +118,9 @@ class TestCartesian(unittest.TestCase):
     def test_string_constructor_exception(self):
         """Test string constructor exception"""
 
-        self.assertRaises(TypeError, lambda a: coords.Cartesian(a), 'some_string')
-        self.assertRaises(TypeError, lambda a: coords.Cartesian(1, a), 'some_string')
-        self.assertRaises(TypeError, lambda a: coords.Cartesian(1, -1, a), 'some_string')
+        self.assertRaises(coords.Error, lambda a: coords.Cartesian(a), 'some_string')
+        self.assertRaises(coords.Error, lambda a: coords.Cartesian(1, a), 'some_string')
+        self.assertRaises(coords.Error, lambda a: coords.Cartesian(1, -1, a), 'some_string')
 
 
     def test_string_assignment_exception(self):
@@ -150,7 +150,7 @@ class TestCartesian(unittest.TestCase):
         a_str = '<Cartesian><x>1.23</x><y>-4.56</y><z>7.89</z></Cartesian>'
         self.assertEqual(a_str, str(a_point))
 
-    @unittest.skip('TODO Boost')
+
     def test_repr(self):
         """Test repr"""
 
@@ -164,7 +164,7 @@ class TestCartesian(unittest.TestCase):
     def test_magnitude(self):
         """Test space magnitude"""
         root_sum_square = math.sqrt(self.p1.x*self.p1.x + self.p1.y*self.p1.y + self.p1.z*self.p1.z)
-        a = coords.Cartesian.magnitude(self.p1)
+        a = coords.Cartesian().magnitude(self.p1)
         self.assertAlmostEqual(root_sum_square, a, self.places)
 
 
@@ -175,14 +175,13 @@ class TestCartesian(unittest.TestCase):
                                       self.p1.y/root_sum_square,
                                       self.p1.z/root_sum_square)
 
-        a = coords.Cartesian.normalized(self.p1)
+        a = coords.Cartesian().normalized(self.p1)
         self.assertSpacesAreEqual(normalized, a)
 
     # ----------------------------
     # ----- test richcompare -----
     # ----------------------------
 
-    @unittest.skip('TODO Boost')
     def test_space_eq_space(self):
         """Test space == space"""
         result = coords.Cartesian(self.p1.x, self.p1.y, self.p1.z)
@@ -190,7 +189,6 @@ class TestCartesian(unittest.TestCase):
         self.assertTrue(result == a)
 
 
-    @unittest.skip('TODO Boost')
     def test_space_ne_space(self):
         """Test space != space"""
         a = coords.Cartesian(1, 2, 3)
@@ -198,7 +196,6 @@ class TestCartesian(unittest.TestCase):
         self.assertTrue(a != b) # True because comparing memory addresses not value.
 
 
-    @unittest.skip('TODO Boost')
     def test_space_eq_space1(self):
         """Test space == space"""
         a = coords.Cartesian(1, 2, 3)
@@ -206,7 +203,6 @@ class TestCartesian(unittest.TestCase):
         self.assertTrue(a == b)
 
 
-    @unittest.skip('TODO Boost')
     def test_space_eq_space2(self):
         """Test space == space"""
         a = coords.Cartesian(1, 2, 3)
@@ -214,7 +210,6 @@ class TestCartesian(unittest.TestCase):
         self.assertFalse(a == b)
 
 
-    @unittest.skip('TODO Boost')
     def test_space_ne_space1(self):
         """Test space != space"""
         a = coords.Cartesian(1, 2, 3)
@@ -222,7 +217,6 @@ class TestCartesian(unittest.TestCase):
         self.assertTrue(a != b)
 
 
-    @unittest.skip('TODO Boost')
     def test_space_ne_space2(self):
         """Test space != space"""
         a = coords.Cartesian(1, 2, 3)
@@ -230,7 +224,6 @@ class TestCartesian(unittest.TestCase):
         self.assertFalse(a != b)
 
 
-    @unittest.skip('TODO Boost')
     def test_space_noop_richcompare_space(self):
         """Test space >, >=, <, <= space"""
         a = coords.Cartesian(1, 2, 3)
@@ -288,7 +281,6 @@ class TestCartesian(unittest.TestCase):
         self.assertSpacesAreEqual(result, a)
 
 
-    @unittest.skip('TODO Boost')
     def test_unitary_minus(self):
         """Test space = -space"""
         result = coords.Cartesian(-self.p1.x,
@@ -349,33 +341,33 @@ class TestCartesian(unittest.TestCase):
     def test_dot_product(self):
         """Test space dot product function"""
         result = self.p1.x * self.p2.x + self.p1.y * self.p2.y + self.p1.z * self.p2.z
-        a = coords.Cartesian.dot(self.p1, self.p2)
+        a = coords.Cartesian().dot(self.p1, self.p2)
         self.assertEqual(result, a)
 
 
     def test_x_cross_y(self):
         """Test x cross y is z"""
-        a = coords.Cartesian.cross(coords.Cartesian.Ux, coords.Cartesian.Uy)
-        self.assertSpacesAreEqual(coords.Cartesian.Uz, a)
+        a = coords.Cartesian().cross(coords.Ux, coords.Uy)
+        self.assertSpacesAreEqual(coords.Uz, a)
 
 
     def test_y_cross_z(self):
         """Test x cross y is z"""
-        a = coords.Cartesian.cross(coords.Cartesian.Uy, coords.Cartesian.Uz)
-        self.assertSpacesAreEqual(coords.Cartesian.Ux, a)
+        a = coords.Cartesian().cross(coords.Uy, coords.Uz)
+        self.assertSpacesAreEqual(coords.Ux, a)
 
 
     def test_z_cross_x(self):
         """Test x cross y is z"""
-        a = coords.Cartesian.cross(coords.Cartesian.Uz, coords.Cartesian.Ux)
-        self.assertSpacesAreEqual(coords.Cartesian.Uy, a)
+        a = coords.Cartesian().cross(coords.Uz, coords.Ux)
+        self.assertSpacesAreEqual(coords.Uy, a)
 
 
     def test_cross_1(self):
         """Test more arbitrary cross product"""
         a = coords.Cartesian(1, 1, 1)
         b = coords.Cartesian(0, 0, 0.5)
-        c = coords.Cartesian.cross(a, b)
+        c = coords.Cartesian().cross(a, b)
         self.assertSpacesAreEqual(coords.Cartesian(0.5, -0.5, 0), c)
 
 
@@ -401,7 +393,7 @@ class TestCartesian(unittest.TestCase):
     def test_divide_by_zero(self):
         """Test space / 0"""
         a1 = self.p1
-        self.assertRaises(RuntimeError, lambda a: a / 0, a1)
+        self.assertRaises(coords.Error, lambda a: a / 0, a1)
         # Note: different from Boost catching RuntimeError
 
 

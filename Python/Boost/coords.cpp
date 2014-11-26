@@ -136,15 +136,13 @@ BOOST_PYTHON_MODULE(coords) {
     .def(self / double())
 
     // other methods
+    .def("cross", &Coords::cross)
+    .def("dot", &Coords::dot)
     .def("magnitude", &Coords::Cartesian::magnitude)
     .def("normalized", &Coords::Cartesian::normalized)
 
-
     ; // end of class_
 
-  // functions
-  def("cross", Coords::cross);
-  def("dot", Coords::dot);
 
 
 
