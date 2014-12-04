@@ -50,7 +50,10 @@ namespace Coords {
 
     explicit spherical(const Cartesian& a);
 
-    // TODO spherical coord to construct from Latitude and convert to phi
+    explicit spherical(const double& r,
+		       const Latitude& lat,
+		       const angle& phi = angle(0.0))
+      : m_r(r), m_theta(90.0 - lat.value()), m_phi(phi) {};
 
     ~spherical() {};
 

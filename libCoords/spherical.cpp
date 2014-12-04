@@ -51,7 +51,6 @@ Coords::spherical::spherical(const Coords::Cartesian& a)
   theta(Coords::angle(Coords::angle::rad2deg(atan2(r_xy, a.z()))));
 }
 
-
 // ----- copy constructor -----
 Coords::spherical::spherical(const Coords::spherical& a) {
   m_r     = a.r();
