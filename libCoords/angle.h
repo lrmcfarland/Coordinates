@@ -56,7 +56,7 @@ namespace Coords {
 		   const std::string& a_min = "0",
 		   const std::string& a_sec = "0");
 
-    ~angle() {};
+    virtual ~angle() {};
 
     angle(const angle& a);
     angle& operator=(const angle& rhs);
@@ -148,7 +148,7 @@ namespace Coords {
 		      const std::string& a_min = "0.0",
 		      const std::string& a_sec = "0.0");
 
-    ~Latitude() {};
+    virtual ~Latitude() {};
 
   };
 
