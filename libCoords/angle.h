@@ -56,10 +56,10 @@ namespace Coords {
 		   const std::string& a_min = "0",
 		   const std::string& a_sec = "0");
 
-    virtual ~angle() {};
+    ~angle() {};
 
-     angle(const angle& a);
-     angle& operator=(const angle& rhs);
+    angle(const angle& a);
+    angle& operator=(const angle& rhs);
 
     // ----- accessors -----
     void          value(const double& a_value) {m_value = a_value;}
@@ -76,26 +76,26 @@ namespace Coords {
 
     // ----- boolean operators -----
 
-     bool operator== (const angle& rhs) const;
-     bool operator!= (const angle& rhs) const;
+    bool operator== (const angle& rhs) const;
+    bool operator!= (const angle& rhs) const;
 
-     bool operator< (const angle& rhs) const;
-     bool operator<= (const angle& rhs) const;
+    bool operator< (const angle& rhs) const;
+    bool operator<= (const angle& rhs) const;
 
-     bool operator> (const angle& rhs) const;
-     bool operator>= (const angle& rhs) const;
+    bool operator> (const angle& rhs) const;
+    bool operator>= (const angle& rhs) const;
 
     // ----- in-place operators -----
 
-    virtual angle& operator+=(const angle& rhs);
-    virtual angle& operator-=(const angle& rhs);
+    angle& operator+=(const angle& rhs);
+    angle& operator-=(const angle& rhs);
 
-    virtual angle& operator*=(const angle& rhs);
-    virtual angle& operator/=(const angle& rhs) throw (DivideByZeroError);
+    angle& operator*=(const angle& rhs);
+    angle& operator/=(const angle& rhs) throw (DivideByZeroError);
 
 
     // ----- other methods -----
-    virtual void normalize();  // TODO normalized -> return a new copy?
+    void normalize();  // TODO normalized -> return a new copy?
 
   private:
 
@@ -129,6 +129,3 @@ namespace Coords {
 
 
 } // end namespace Coords
-
-
-
