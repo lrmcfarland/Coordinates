@@ -409,7 +409,6 @@ namespace {
   }
 
 
-
   // opeartor<<()
 
   TEST(angle, output_dms) {
@@ -431,7 +430,51 @@ namespace {
   }
 
 
-  // TODO
+  // Latitude
+
+  TEST(Latitude, DefaultConstructor) {
+    Coords::Latitude a;
+    EXPECT_EQ(0, a.radians());
+  }
+
+  TEST(Latitude, ConstructorDeg) {
+    Coords::Latitude a(90);
+    EXPECT_EQ(Coords::Latitude::deg2rad(90), a.radians());
+  }
+
+  TEST(Latitude, ConstructorDegFromStr) {
+    Coords::Latitude a("-90");
+    EXPECT_EQ(Coords::Latitude::deg2rad(-90), a.radians());
+  }
+
+  TEST(Latitude, MaximumExceeded) {
+    try {
+      Coords::Latitude a(90.0001);
+    } catch (Coords::Error& err) {
+      EXPECT_STREQ(err.what(), "maximum Latitude exceeded");
+    }
+
+  }
+
+  TEST(Latitude, MinimumExceeded) {
+    try {
+      Coords::Latitude a(-90.0001);
+    } catch (Coords::Error& err) {
+      EXPECT_STREQ(err.what(), "minimum Latitude exceeded");
+    }
+
+  }
+
+  TEST(Latitude, Addition) {
+    Coords::Latitude a(45);
+    Coords::Latitude b(-40);
+    Coords::angle c;
+
+    c = a + b;
+
+    EXPECT_EQ(5.0, c.value());
+
+  }
 
 
 } // end anonymous namespace

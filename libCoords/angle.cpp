@@ -30,16 +30,16 @@
 
 // ----- constructors -----
 
-Coords::angle::angle(const double& a_deg_or_hr,
+Coords::angle::angle(const double& a_deg,
 		     const double& a_min,
 		     const double& a_sec) {
-  value(degrees2seconds(a_deg_or_hr, a_min, a_sec)/3600.0);
+  value(degrees2seconds(a_deg, a_min, a_sec)/3600.0);
 }
 
-Coords::angle::angle(const std::string& a_deg_or_hr,
+Coords::angle::angle(const std::string& a_deg,
 		     const std::string& a_min,
 		     const std::string& a_sec) {
-  value(angle(Coords::stod(a_deg_or_hr),
+  value(angle(Coords::stod(a_deg),
 	      Coords::stod(a_min),
 	      Coords::stod(a_sec)).value());
   // TODO bad string exception with C++11 stod
@@ -166,3 +166,35 @@ void Coords::angle::normalize() {
     m_value -= 360;
 }
 
+// ====================
+// ===== Latitude =====
+// ====================
+
+const double Coords::Latitude::g_north_pole(90);
+const double Coords::Latitude::g_south_pole(-90);
+
+// ----- constructors -----
+
+Coords::Latitude::Latitude(const double& a_deg,
+			   const double& a_min,
+			   const double& a_sec)
+  : angle(a_deg, a_min, a_sec) {
+
+  if (value() > g_north_pole)
+    throw Coords::Error("maximum Latitude exceeded");
+
+  if (value() < g_south_pole)
+    throw Coords::Error("minimum Latitude exceeded");
+}
+
+Coords::Latitude::Latitude(const std::string& a_deg,
+			   const std::string& a_min,
+			   const std::string& a_sec)
+  : angle(a_deg, a_min, a_sec) {
+
+  if (value() > g_north_pole)
+    throw Coords::Error("maximum Latitude exceeded");
+
+  if (value() < g_south_pole)
+    throw Coords::Error("minimum Latitude exceeded");
+}

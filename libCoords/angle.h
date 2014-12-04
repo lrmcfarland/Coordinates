@@ -128,4 +128,28 @@ namespace Coords {
   }
 
 
+  // --------------------
+  // ----- Latitude -----
+  // --------------------
+
+  // special case so spherical can convert to theta
+
+  class Latitude : public angle {
+
+  public:
+    static const double g_north_pole;
+    static const double g_south_pole;
+
+    explicit Latitude(const double& a_deg = 0.0,
+		      const double& a_min = 0.0,
+		      const double& a_sec = 0.0);
+
+    explicit Latitude(const std::string& a_deg,
+		      const std::string& a_min = "0.0",
+		      const std::string& a_sec = "0.0");
+
+    ~Latitude() {};
+
+  };
+
 } // end namespace Coords
