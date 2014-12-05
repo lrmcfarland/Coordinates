@@ -127,8 +127,8 @@ distance between them.
 
 ```
 >>> import coords
->>> keplers = coords.spherical(6371, coords.angle(90) - coords.angle(37, 27, 13), coords.angle(-122, 10, 55))
->>> booksinc = coords.spherical(6371, coords.angle(90) - coords.angle(37, 23, 32.4852), coords.angle(-122, 4, 46.2252))
+>>> keplers = coords.spherical(6371, coords.latitude(37, 27, 13), coords.angle(-122, 10, 55))
+>>> booksinc = coords.spherical(6371, coords.latitude(37, 23, 32.4852), coords.angle(-122, 4, 46.2252))
 >>> print keplers - booksinc
-<spherical><r>11.3235</r><theta>61.4649</theta><phi>123.282</phi></spherical>
+<spherical><r>11.323523399</r><theta>61.4648975917</theta><phi>123.282352414</phi></spherical>
 ```

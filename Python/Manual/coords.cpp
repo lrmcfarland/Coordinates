@@ -1128,14 +1128,6 @@ static int is_LatitudeType(PyObject* an_angle) {
   return PyObject_TypeCheck(an_angle, &LatitudeType);
 }
 
-
-
-
-
-
-
-
-
 // =====================
 // ===== Cartesian =====
 // =====================
@@ -1822,7 +1814,8 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
     if (is_AngleType(arg1)) {
       theta = ((Angle*)arg1)->m_angle;
 
-    // TODO if is_LatitudeType
+    } else if (is_LatitudeType(arg1)) {
+      theta = Coords::angle(90.0) - ((Latitude*)arg1)->m_angle;
 
     } else if (PyString_Check(arg1)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
@@ -2378,7 +2371,6 @@ PyMODINIT_FUNC initcoords(void) {
 
 
   // Cartesian
-
   CartesianType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&CartesianType) < 0)
     return;
@@ -2387,7 +2379,6 @@ PyMODINIT_FUNC initcoords(void) {
   PyModule_AddObject(m, "Cartesian", (PyObject *)&CartesianType);
 
   // spherical
-
   sphericalType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&sphericalType) < 0)
     return;
