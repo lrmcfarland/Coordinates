@@ -19,7 +19,7 @@
 //  General Public License for more details.
 //
 //  You should have received a copy of the GNU General Public License
-//  along with Orbits.  If not, see <http://www.gnu.org/licenses/>.
+//  along with Coordinates. If not, see <http://www.gnu.org/licenses/>.
 // ================================================================
 
 
@@ -58,8 +58,8 @@ namespace Coords {
 
     virtual ~angle() {};
 
-     angle(const angle& a);
-     angle& operator=(const angle& rhs);
+    angle(const angle& a);
+    angle& operator=(const angle& rhs);
 
     // ----- accessors -----
     void          value(const double& a_value) {m_value = a_value;}
@@ -76,26 +76,26 @@ namespace Coords {
 
     // ----- boolean operators -----
 
-     bool operator== (const angle& rhs) const;
-     bool operator!= (const angle& rhs) const;
+    bool operator== (const angle& rhs) const;
+    bool operator!= (const angle& rhs) const;
 
-     bool operator< (const angle& rhs) const;
-     bool operator<= (const angle& rhs) const;
+    bool operator< (const angle& rhs) const;
+    bool operator<= (const angle& rhs) const;
 
-     bool operator> (const angle& rhs) const;
-     bool operator>= (const angle& rhs) const;
+    bool operator> (const angle& rhs) const;
+    bool operator>= (const angle& rhs) const;
 
     // ----- in-place operators -----
 
-    virtual angle& operator+=(const angle& rhs);
-    virtual angle& operator-=(const angle& rhs);
+    angle& operator+=(const angle& rhs);
+    angle& operator-=(const angle& rhs);
 
-    virtual angle& operator*=(const angle& rhs);
-    virtual angle& operator/=(const angle& rhs) throw (DivideByZeroError);
+    angle& operator*=(const angle& rhs);
+    angle& operator/=(const angle& rhs) throw (DivideByZeroError);
 
 
     // ----- other methods -----
-    virtual void normalize();  // TODO normalized -> return a new copy?
+    void normalize();  // TODO normalized -> return a new copy?
 
   private:
 
@@ -128,7 +128,28 @@ namespace Coords {
   }
 
 
+  // --------------------
+  // ----- Latitude -----
+  // --------------------
+
+  // special case so spherical can convert to theta
+
+  class Latitude : public angle {
+
+  public:
+    static const double g_north_pole;
+    static const double g_south_pole;
+
+    explicit Latitude(const double& a_deg = 0.0,
+		      const double& a_min = 0.0,
+		      const double& a_sec = 0.0);
+
+    explicit Latitude(const std::string& a_deg,
+		      const std::string& a_min = "0.0",
+		      const std::string& a_sec = "0.0");
+
+    virtual ~Latitude() {};
+
+  };
+
 } // end namespace Coords
-
-
-

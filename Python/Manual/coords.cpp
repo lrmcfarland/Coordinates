@@ -34,7 +34,6 @@ static const unsigned int sPrintPrecision(12); // matches defaut %s precision fo
 // ----- Angle -----
 // -----------------
 
-// char* kwlist[] init strings
 static char sDegreeStr[] = "degees";
 static char sMinuteStr[] = "minutes";
 static char sSecondStr[] = "seconds";
@@ -52,11 +51,23 @@ typedef struct {
 static void new_AngleType(Angle** an_angle);
 static int is_AngleType(PyObject* an_angle);
 
+// --------------------
+// ----- Latitude -----
+// --------------------
+
+// object definition.
+typedef struct {
+  PyObject_HEAD
+  Coords::Latitude m_angle;
+} Latitude;
+
+static void new_LatitudeType(Latitude** an_angle);
+static int is_LatitudeType(PyObject* an_angle);
+
 // ---------------------
 // ----- Cartesian -----
 // ---------------------
 
-// char* kwlist[] init strings
 static char sXstr[] = "x";
 static char sYstr[] = "y";
 static char sZstr[] = "z";
@@ -80,7 +91,6 @@ static PyObject* Cartesian_normalized(PyObject* self, PyObject *args);
 // ----- spherical -----
 // ---------------------
 
-// char* kwlist[] init strings
 static char sRstr[] = "r";
 static char sThetaStr[] = "theta";
 static char sPhiStr[] = "phi";
@@ -615,6 +625,507 @@ static void new_AngleType(Angle** an_angle) {
 static int is_AngleType(PyObject* an_angle) {
   //wrapper for type check
   return PyObject_TypeCheck(an_angle, &AngleType);
+}
+
+
+
+
+
+// TODO better than copy/paste of Angle for Latitude
+
+// ====================
+// ===== Latitude =====
+// ====================
+
+// ------------------------
+// ----- constructors -----
+// ------------------------
+
+static PyObject* Latitude_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
+  Latitude* self(NULL);
+  self = (Latitude*)type->tp_alloc(type, 0);
+  return (PyObject*)self;
+}
+
+static int Latitude_init(Latitude* self, PyObject* args, PyObject* kwds) {
+
+  static char* kwlist[] = {sDegreeStr, sMinuteStr, sSecondStr, NULL};
+
+  double degrees(0); // default value
+  double minutes(0); // default value
+  double seconds(0); // default value
+
+  PyObject* arg0(NULL);
+  PyObject* arg1(NULL);
+  PyObject* arg2(NULL);
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOO", kwlist, &arg0, &arg1, &arg2))
+    return -1;
+
+  if (arg0) {
+
+    // copy constructor
+    if (is_LatitudeType(arg0)) {
+      self->m_angle.value(((Latitude*)arg0)->m_angle.value());
+      return 0;
+
+    } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
+      degrees = PyFloat_AsDouble(arg0);
+
+    } else if (PyString_Check(arg0)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+      return -1;
+
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      return -1;
+    }
+
+  }
+
+  if (arg1) {
+
+    if (PyFloat_Check(arg1) || PyInt_Check(arg1)) {
+      minutes = PyFloat_AsDouble(arg1);
+
+    } else if (PyString_Check(arg1)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+      return -1;
+
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg1 type");
+      return -1;
+    }
+
+  }
+
+  if (arg2) {
+
+    if (PyFloat_Check(arg2) || PyInt_Check(arg2)) {
+      seconds = PyFloat_AsDouble(arg2);
+
+    } else if (PyString_Check(arg2)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+      return -1;
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg1 type");
+      return -1;
+    }
+
+  }
+
+  self->m_angle.value(Coords::degrees2seconds(degrees, minutes, seconds)/3600);
+
+  return 0;
+
+}
+
+
+static void Latitude_dealloc(Latitude* self) {
+  self->ob_type->tp_free((PyObject*)self);
+}
+
+// -----------------
+// ----- print -----
+// -----------------
+
+// TODO switch repr and str so repr is xml and str is (x, y, z)?
+
+PyObject* Latitude_str(PyObject* self) {
+  std::stringstream result;
+  result.precision(sPrintPrecision);
+  result << ((Latitude*)self)->m_angle;
+  return PyString_FromString(result.str().c_str());
+}
+
+// TODO a different repr? for constructor?
+PyObject* Latitude_repr(PyObject* self) {
+  std::stringstream result;
+  result.precision(sPrintPrecision);
+  result << ((Latitude*)self)->m_angle;
+  return PyString_FromString(result.str().c_str());
+}
+
+// -------------------------------
+// ----- getters and setters -----
+// -------------------------------
+
+// ----- value -----
+
+static PyObject* Latitude_getValue(Latitude* self, void* closure) {
+  return PyFloat_FromDouble(self->m_angle.value());
+}
+
+static int Latitude_setValue(Latitude* self, PyObject* value, void* closure) {
+
+  if (value == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete value");
+    return -1;
+  }
+
+  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+    PyErr_SetString(sCoordsException, "value must be a float");
+    return -1;
+  }
+
+  self->m_angle.value(PyFloat_AsDouble(value));
+
+  return 0;
+}
+
+// ----- radians -----
+
+static PyObject* Latitude_getRadians(Latitude* self, void* closure) {
+  return PyFloat_FromDouble(self->m_angle.radians());
+}
+
+static int Latitude_setRadians(Latitude* self, PyObject* radians, void* closure) {
+
+  if (radians == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete radians");
+    return -1;
+  }
+
+  if (!PyFloat_Check(radians) && !PyInt_Check(radians)) {
+    PyErr_SetString(sCoordsException, "radians must be a float");
+    return -1;
+  }
+
+  self->m_angle.radians(PyFloat_AsDouble(radians));
+
+  return 0;
+}
+
+// --------------------------
+// ----- number methods -----
+// --------------------------
+
+
+static PyObject* Latitude_nb_add(PyObject* o1, PyObject* o2) {
+
+  if (!is_LatitudeType(o1) || !is_LatitudeType(o2)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  Angle* result_angle(NULL); // switches to Angle
+
+  new_AngleType(&result_angle);
+
+  if (result_angle == NULL) {
+    PyErr_SetString(sCoordsException, "add failed to create coord.angle");
+    return NULL;
+  }
+
+  Coords::angle the_sum(((Latitude*)o1)->m_angle + ((Latitude*)o2)->m_angle);
+
+  result_angle->m_angle = the_sum;
+
+  return (PyObject*) result_angle;
+}
+
+
+static PyObject* Latitude_nb_subtract(PyObject* o1, PyObject* o2) {
+
+  if (!is_LatitudeType(o1) || !is_LatitudeType(o2)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  Angle* result_angle(NULL); // switches to Angle
+
+  new_AngleType(&result_angle);
+
+  if (result_angle == NULL) {
+    PyErr_SetString(sCoordsException, "subtract failed to create coord.angle");
+    return NULL;
+  }
+
+  Coords::angle the_difference(((Latitude*)o1)->m_angle - ((Latitude*)o2)->m_angle);
+
+  result_angle->m_angle = the_difference;
+
+  return (PyObject*) result_angle;
+}
+
+
+static PyObject* Latitude_nb_negative(PyObject* o1) {
+  // Unitary minus
+
+  if (!is_LatitudeType(o1)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  Angle* result_angle(NULL); // switches to Angle
+
+  new_AngleType(&result_angle);
+
+  if (result_angle == NULL) {
+    PyErr_SetString(sCoordsException, "negative failed to create coord.angle");
+    return NULL;
+  }
+
+  Coords::angle the_inverse = -((Latitude*)o1)->m_angle;
+
+  result_angle->m_angle = the_inverse;
+
+  return (PyObject*) result_angle;
+}
+
+
+static PyObject* Latitude_nb_multiply(PyObject* o1, PyObject* o2) {
+
+  if (!is_LatitudeType(o1) || !is_LatitudeType(o2)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  Angle* result_angle(NULL); // switches to Angle
+  new_AngleType(&result_angle);
+
+  if (result_angle == NULL) {
+    PyErr_SetString(sCoordsException, "multiply failed to create coord.angle");
+    return NULL;
+  }
+
+  result_angle->m_angle = ((Latitude*)o1)->m_angle * ((Latitude*)o2)->m_angle;
+
+  return (PyObject*) result_angle;
+}
+
+
+static PyObject* Latitude_nb_divide(PyObject* o1, PyObject* o2) {
+
+  if (!is_LatitudeType(o1) || !is_LatitudeType(o2)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  Angle* result_angle(NULL); // switches to Angle
+  new_AngleType(&result_angle);
+
+  if (result_angle == NULL) {
+    PyErr_SetString(sCoordsException, "divide failed to create coord.angle");
+    return NULL;
+  }
+
+  try {
+    result_angle->m_angle = ((Latitude*)o1)->m_angle / ((Latitude*)o2)->m_angle;
+  } catch (Coords::Error err) {
+    PyErr_SetString(sCoordsException, err.what());
+    return NULL;
+  }
+
+  return (PyObject*) result_angle;
+}
+
+
+static PyObject* Latitude_tp_richcompare(PyObject* o1, PyObject* o2, int op) {
+
+  if (!is_LatitudeType(o1) || !is_LatitudeType(o2)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  if (op == Py_LT) {
+
+    if (((Latitude*)o1)->m_angle < ((Latitude*)o2)->m_angle)
+      return Py_True;
+    else
+      return Py_False;
+
+  } else if (op == Py_LE) {
+
+    if (((Latitude*)o1)->m_angle <= ((Latitude*)o2)->m_angle)
+      return Py_True;
+    else
+      return Py_False;
+
+  } else if (op == Py_EQ) {
+
+    if (((Latitude*)o1)->m_angle == ((Latitude*)o2)->m_angle)
+      return Py_True;
+    else
+      return Py_False;
+
+  } else if (op == Py_NE) {
+
+    if (((Latitude*)o1)->m_angle != ((Latitude*)o2)->m_angle)
+      return Py_True;
+    else
+      return Py_False;
+
+  } else if (op == Py_GT) {
+
+    if (((Latitude*)o1)->m_angle > ((Latitude*)o2)->m_angle)
+      return Py_True;
+    else
+      return Py_False;
+
+  } else if (op == Py_GE) {
+
+    if (((Latitude*)o1)->m_angle >= ((Latitude*)o2)->m_angle)
+      return Py_True;
+    else
+      return Py_False;
+
+  } else {
+
+    PyErr_SetString(PyExc_TypeError, "richcompare op not supported");
+    return NULL;
+
+  }
+
+}
+
+// ---------------------------
+// ----- inplace methods -----
+// ---------------------------
+
+static PyObject* Latitude_nb_inplace_add(PyObject* o1, PyObject* o2) {
+  // TODO can this be implement directly using space::operator+=()?
+  // problem with refence going out of scope, segfault.
+  return Latitude_nb_add(o1, o2);
+}
+
+static PyObject* Latitude_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
+  // TOOD implement directly?
+  return Latitude_nb_subtract(o1, o2);
+}
+
+static PyObject* Latitude_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
+  // TOOD implement directly?
+  return Latitude_nb_multiply(o1, o2);
+}
+
+static PyObject* Latitude_nb_inplace_divide(PyObject* o1, PyObject* o2) {
+  // TOOD implement directly?
+  return Latitude_nb_divide(o1, o2);
+}
+
+// --------------------------
+// ----- Python structs -----
+// --------------------------
+
+static PyMethodDef Latitude_methods[] = {
+  {NULL}  /* Sentinel */
+};
+
+
+static PyMemberDef Latitude_members[] = {
+  {NULL}  /* Sentinel */
+};
+
+static PyGetSetDef Latitude_getseters[] = {
+  {sValueStr, (getter)Latitude_getValue, (setter)Latitude_setValue, sValueStr, NULL},
+  {sRadiansStr, (getter)Latitude_getRadians, (setter)Latitude_setRadians, sRadiansStr, NULL},
+  {NULL}  /* Sentinel */
+};
+
+
+// see http://docs.python.org/c-api/typeobj.html
+static PyNumberMethods Latitude_as_number = {
+  (binaryfunc) Latitude_nb_add,
+  (binaryfunc) Latitude_nb_subtract,
+  (binaryfunc) Latitude_nb_multiply,
+  (binaryfunc) Latitude_nb_divide,
+  (binaryfunc) 0,  // nb_remainder
+  (binaryfunc) 0,  // nb_divmod
+  (ternaryfunc) 0, // nb_power
+  (unaryfunc) Latitude_nb_negative,
+  (unaryfunc) 0,   // nb_positive
+  (unaryfunc) 0,   // nb_absolute
+  (inquiry) 0,     // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,   // nb_invert
+  (binaryfunc) 0,  // nb_lshift
+  (binaryfunc) 0,  // nb_rshift
+  (binaryfunc) 0,  // nb_and
+  (binaryfunc) 0,  // nb_xor
+  (binaryfunc) 0,  // nb_or
+  (coercion) 0,    // Used by the coerce() function
+  (unaryfunc) 0,   // nb_int
+  (unaryfunc) 0,   // nb_long
+  (unaryfunc) 0,   // nb_float
+  (unaryfunc) 0,   // nb_oct
+  (unaryfunc) 0,   // nb_hex
+
+  // added in release 2.0
+
+  (binaryfunc) Latitude_nb_inplace_add,
+  (binaryfunc) Latitude_nb_inplace_subtract,
+  (binaryfunc) Latitude_nb_inplace_multiply,
+  (binaryfunc) Latitude_nb_inplace_divide,
+  (binaryfunc) 0,  // nb_inplace_remainder
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  // added in release 2.2
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) 0,  // nb_true_divide
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+};
+
+
+PyTypeObject LatitudeType = {
+  PyObject_HEAD_INIT(NULL)
+  0,                                 /* ob_size */
+  "angle",                           /* tp_name */
+  sizeof(Latitude),                     /* tp_basicsize */
+  0,                                 /* tp_itemsize */
+  (destructor) Latitude_dealloc,        /* tp_dealloc */
+  0,                                 /* tp_print */
+  0,                                 /* tp_getattr */
+  0,                                 /* tp_setattr */
+  0,                                 /* tp_compare */
+  Latitude_repr,                        /* tp_repr */
+  &Latitude_as_number,                  /* tp_as_number */
+  0,                                 /* tp_as_sequence */
+  0,                                 /* tp_as_mapping */
+  0,                                 /* tp_hash */
+  0,                                 /* tp_call */
+  Latitude_str,                         /* tp_str */
+  0,                                 /* tp_getattro */
+  0,                                 /* tp_setattro */
+  0,                                 /* tp_as_buffer */
+  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  "angle objects",                   /* tp_doc */
+  0,                                 /* tp_traverse */
+  0,                                 /* tp_clear */
+  Latitude_tp_richcompare,              /* tp_richcompare */
+  0,                                 /* tp_weaklistoffset */
+  0,                                 /* tp_iter */
+  0,                                 /* tp_iternext */
+  Latitude_methods,                     /* tp_methods */
+  Latitude_members,                     /* tp_members */
+  Latitude_getseters,                   /* tp_getset */
+  0,                                 /* tp_base */
+  0,                                 /* tp_dict */
+  0,                                 /* tp_descr_get */
+  0,                                 /* tp_descr_set */
+  0,                                 /* tp_dictoffset */
+  (initproc)Latitude_init,              /* tp_init */
+  0,                                 /* tp_alloc */
+  Latitude_new,                         /* tp_new */
+};
+
+// ------------------------------------------
+// ----- implement forward declarations -----
+// ------------------------------------------
+
+static void new_LatitudeType(Latitude** an_angle) {
+  *an_angle = PyObject_New(Latitude, &LatitudeType);
+}
+
+static int is_LatitudeType(PyObject* an_angle) {
+  //wrapper for type check
+  return PyObject_TypeCheck(an_angle, &LatitudeType);
 }
 
 // =====================
@@ -1303,6 +1814,9 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
     if (is_AngleType(arg1)) {
       theta = ((Angle*)arg1)->m_angle;
 
+    } else if (is_LatitudeType(arg1)) {
+      theta = Coords::angle(90.0) - ((Latitude*)arg1)->m_angle;
+
     } else if (PyString_Check(arg1)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
@@ -1848,9 +2362,15 @@ PyMODINIT_FUNC initcoords(void) {
   Py_INCREF(&AngleType);
   PyModule_AddObject(m, "angle", (PyObject *)&AngleType);
 
+  // Latitude
+  LatitudeType.tp_new = PyType_GenericNew;
+  if (PyType_Ready(&LatitudeType) < 0)
+    return;
+  Py_INCREF(&LatitudeType);
+  PyModule_AddObject(m, "latitude", (PyObject *)&LatitudeType);
+
 
   // Cartesian
-
   CartesianType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&CartesianType) < 0)
     return;
@@ -1859,7 +2379,6 @@ PyMODINIT_FUNC initcoords(void) {
   PyModule_AddObject(m, "Cartesian", (PyObject *)&CartesianType);
 
   // spherical
-
   sphericalType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&sphericalType) < 0)
     return;

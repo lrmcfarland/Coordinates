@@ -12,18 +12,18 @@
 // g++ -I /usr/local/gtest-1.6.0/include -I . -c spherical_unittest.cpp
 // g++ -L /usr/local/gtest-1.6.0 -lgtest spherical_unittest.o -o spherical_unittest
 //
-//  Orbits is free software: you can redistribute it and/or modify
+//  Coordinates is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
 //
-//  Orbits is distributed in the hope that it will be useful,
+//  Coordinates is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
 //
 //  You should have received a copy of the GNU General Public License
-//  along with Orbits.  If not, see <http://www.gnu.org/licenses/>.
+//  along with Coordinates. If not, see <http://www.gnu.org/licenses/>.
 // ================================================================
 
 
@@ -316,6 +316,25 @@ namespace {
     EXPECT_EQ(Coords::angle(90.0), b.phi());
   }
 
+  TEST(FixedSpherical, ConstructFromLatitude_north) {
+    // northern hemisphere
+    Coords::Latitude a(30);
+    Coords::spherical b(1, a);
+
+    EXPECT_DOUBLE_EQ(1, b.r());
+    EXPECT_EQ(Coords::angle(60.0), b.theta());
+    EXPECT_EQ(Coords::angle(0.0), b.phi());
+  }
+
+  TEST(FixedSpherical, ConstructFromLatitude_south) {
+    // southern hemisphere
+    Coords::Latitude a(-30);
+    Coords::spherical b(1, a);
+
+    EXPECT_DOUBLE_EQ(1, b.r());
+    EXPECT_EQ(Coords::angle(120.0), b.theta());
+    EXPECT_EQ(Coords::angle(0.0), b.phi());
+  }
 
   // add
 

@@ -2,7 +2,10 @@
 // Filename:    spherical.h
 //
 // Description: This defines a spherical coordinate class for physics
-//              applications.
+//              applications and follows the physics convention of
+//              theta being the polar angle to the z axis and phi
+//              being the azimuth (see also
+//              http://en.wikipedia.org/wiki/Spherical_coordinate_system)
 //
 // Author:      L.R. McFarland
 // Created:     2014 Nov 07
@@ -47,6 +50,11 @@ namespace Coords {
 
     explicit spherical(const Cartesian& a);
 
+    explicit spherical(const double& r,
+		       const Latitude& lat,
+		       const angle& phi = angle(0.0))
+      : m_r(r), m_theta(90.0 - lat.value()), m_phi(phi) {};
+
     ~spherical() {};
 
     spherical(const spherical& a);
@@ -89,9 +97,10 @@ namespace Coords {
 
     double m_r;     // Radius: Euclidean distance from the origin (O) to point (P).
 
-    angle  m_theta; // Inclination: The angle between the zenith
-		    // direction and the line segment OP. This ranges
-		    // from 0 (+Z axis) to -180 (-Z axis) degrees
+    angle  m_theta; // Inclination or polar Angle: The angle between
+		    // the zenith direction and the line segment
+		    // OP. This ranges from 0 (+Z axis) to -180 (-Z
+		    // axis) degrees
 
     angle  m_phi;   // Azimuth: The angle between the x-axis and the
 		    // projection of OP into the xy plane. This ranges
@@ -133,4 +142,3 @@ namespace Coords {
 
 
 } // end namespace Coords
-

@@ -361,6 +361,70 @@ class TestAngle(unittest.TestCase):
         self.assertEqual(a_repr, repr(an_angle))
 
 
+class TestLatitude(unittest.TestCase):
+
+    def setUp(self):
+
+        """Set up test parameters."""
+
+        self.places = 7 # precision
+
+
+    def test_default_constructor(self):
+        """Test default constructor"""
+        a_latitude = coords.latitude()
+        self.assertEqual(0, a_latitude.value)
+
+
+    def test_constructor_1(self):
+        """Test constructor 1"""
+        a_latitude = coords.latitude(45)
+        self.assertEqual(45, a_latitude.value)
+
+
+    def test_constructor_exception_north(self):
+        """Test constructor_exception north"""
+        try:
+            a_latitude = coords.latitude(100)
+            self.assertRaises(False) # correct behavior skips this
+        except RuntimeError, err:
+            self.assertTrue(RuntimeError == type(err))
+
+
+    def test_constructor_exception_south(self):
+        """Test constructor_exception south"""
+        try:
+            a_latitude = coords.latitude(-100)
+            self.assertRaises(False) # correct behavior skips this
+        except RuntimeError, err:
+            self.assertTrue(RuntimeError == type(err))
+
+
+    def test_inplace_add_1(self):
+        """Test latitude += latitude"""
+        a1 = coords.latitude(10)
+        a2 = coords.latitude(10)
+        a1 += a2
+        self.assertAlmostEqual(20, a1.value, self.places)
+
+    def test_inplace_add_2(self):
+        """Test latitude += angle"""
+        a1 = coords.latitude(10)
+        a2 = coords.angle(10)
+        a1 += a2
+        self.assertAlmostEqual(20, a1.value, self.places)
+
+
+    def test_inplace_add_over_limit(self):
+        """Test latitude += latitude"""
+        # TODO doesn't prevent this. See Angles with templates repo.
+        a1 = coords.latitude(50)
+        a2 = coords.latitude(50)
+        a1 += a2
+        self.assertAlmostEqual(100, a1.value, self.places)
+
+
+
 if __name__ == '__main__':
     random.seed(time.time())
     unittest.main()

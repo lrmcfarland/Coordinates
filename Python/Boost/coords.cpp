@@ -82,7 +82,15 @@ BOOST_PYTHON_MODULE(coords) {
     ; // end of angle class_
 
 
+  class_<Coords::Latitude, bases<Coords::angle> >("latitude")
 
+        // constructors
+    .def(init<>()) // default
+    .def(init<double>()) // degrees
+    .def(init<double, double>()) // degrees, minutes
+    .def(init<double, double, double>()) // degrees, minutes, seconds
+
+    ; // end of Latitude class_
 
 
 
@@ -144,9 +152,6 @@ BOOST_PYTHON_MODULE(coords) {
     ; // end of class_
 
 
-
-
-
   class_<Coords::spherical>("spherical")
 
     // constructors
@@ -157,6 +162,7 @@ BOOST_PYTHON_MODULE(coords) {
     .def(init<double>()) // r
     .def(init<double, Coords::angle>()) // r, theta
     .def(init<double, Coords::angle, Coords::angle>()) // r, theta, phi
+    .def(init<double, Coords::Latitude, Coords::angle>()) // r, latitude, phi
 
     // accessors
     .def("getR", &Coords::spherical::getR)
@@ -191,8 +197,5 @@ BOOST_PYTHON_MODULE(coords) {
     .def("zero", &Coords::spherical::zero)
 
     ; // end of class_
-
-
-
 
 };

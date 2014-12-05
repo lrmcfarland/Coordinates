@@ -377,7 +377,24 @@ class TestSpherical(unittest.TestCase):
         self.assertRaises(RuntimeError, lambda a: a / 0, a1)
         # Note: different from Boost catching RuntimeError
 
-# end spherical
+
+    def test_construct_from_latitude_north(self):
+        """Test construct from latitude north"""
+        lat1 = coords.spherical(1, coords.latitude(30), coords.angle(120))
+
+        self.assertAlmostEqual(1, lat1.r)
+        self.assertAlmostEqual(60, lat1.theta.value)
+        self.assertAlmostEqual(120, lat1.phi.value)
+
+
+    def test_construct_from_latitude_south(self):
+        """Test construct from latitude south"""
+        lat1 = coords.spherical(1, coords.latitude(-30), coords.angle(120))
+
+        self.assertAlmostEqual(1, lat1.r)
+        self.assertAlmostEqual(120, lat1.theta.value)
+        self.assertAlmostEqual(120, lat1.phi.value)
+
 
 
 if __name__ == '__main__':
