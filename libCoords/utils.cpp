@@ -160,7 +160,9 @@ void Coords::value2HMSString(const double& a_value, std::stringstream& a_string)
     degrees = floor(degrees);
 
   a_string << std::setw(2) << std::setfill('0') << degrees
-	   << ":" << std::setw(2) << std::setfill('0') << floor(minutes)
-	   << ":" << std::setw(2) << std::setfill('0') << seconds;
+	   << ":"
+	   << std::setw(2) << std::setfill('0') << floor(minutes)
+	   << ":"
+	   << std::setw(2) << std::setfill('0') << seconds;
 
 }
