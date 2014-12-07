@@ -27,9 +27,13 @@
 #include <utils.h>
 
 double Coords::stod(const std::string& a_string) {
+
   // TODO stand-ins until c++ 11
   // doesn't catch syntax errors
   // but no worse than m_current_x = atof(m_current_characters.c_str());
+
+  // TODO use regex?
+
   double a_double;
 
 #if 0
@@ -46,6 +50,9 @@ double Coords::stod(const std::string& a_string) {
 }
 
 int Coords::stoi(const std::string& a_string) {
+
+  // TODO check with regex
+
   int an_int;
   std::stringstream(a_string) >> an_int;
   return an_int;

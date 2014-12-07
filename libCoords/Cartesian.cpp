@@ -47,6 +47,8 @@ Coords::Cartesian::Cartesian(const std::string& a,
   x(Coords::stod(a));
   y(Coords::stod(b));
   z(Coords::stod(c));
+  // TODO bad string exception with C++11 stod
+  // TODO delegating constructors in C++11
 }
 
 // ----- conversion constructor to build from spherical coords ----
