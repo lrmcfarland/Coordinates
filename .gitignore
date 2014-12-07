@@ -20,6 +20,7 @@
 # executables
 libCoords/angle_unittest
 libCoords/cartesian_unittest
+libCoords/datetime_unittest
 libCoords/spherical_unittest
 
 libCoords/example1
