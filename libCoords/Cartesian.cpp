@@ -21,8 +21,6 @@
 //  along with Coordinates.  If not, see <http://www.gnu.org/licenses/>.
 // ==================================================================
 
-#include <stdlib.h> // strtod
-
 #include <angle.h>
 #include <Cartesian.h>
 #include <spherical.h>
