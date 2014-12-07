@@ -7,5 +7,5 @@
 
 . ./setenv.sh
 
-./angle_unittest
+./angle_unittest "$@"
 
