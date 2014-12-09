@@ -77,8 +77,6 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
     throw Coords::Error(emsg.str());
   }
 
-  m_is_leap_year = false;
-
   if (m_year % 4 == 0 && m_year % 100 != 0)
     m_is_leap_year = true;
 
@@ -190,7 +188,7 @@ double Coords::DateTime::asJulianDate() {
 
   double jd_hours(Coords::degrees2seconds(m_hour, m_minute, m_second)/86400.0);
 
-  return static_cast<double>(jd_days) + jd_hours;
+  return static_cast<double>(jd_days) + jd_hours + m_time_zone;
 
 #if 0
   // http://aa.usno.navy.mil/software/novas/novas_c/novas.c
