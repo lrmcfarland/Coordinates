@@ -439,6 +439,22 @@ namespace {
   }
 
 
+  // Julian dates
+
+  TEST(DateTime, JulianDate_1) {
+    std::string a_string("2014-12-09T00:00:00");
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_DOUBLE_EQ(2457000.66944, a_datetime.asJulianDate()); // http://en.wikipedia.org/wiki/Julian_day
+  }
+
+  TEST(DateTime, JulianDate_2) {
+    std::string a_string("1582-10-15T00:00:00");
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_DOUBLE_EQ(2299160.5, a_datetime.asJulianDate()); // Montenbruck
+  }
+
+
+
 } // end anonymous namespace
 
 

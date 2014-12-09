@@ -171,6 +171,52 @@ Coords::DateTime& Coords::DateTime::operator=(const Coords::DateTime& rhs) {
   return *this;
 }
 
+// ----- as Julian Date -----
+
+double Coords::DateTime::asJulianDate() {
+
+  //  http://en.wikipedia.org/wiki/Julian_day
+
+  long int l_year(static_cast<long int>(m_year));
+  long int l_month(static_cast<long int>(m_month));
+  long int l_day(static_cast<long int>(m_day));
+
+  long int jd_days(0);
+
+  jd_days = 1461L * (l_year + 4800L + (l_month - 14L)/12L) / 4L
+    + 367L * (l_month - 2L - 12L*(l_month - 14L)/12L) / 12L
+    - 3L * ((l_year + 4900L + (l_month - 14L)/12L)/100L) / 4L
+    + l_day - 32075L;
+
+  double jd_hours(Coords::degrees2seconds(m_hour, m_minute, m_second)/86400.0);
+
+  return static_cast<double>(jd_days) + jd_hours;
+
+#if 0
+  // http://aa.usno.navy.mil/software/novas/novas_c/novas.c
+  // from Fliegel, H. & Van Flandern, T.  Comm. of the ACM, Vol. 11, No. 10, October 1968, p. 657.
+
+  jd12h = (long) day - 32075L +
+
+    1461L * ((long) year + 4800L + ((long) month - 14L) / 12L) / 4L
+    + 367L * ((long) month - 2L - ((long) month - 14L) / 12L * 12L) / 12L
+    - 3L * (((long) year + 4900L + ((long) month - 14L) / 12L) / 100L) / 4L;
+
+
+  // and http://www.stiltner.org/book/bookcalc.htm.
+  // stiltner
+  // TODO only valid from -4900-03-01 G onward
+
+  jd = ( 1461 * ( y + 4800 + ( m - 14 ) / 12 ) ) / 4 +
+    ( 367 * ( m - 2 - 12 * ( ( m - 14 ) / 12 ) )  / 12 -
+      ( 3 * ( ( y + 4900 + ( m - 14 ) / 12 ) / 100 ) ) / 4 +
+      d - 32075;
+
+#endif
+
+
+}
+
 
 // ----- string utility -----
 
