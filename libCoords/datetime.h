@@ -59,7 +59,8 @@ namespace Coords {
 
     ~DateTime() {};
 
-    // TODO copy, copy assign
+    DateTime(const DateTime& a);
+    DateTime& operator=(const DateTime& rhs);
 
     // accessors
 

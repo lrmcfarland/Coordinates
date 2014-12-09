@@ -49,7 +49,34 @@ namespace {
     EXPECT_STREQ("2014-12-08T13:30:00-5.1", out.str().c_str());
   }
 
-  // TODO years tests?
+
+  TEST(DateTime, CopyConstructor_1) {
+    Coords::DateTime a_datetime(2014, 12, 8, 13, 30, 00, 4.3);
+    Coords::DateTime another_datetime(a_datetime);
+
+    std::stringstream an_out;
+    an_out << a_datetime;
+
+    std::stringstream another_out;
+    another_out << another_datetime;
+
+    EXPECT_STREQ(an_out.str().c_str(), another_out.str().c_str());
+  }
+
+  TEST(DateTime, CopyAssign_1) {
+    Coords::DateTime a_datetime(2014, 12, 8, 13, 30, 00, 4.3);
+    Coords::DateTime another_datetime;
+
+    another_datetime = a_datetime;
+
+    std::stringstream an_out;
+    an_out << a_datetime;
+
+    std::stringstream another_out;
+    another_out << another_datetime;
+
+    EXPECT_STREQ(an_out.str().c_str(), another_out.str().c_str());
+  }
 
   // months
 

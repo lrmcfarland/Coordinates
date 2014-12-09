@@ -115,6 +115,43 @@ Coords::DateTime::DateTime(const std::string& a_iso8601_time) {
 
 }
 
+// ----- copy constructor -----
+
+Coords::DateTime::DateTime(const Coords::DateTime& a) {
+  m_year = a.m_year;
+  m_month = a.m_month;
+  m_day = a.m_day;
+  m_hour = a.m_hour;
+  m_minute = a.m_minute;
+  m_second = a.m_second;
+  m_is_zulu = a.m_is_zulu;
+  m_time_zone_hh = a.m_time_zone_hh;
+  m_time_zone_mm = a.m_time_zone_mm;
+  m_has_time_zone_colon = a.m_has_time_zone_colon;
+  m_time_zone = a.m_time_zone;
+  m_is_leap_year = a.m_is_leap_year;
+}
+
+// ----- copy assignment -----
+Coords::DateTime& Coords::DateTime::operator=(const Coords::DateTime& rhs) {
+  if (this == &rhs) return *this;
+  m_year = rhs.m_year;
+  m_month = rhs.m_month;
+  m_day = rhs.m_day;
+  m_hour = rhs.m_hour;
+  m_minute = rhs.m_minute;
+  m_second = rhs.m_second;
+  m_is_zulu = rhs.m_is_zulu;
+  m_time_zone_hh = rhs.m_time_zone_hh;
+  m_time_zone_mm = rhs.m_time_zone_mm;
+  m_has_time_zone_colon = rhs.m_has_time_zone_colon;
+  m_time_zone = rhs.m_time_zone;
+  m_is_leap_year = rhs.m_is_leap_year;
+  return *this;
+}
+
+
+// ----- string utility -----
 
 void Coords::DateTime2String(const Coords::DateTime& a_datetime, std::stringstream& a_string) {
 
