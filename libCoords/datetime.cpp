@@ -23,11 +23,11 @@
 //  along with Coordinates. If not, see <http://www.gnu.org/licenses/>.
 // ================================================================
 
+#include <cmath>
 #include <iomanip> // for std::setw() and std::setfill()
 #include <sstream>
 
 #define DEBUG_REGEX 0
-
 #if DEBUG_REGEX
 #include <iostream>
 #endif
@@ -171,49 +171,107 @@ Coords::DateTime& Coords::DateTime::operator=(const Coords::DateTime& rhs) {
 
 // ----- as Julian Date -----
 
-double Coords::DateTime::asJulianDate() {
+double Coords::DateTime::asNRCJulianDate() {
 
-  //  http://en.wikipedia.org/wiki/Julian_day
+  // From Numerical Recipes in C, pp. 11-12
+  // WARNING: this rounds to the day
 
-  long int l_year(static_cast<long int>(m_year));
+  long int l_year(static_cast<long int>(m_year));   // long and local. does not alter m_year.
   long int l_month(static_cast<long int>(m_month));
   long int l_day(static_cast<long int>(m_day));
 
   long int jd_days(0);
 
-  jd_days = 1461L * (l_year + 4800L + (l_month - 14L)/12L) / 4L
-    + 367L * (l_month - 2L - 12L*(l_month - 14L)/12L) / 12L
-    - 3L * ((l_year + 4900L + (l_month - 14L)/12L)/100L) / 4L
+  const long int iGreg (15+31L*(10+12L*1582)); // Gregorian calendar adopted Oct. 15, 1582, first in Catholic countries.
+
+  if (m_year == 0)
+    throw Coords::Error("There is no year zero, but there should be.");
+
+  if (l_year < 0)
+    ++l_year;
+
+  if (l_month > 2) {
+    l_month = m_month + 1;
+  } else {
+    --l_year;
+    l_month = m_month + 13;
+  }
+
+  jd_days = static_cast<long int>(floor(365.25*l_year) + floor(30.6001*l_month) + l_day + 1720995);
+
+  if (m_day + 31L*(m_month + 12L*m_year) >= iGreg) {
+    int ja = static_cast<int>(0.01*l_year);
+    jd_days += 2 - ja + static_cast<int>(0.25*ja);
+  }
+
+  double partial_day((Coords::degrees2seconds(m_hour, m_minute, m_second) + m_time_zone*3600)/86400.0);
+
+  return static_cast<double>(jd_days) + partial_day;
+
+}
+
+double Coords::DateTime::asAPCModifiedJulianDate() {
+
+  // from Astronomy on a Personal Computer, Montenbruck and Pfleger, p. 15
+  // WARNING: this seems to be 0.5 day off from http://www.imcce.fr/en/grandpublic/temps/jour_julien.php.
+  // Not correcting for noon vs. midnight?
+
+  long int l_year(static_cast<long int>(m_year));   // long and local. does not alter m_year.
+  long int l_month(static_cast<long int>(m_month));
+  long int l_day(static_cast<long int>(m_day));
+
+  long int jd_days(0);
+  long int b(0);
+
+  if (m_month <= 2) {
+    l_month += 12;
+    --l_year;
+  }
+
+  if ((10000L*l_year + 100L*l_month + l_day) <= 15821004L)
+    b = -2 + ((l_year + 4716)/4) - 1179; // Julian calendar
+  else
+    b = (l_year/400) - (l_year/100) + (l_year/4); // Gregorian calendar
+
+  jd_days = 365L*l_year - 679004L + b + static_cast<int>(30.6001*(l_month+1)) + l_day; // at midnight
+
+  double partial_day((Coords::degrees2seconds(m_hour, m_minute, m_second) + m_time_zone*3600)/86400.0);
+
+  return static_cast<double>(jd_days) + partial_day;
+
+}
+
+
+#if NOVAS
+
+  // TODO my implementation of this is off by 2 to 6 months depending on how far back you go.
+
+  jd_days = (1461L * (l_year + 4800L + (l_month - 14L)/12L)) / 4L
+    + (367L * (l_month - 2L - 12L*(l_month - 14L)/12L)) / 12L
+    - (3L * ((l_year + 4900L + (l_month - 14L)/12L)/100L)) / 4L
     + l_day - 32075L;
 
-  double jd_hours(Coords::degrees2seconds(m_hour, m_minute, m_second)/86400.0);
 
-  return static_cast<double>(jd_days) + jd_hours + m_time_zone;
-
-#if 0
   // http://aa.usno.navy.mil/software/novas/novas_c/novas.c
   // from Fliegel, H. & Van Flandern, T.  Comm. of the ACM, Vol. 11, No. 10, October 1968, p. 657.
 
-  jd12h = (long) day - 32075L +
-
-    1461L * ((long) year + 4800L + ((long) month - 14L) / 12L) / 4L
-    + 367L * ((long) month - 2L - ((long) month - 14L) / 12L * 12L) / 12L
-    - 3L * (((long) year + 4900L + ((long) month - 14L) / 12L) / 100L) / 4L;
+  // jd12h = (long) day - 32075L +
+  //  1461L * ((long) year + 4800L + ((long) month - 14L) / 12L) / 4L
+  //  + 367L * ((long) month - 2L - ((long) month - 14L) / 12L * 12L) / 12L
+  //  - 3L * (((long) year + 4900L + ((long) month - 14L) / 12L) / 100L) / 4L;
 
 
   // and http://www.stiltner.org/book/bookcalc.htm.
   // stiltner
   // TODO only valid from -4900-03-01 G onward
 
-  jd = ( 1461 * ( y + 4800 + ( m - 14 ) / 12 ) ) / 4 +
-    ( 367 * ( m - 2 - 12 * ( ( m - 14 ) / 12 ) )  / 12 -
-      ( 3 * ( ( y + 4900 + ( m - 14 ) / 12 ) / 100 ) ) / 4 +
-      d - 32075;
+  // jd = ( 1461 * ( y + 4800 + ( m - 14 ) / 12 ) ) / 4 +
+  //   ( 367 * ( m - 2 - 12 * ( ( m - 14 ) / 12 ) ) ) / 12 -
+  //  ( 3 * ( ( y + 4900 + ( m - 14 ) / 12 ) / 100 ) ) / 4 +
+  //  d - 32075
+
 
 #endif
-
-
-}
 
 
 // ----- string utility -----

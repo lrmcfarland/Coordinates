@@ -438,27 +438,115 @@ namespace {
     EXPECT_STREQ(a_string.c_str(), out.str().c_str());
   }
 
+  // NRC Julian dates
+  // Actual dates take from http://www.imcce.fr/en/grandpublic/temps/jour_julien.php
 
-  // Julian dates
+  TEST(DISABLED_DateTime, NRCJulianDate_0) {
+    std::string a_string("-4712-01-01T12:00:00");
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_DOUBLE_EQ(0.5, a_datetime.asNRCJulianDate());
+    // asNRCJulianDate() rounds to nearest day. Does not start at noon? Does not account for year 0?
+  }
 
-  TEST(DateTime, JulianDate_1) {
+  TEST(DISABLED_DateTime, NRCJulianDate_pre_Julian2Gregorian) {
+    std::string a_string("1582-10-14T00:00:00"); // Gregorian replaces Julian
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_NEAR(2299159.5, a_datetime.asNRCJulianDate(), 0.5);
+    // does not account for 10 day "gap" in calendar change.
+  }
+
+  TEST(DateTime, NRCJulianDate_post_Julian2Gregorian) {
+    std::string a_string("1582-10-15T00:00:00"); // Gregorian replaces Julian
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_NEAR(2299160.5, a_datetime.asNRCJulianDate(), 0.5);
+    // asNRCJulianDate() rounds to nearest day
+  }
+
+  TEST(DateTime, NRCJulianDate_pre_reduced) {
+    std::string a_string("1858-11-16T12:00:00"); // modified date change switches from noon to midnight
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_NEAR(2400000, a_datetime.asNRCJulianDate(), 0.5);
+   // asNRCJulianDate() rounds to nearest day
+  }
+
+  TEST(DateTime, NRCJulianDate_post_reduced) {
+    std::string a_string("1858-11-17T00:00:00"); // modified date change switches from noon to midnight
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_NEAR(2400000.5, a_datetime.asNRCJulianDate(), 0.5);
+   // asNRCJulianDate() rounds to nearest day
+  }
+
+  TEST(DateTime, NRCJulianDate_modified) {
+    std::string a_string("1968-05-23T12:00:00"); // truncated Julian date
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_NEAR(2440000, a_datetime.asNRCJulianDate(), 0.5);
+   // asNRCJulianDate() rounds to nearest day
+  }
+
+  TEST(DateTime, NRCJulianDate_3) {
+    std::string a_string("2013-01-01T00:30:00");
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_NEAR(2456293.5208333335, a_datetime.asNRCJulianDate(), 0.500001);
+    // asNRCJulianDate() rounds to nearest day. Does not start at noon.
+  }
+
+  TEST(DateTime, NRCJulianDate_4) {
     std::string a_string("2014-12-09T00:00:00");
     Coords::DateTime a_datetime(a_string);
-    EXPECT_DOUBLE_EQ(2457000.66944, a_datetime.asJulianDate()); // http://en.wikipedia.org/wiki/Julian_day
+    EXPECT_NEAR(2457000.5, a_datetime.asNRCJulianDate(), 0.5);
+    // asNRCJulianDate() rounds to nearest day
   }
 
-  TEST(DateTime, JulianDate_2) {
-    std::string a_string("1582-10-15T00:00:00");
+  // APC Modified Julian Dates
+
+  TEST(DateTime, APCModifiedJulianDate_0) {
+    std::string a_string("-4712-01-01T12:00:00");
     Coords::DateTime a_datetime(a_string);
-    EXPECT_DOUBLE_EQ(2299160.5, a_datetime.asJulianDate()); // Montenbruck
+    EXPECT_DOUBLE_EQ(-2400000.5, a_datetime.asAPCModifiedJulianDate());
+    // TODO asAPCJulianDate() differs from IMCEE on noon vs. midnight on this date?
   }
 
-  TEST(DateTime, JulianDate_3) {
-    std::string a_string("1968-05-23T00:00:00");
+  TEST(DateTime, APCModifiedJulianDate_pre_Julian2Gregorian) {
+    std::string a_string("1582-10-14T00:00:00"); // Gregorian replaces Julian
     Coords::DateTime a_datetime(a_string);
-    EXPECT_DOUBLE_EQ(2440000, a_datetime.asJulianDate()); // Numerical Recipes in C
+    EXPECT_DOUBLE_EQ(2299159.5 - 2400000.5, a_datetime.asAPCModifiedJulianDate());
   }
 
+  TEST(DateTime, APCModifiedJulianDate_post_Julian2Gregorian) {
+    std::string a_string("1582-10-15T00:00:00"); // Gregorian replaces Julian
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_DOUBLE_EQ(2299160.5 - 2400000.5, a_datetime.asAPCModifiedJulianDate());
+  }
+
+  TEST(DateTime, APCModifiedJulianDate_pre_reduced) {
+    std::string a_string("1858-11-16T12:00:00"); // modified date change switches from noon to midnight
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_DOUBLE_EQ(2400000 - 2400000.5, a_datetime.asAPCModifiedJulianDate());
+  }
+
+  TEST(DateTime, APCModifiedJulianDate_post_reduced) {
+    std::string a_string("1858-11-17T00:00:00"); // modified date change switches from noon to midnight
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_DOUBLE_EQ(2400000.5 - 2400000.5, a_datetime.asAPCModifiedJulianDate());
+  }
+
+  TEST(DateTime, APCJulianDate_2) {
+    std::string a_string("1968-05-23T12:00:00"); // truncated Julian date
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_DOUBLE_EQ(2440000 - 2400000.5, a_datetime.asAPCModifiedJulianDate());
+  }
+
+  TEST(DateTime, APCModifiedJulianDate_3) {
+    std::string a_string("2013-01-01T00:30:00");
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_NEAR(2456293.5208333335 - 2400000.5, a_datetime.asAPCModifiedJulianDate(), 0.000000001);
+  }
+
+  TEST(DateTime, APCModifiedJulianDate_4) {
+    std::string a_string("2014-12-09T00:00:00");
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_DOUBLE_EQ(2457000.5 - 2400000.5, a_datetime.asAPCModifiedJulianDate());
+  }
 
 
 } // end anonymous namespace

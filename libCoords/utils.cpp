@@ -20,8 +20,8 @@
 //  along with Coords.  If not, see <http://www.gnu.org/licenses/>.
 // ================================================================
 
-#include <iomanip> // for std::setw() and std::setfill()
 #include <cmath>
+#include <iomanip> // for std::setw() and std::setfill()
 #include <stdlib.h> // strtod
 
 #include <utils.h>

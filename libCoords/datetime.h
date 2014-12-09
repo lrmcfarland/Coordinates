@@ -80,7 +80,8 @@ namespace Coords {
 
     // TODO Julian Date, Modified Julian date, J1950, J2000
 
-    double asJulianDate();
+    double asNRCJulianDate();
+    double asAPCModifiedJulianDate();
 
 
   private:
