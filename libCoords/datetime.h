@@ -23,7 +23,6 @@
 //  along with Coordinates. If not, see <http://www.gnu.org/licenses/>.
 // ================================================================
 
-
 #pragma once
 
 #include <regex>
@@ -43,7 +42,9 @@ namespace Coords {
     static const std::string ISO8601_format;
     static const std::regex  ISO8601_rx;
 
-    // TODO only construct from ISO8601 string?
+    explicit DateTime(const std::string& a_iso8601_time);
+
+    // numeric constructor has no range checks. ISO-8601 only or remove? bug or feature?
     explicit DateTime(const int& a_year = 1970, // Unix epoch
 		      const int& a_month = 1,
 		      const int& a_day = 1,
@@ -53,16 +54,14 @@ namespace Coords {
 		      const double& a_time_zone = 0) // TODO timezone as hh:mm
       : m_year(a_year), m_month(a_month), m_day(a_day),
       m_hour(a_hour), m_minute(a_minute), m_second(a_second),
-      m_is_zulu(false), m_time_zone_hh(0), m_time_zone_mm(0), m_time_zone(a_time_zone), m_is_leap_year(false)
+      m_is_zulu(false), m_has_time_zone_colon(false), m_time_zone(a_time_zone), m_is_leap_year(false)
     {};
-
-    // TODO ISO 8601
-    explicit DateTime(const std::string& a_iso8601_time);
-
 
     ~DateTime() {};
 
     // TODO copy, copy assign
+
+    // accessors
 
     const int& year() const {return m_year;}
     const int& month() const {return m_month;}
@@ -72,13 +71,13 @@ namespace Coords {
     const double& second() const {return m_second;}
 
     const bool& isZulu() const {return m_is_zulu;}
-    const int& timeZoneHH() const {return m_time_zone_hh;}
-    const int& timeZoneMM() const {return m_time_zone_mm;}
+    const std::string& timeZoneHH() const {return m_time_zone_hh;}
+    const std::string& timeZoneMM() const {return m_time_zone_mm;}
+    const bool& hasTimeZoneColon() const {return m_has_time_zone_colon;}
     const double& timeZone() const {return m_time_zone;}
 
 
     // TODO Julian Date, Modified Julian date, J1950, J2000
-
 
 
   private:
@@ -91,8 +90,9 @@ namespace Coords {
     double m_second;
 
     bool m_is_zulu;
-    int m_time_zone_hh;
-    int m_time_zone_mm;
+    std::string m_time_zone_hh;
+    std::string m_time_zone_mm;
+    bool m_has_time_zone_colon; // for operator<<() idempotence
 
     double m_time_zone;
 

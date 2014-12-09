@@ -29,11 +29,27 @@
 namespace {
 
   TEST(DateTime, DefaultConstructor) {
-    Coords::DateTime a;
-    // TODO expect something
+    Coords::DateTime a_datetime;
+    std::stringstream out;
+    out << a_datetime;
+    EXPECT_STREQ("1970-01-01T00:00:00", out.str().c_str());
   }
 
-  // TODO years?
+  TEST(DateTime, ParameterConstructorWithTimeZone_pos) {
+    Coords::DateTime a_datetime(2014, 12, 8, 13, 30, 00, 4.3);
+    std::stringstream out;
+    out << a_datetime;
+    EXPECT_STREQ("2014-12-08T13:30:00+4.3", out.str().c_str());
+  }
+
+  TEST(DateTime, ParameterConstructorWithTimeZone_neg) {
+    Coords::DateTime a_datetime(2014, 12, 8, 13, 30, 00, -5.1);
+    std::stringstream out;
+    out << a_datetime;
+    EXPECT_STREQ("2014-12-08T13:30:00-5.1", out.str().c_str());
+  }
+
+  // TODO years tests?
 
   // months
 
@@ -41,7 +57,7 @@ namespace {
     try {
       Coords::DateTime a("2014-00-07T12:34:56");
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not ISO8601 format");
+      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
     }
   }
 
@@ -49,7 +65,7 @@ namespace {
     try {
       Coords::DateTime a("2014-13-07T12:34:56");
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not ISO8601 format");
+      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
     }
   }
 
@@ -60,6 +76,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+    EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
   }
 
   TEST(DateTime, GoodMonthConstructor_1) {
@@ -78,7 +95,7 @@ namespace {
     try {
       Coords::DateTime a("2014-12-00T12:34:56");
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not ISO8601 format");
+      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
     }
   }
 
@@ -86,7 +103,7 @@ namespace {
     try {
       Coords::DateTime a("2014-12-32T12:34:56");
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not ISO8601 format");
+      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
     }
   }
 
@@ -96,7 +113,7 @@ namespace {
     try {
       Coords::DateTime a("2012-02-30T12:34:56");
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "Except for February all alone. It has 28, but 29 each leap year.");
+      EXPECT_STREQ(err.what(), "Except for February all alone. It has 28, but 29 each _leap_ year.");
     }
   }
 
@@ -106,7 +123,7 @@ namespace {
     try {
       Coords::DateTime a("2014-02-29T12:34:56");
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "Except for February all alone. It has 28, but 29 each leap year.");
+      EXPECT_STREQ(err.what(), "Except for February all alone. It has _28_, but 29 each leap year.");
     }
   }
 
@@ -116,7 +133,7 @@ namespace {
     try {
       Coords::DateTime a("2000-02-30T12:34:56");
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "Except for February all alone. It has 28, but 29 each leap year.");
+      EXPECT_STREQ(err.what(), "Except for February all alone. It has 28, but 29 each _leap_ year.");
     }
   }
 
@@ -126,7 +143,7 @@ namespace {
     try {
       Coords::DateTime a("2100-02-29T12:34:56");
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "Except for February all alone. It has 28, but 29 each leap year.");
+      EXPECT_STREQ(err.what(), "Except for February all alone. It has _28_, but 29 each leap year.");
     }
   }
 
@@ -207,7 +224,7 @@ namespace {
     try {
       Coords::DateTime a("2014-12-31T60:34:56");
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not ISO8601 format");
+      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
     }
   }
 
@@ -228,7 +245,7 @@ namespace {
     try {
       Coords::DateTime a("2014-12-31T10:62:56");
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not ISO8601 format");
+      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
     }
   }
 
@@ -249,7 +266,7 @@ namespace {
     try {
       Coords::DateTime a("2014-12-31T10:12:66");
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not ISO8601 format");
+      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
     }
   }
 
@@ -277,7 +294,7 @@ namespace {
     try {
       Coords::DateTime a("2014-12-07T12:34:56.78+13.987");
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not ISO8601 format");
+      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
     }
   }
 
@@ -285,7 +302,7 @@ namespace {
     try {
       Coords::DateTime a("2014-12-07T12:34:56.78-13.987");
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not ISO8601 format");
+      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
     }
   }
 
@@ -298,16 +315,25 @@ namespace {
   }
 
 
-  TEST(DISABLED_DateTime, GoodTimeZoneConstructor_2) {
-    // TODO pad leading 0s or support hh:mm format
-    std::string a_string("2014-12-07T12:34:56.78+04.5");
+  TEST(DateTime, GoodTimeZoneConstructor_2) {
+    std::string a_string("2014-12-07T12:34:56.78+0430");
     Coords::DateTime a_datetime(a_string);
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+    EXPECT_DOUBLE_EQ(4.5, a_datetime.timeZone());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_3) {
+    std::string a_string("2014-12-07T12:34:56.78+04:15");
+    Coords::DateTime a_datetime(a_string);
+    std::stringstream out;
+    out << a_datetime;
+    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+    EXPECT_DOUBLE_EQ(4.25, a_datetime.timeZone());
+  }
+
+  TEST(DateTime, GoodTimeZoneConstructor_4) {
     std::string a_string("2014-12-07T12:34:56.78-04");
     Coords::DateTime a_datetime(a_string);
     std::stringstream out;
@@ -316,16 +342,31 @@ namespace {
   }
 
 
-  TEST(DISABLED_DateTime, GoodTimeZoneConstructor_4) {
-    // TODO pad leading 0s or support hh:mm format
-    std::string a_string("2014-12-07T12:34:56.78-04.5");
+  TEST(DateTime, GoodTimeZoneConstructor_5) {
+    std::string a_string("2014-12-07T12:34:56.78-0430");
+    Coords::DateTime a_datetime(a_string);
+    std::stringstream out;
+    out << a_datetime;
+    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+    EXPECT_DOUBLE_EQ(-4.5, a_datetime.timeZone());
+  }
+
+  TEST(DateTime, GoodTimeZoneConstructor_6) {
+    std::string a_string("2014-12-07T12:34:56.78-04:45");
+    Coords::DateTime a_datetime(a_string);
+    std::stringstream out;
+    out << a_datetime;
+    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+    EXPECT_DOUBLE_EQ(-4.75, a_datetime.timeZone());
+  }
+
+  TEST(DateTime, LetsGetBiblical_1) {
+    std::string a_string("-5579-03-20T12:00:00");
     Coords::DateTime a_datetime(a_string);
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_string.c_str(), out.str().c_str());
   }
-
-
 
 
 } // end anonymous namespace
