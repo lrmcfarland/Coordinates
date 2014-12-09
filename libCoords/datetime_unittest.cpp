@@ -20,6 +20,7 @@
 //  along with Coordinates.  If not, see <http://www.gnu.org/licenses/>.
 // ================================================================
 
+#include <iomanip> // for std::setw() and std::setfill()
 #include <sstream>
 
 #include <gtest/gtest.h>
@@ -80,232 +81,265 @@ namespace {
 
   // months
 
+  TEST(DateTime, GoodMonthConstructors) {
+    for (int i(1); i < 13; ++i) {
+      std::stringstream a_date_string;
+      a_date_string << "2014-" << std::setw(2) << std::setfill('0') << i << "-01T12:34:56";
+      Coords::DateTime a_datetime(a_date_string.str());
+      std::stringstream out;
+      out << a_datetime;
+      EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
+    }
+  }
+
   TEST(DateTime, BadMonthConstructor_0) {
+    std::string a_date_string("2014-00-07T12:34:56");
     try {
-      Coords::DateTime a("2014-00-07T12:34:56");
+      Coords::DateTime a_datetime(a_date_string);
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
+      std::stringstream emsg;
+      emsg << a_date_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
 
-  TEST(DateTime, BadMonthConstructor_1) {
+  TEST(DateTime, BadMonthConstructor_13) {
+    std::string a_date_string("2014-13-07T12:34:56");
     try {
-      Coords::DateTime a("2014-13-07T12:34:56");
+      Coords::DateTime a_datetime(a_date_string);
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
+      std::stringstream emsg;
+      emsg << a_date_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
-  }
-
-  TEST(DateTime, GoodMonthConstructor_0) {
-    // test regex month group 0
-    std::string a_string("2014-02-01T12:34:56");
-    Coords::DateTime a_datetime(a_string);
-    std::stringstream out;
-    out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
-  }
-
-  TEST(DateTime, GoodMonthConstructor_1) {
-    // test regex month group 1
-    std::string a_string("2014-12-01T12:34:56");
-    Coords::DateTime a_datetime(a_string);
-    std::stringstream out;
-    out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
   }
 
 
   // days
 
+  TEST(DateTime, GoodDayConstructors_jan) {
+    for (int i(1); i < 32; ++i) {
+      std::stringstream a_date_string;
+      a_date_string << "2014-01-" << std::setw(2) << std::setfill('0') << i << "T12:34:56";
+      Coords::DateTime a_datetime(a_date_string.str());
+      std::stringstream out;
+      out << a_datetime;
+      EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
+    }
+  }
+
+  TEST(DateTime, GoodDayConstructors_sep) {
+    // Thirty days hath September
+    for (int i(1); i < 31; ++i) {
+      std::stringstream a_date_string;
+      a_date_string << "2014-09-" << std::setw(2) << std::setfill('0') << i << "T12:34:56";
+      Coords::DateTime a_datetime(a_date_string.str());
+      std::stringstream out;
+      out << a_datetime;
+      EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
+    }
+  }
+
+
   TEST(DateTime, BadDayConstructor_0) {
+    std::string a_date_string("2014-12-00T12:34:56");
     try {
-      Coords::DateTime a("2014-12-00T12:34:56");
+      Coords::DateTime a_datetime(a_date_string);
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
+      std::stringstream emsg;
+      emsg << a_date_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
 
-  TEST(DateTime, BadDayConstructor_1) {
+  TEST(DateTime, BadDayConstructor_32) {
+    std::string a_date_string("2014-12-32T12:34:56");
     try {
-      Coords::DateTime a("2014-12-32T12:34:56");
+      Coords::DateTime a_datetime(a_date_string);
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
+      std::stringstream emsg;
+      emsg << a_date_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
 
-  TEST(DateTime, BadDayConstructor_2a) {
+  TEST(DateTime, BadDayConstructor_leap_year_1) {
     // leap year
-    Coords::DateTime b("2012-02-29T12:34:56");
+    Coords::DateTime good_date("2012-02-29T12:34:56");
+    std::string bad_date("2012-02-30T12:34:56");
     try {
-      Coords::DateTime a("2012-02-30T12:34:56");
+      Coords::DateTime a_datetime(bad_date);
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "Except for February all alone. It has 28, but 29 each _leap_ year.");
+      std::stringstream emsg;
+      emsg << bad_date << ": Except for February all alone. It has 28, but 29 each _leap_ year.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
 
-  TEST(DateTime, BadDayConstructor_2b) {
-    // not leap year
-    Coords::DateTime b("2014-02-28T12:34:56");
+  TEST(DateTime, BadDayConstructor_leap_year_2) {
+    // not a leap year
+    Coords::DateTime good_date("2014-02-28T12:34:56");
+    std::string bad_date("2014-02-29T12:34:56");
     try {
-      Coords::DateTime a("2014-02-29T12:34:56");
+      Coords::DateTime a_datetime(bad_date);
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "Except for February all alone. It has _28_, but 29 each leap year.");
+      std::stringstream emsg;
+      emsg << bad_date << ": Except for February all alone. It has _28_, but 29 each leap year.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
 
-  TEST(DateTime, BadDayConstructor_2c) {
+  TEST(DateTime, BadDayConstructor_leap_year_3) {
     // leap year mod 400 rule
-    Coords::DateTime a("2000-02-29T12:34:56");
+    Coords::DateTime good_date("2000-02-29T12:34:56");
+    std::string bad_date("2000-02-30T12:34:56");
     try {
-      Coords::DateTime a("2000-02-30T12:34:56");
+      Coords::DateTime a_datetime(bad_date);
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "Except for February all alone. It has 28, but 29 each _leap_ year.");
+      std::stringstream emsg;
+      emsg << bad_date << ": Except for February all alone. It has 28, but 29 each _leap_ year.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
 
-  TEST(DateTime, BadDayConstructor_2d) {
-    // not leap year
-      Coords::DateTime a("2100-02-28T12:34:56");
+  TEST(DateTime, BadDayConstructor_leap_year_4) {
+    // not a leap year
+    Coords::DateTime good_date("2100-02-28T12:34:56");
+    std::string bad_date("2100-02-29T12:34:56");
     try {
-      Coords::DateTime a("2100-02-29T12:34:56");
+      Coords::DateTime a_datetime(bad_date);
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "Except for February all alone. It has _28_, but 29 each leap year.");
-    }
-  }
-
-
-  TEST(DateTime, BadDayConstructor_4) {
-    try {
-      Coords::DateTime a("2014-04-31T12:34:56");
-    } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "Thirty days hath September, April, June and November");
-    }
-  }
-
-  TEST(DateTime, BadDayConstructor_6) {
-    try {
-      Coords::DateTime a("2014-06-31T12:34:56");
-    } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "Thirty days hath September, April, June and November");
-    }
-  }
-
-  TEST(DateTime, BadDayConstructor_9) {
-    try {
-      Coords::DateTime a("2014-09-31T12:34:56");
-    } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "Thirty days hath September, April, June and November");
-    }
-  }
-
-  TEST(DateTime, BadDayConstructor_11) {
-    try {
-      Coords::DateTime a("2014-11-31T12:34:56");
-    } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "Thirty days hath September, April, June and November");
+      std::stringstream emsg;
+      emsg << bad_date << ": Except for February all alone. It has _28_, but 29 each leap year.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
 
 
-  TEST(DateTime, GoodDayConstructor_0) {
-    // test regex day group 0
-    std::string a_string("2014-12-01T12:34:56");
-    Coords::DateTime a_datetime(a_string);
-    std::stringstream out;
-    out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+  TEST(DateTime, BadDayConstructor_apr31) {
+    std::string a_date_string("2014-04-31T12:34:56");
+    try {
+      Coords::DateTime a_datetime(a_date_string);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << a_date_string << ": Thirty days hath September, April, June and November";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
   }
 
-  TEST(DateTime, GoodDayConstructor_1) {
-    // test regex day group 2
-    std::string a_string("2014-12-12T12:34:56");
-    Coords::DateTime a_datetime(a_string);
-    std::stringstream out;
-    out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+  TEST(DateTime, BadDayConstructor_jun31) {
+    std::string a_date_string("2014-06-31T12:34:56");
+    try {
+      Coords::DateTime a_datetime(a_date_string);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << a_date_string << ": Thirty days hath September, April, June and November";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
   }
 
-  TEST(DateTime, GoodDayConstructor_2) {
-    // test regex day group 2
-    std::string a_string("2014-12-29T12:34:56");
-    Coords::DateTime a_datetime(a_string);
-    std::stringstream out;
-    out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+  TEST(DateTime, BadDayConstructor_sep31) {
+    std::string a_date_string("2014-09-31T12:34:56");
+    try {
+      Coords::DateTime a_datetime(a_date_string);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << a_date_string << ": Thirty days hath September, April, June and November";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
   }
 
-  TEST(DateTime, GoodDayConstructor_3) {
-    // test regex day group 2
-    std::string a_string("2014-12-31T12:34:56.789");
-    Coords::DateTime a_datetime(a_string);
-    std::stringstream out;
-    out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+  TEST(DateTime, BadDayConstructor_nov31) {
+    std::string a_date_string("2014-11-31T12:34:56");
+    try {
+      Coords::DateTime a_datetime(a_date_string);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << a_date_string << ": Thirty days hath September, April, June and November";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
   }
 
 
   // hours
 
-  TEST(DateTime, BadHourConstructor_1) {
-    try {
-      Coords::DateTime a("2014-12-31T60:34:56");
-    } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
+  TEST(DateTime, GoodHourConstructors) {
+    for (int i(0); i < 60; ++i) {
+      std::stringstream a_date_string;
+      a_date_string << "2014-01-01T" << std::setw(2) << std::setfill('0') << i << ":34:56";
+      Coords::DateTime a_datetime(a_date_string.str());
+      std::stringstream out;
+      out << a_datetime;
+      EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
     }
   }
 
 
-  TEST(DateTime, GoodHourConstructor_0) {
-    // test regex day group 0
-    std::string a_string("2014-12-01T12:34:56");
-    Coords::DateTime a_datetime(a_string);
-    std::stringstream out;
-    out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+  TEST(DateTime, BadHourConstructor_1) {
+    std::string a_date_string("2014-12-31T60:34:56");
+    try {
+      Coords::DateTime a_datetime(a_date_string);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << a_date_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
   }
-
 
   // minutes
 
-  TEST(DateTime, BadMinuteConstructor_1) {
-    try {
-      Coords::DateTime a("2014-12-31T10:62:56");
-    } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
+  TEST(DateTime, GoodMinuteConstructors) {
+    for (int i(0); i < 60; ++i) {
+      std::stringstream a_date_string;
+      a_date_string << "2014-01-01T00:" << std::setw(2) << std::setfill('0') << i << ":56";
+      Coords::DateTime a_datetime(a_date_string.str());
+      std::stringstream out;
+      out << a_datetime;
+      EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
     }
   }
 
-
-  TEST(DateTime, GoodMinuteConstructor_0) {
-    // test regex day group 0
-    std::string a_string("2014-12-01T12:34:56");
-    Coords::DateTime a_datetime(a_string);
-    std::stringstream out;
-    out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+  TEST(DateTime, BadMinuteConstructor_1) {
+    std::string a_date_string("2014-12-31T10:62:56");
+    try {
+      Coords::DateTime a_datetime(a_date_string);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << a_date_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
   }
-
 
   // seconds
 
-  TEST(DateTime, BadSecondConstructor_1) {
-    try {
-      Coords::DateTime a("2014-12-31T10:12:66");
-    } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
+  TEST(DateTime, GoodSecondConstructors) {
+    for (int i(0); i < 60; ++i) {
+      std::stringstream a_date_string;
+      a_date_string << "2014-01-01T00:00:" << std::setw(2) << std::setfill('0') << i;
+      Coords::DateTime a_datetime(a_date_string.str());
+      std::stringstream out;
+      out << a_datetime;
+      EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
     }
   }
 
-
-  TEST(DateTime, GoodSecondConstructor_0) {
-    // test regex day group 0
-    std::string a_string("2014-12-01T12:34:56.123");
-    Coords::DateTime a_datetime(a_string);
-    std::stringstream out;
-    out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+  TEST(DateTime, BadSecondConstructor_1) {
+    std::string a_date_string("2014-12-31T10:12:66");
+    try {
+      Coords::DateTime a_datetime(a_date_string);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << a_date_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
   }
+
 
   // time zones
 
@@ -317,21 +351,30 @@ namespace {
     EXPECT_STREQ(a_string.c_str(), out.str().c_str());
   }
 
+
+
   TEST(DateTime, BadTimeZoneConstructor_1) {
+    std::string a_date_string("2014-12-07T12:34:56.78+13.987");
     try {
-      Coords::DateTime a("2014-12-07T12:34:56.78+13.987");
+      Coords::DateTime a_datetime(a_date_string);
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
+      std::stringstream emsg;
+      emsg << a_date_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
 
   TEST(DateTime, BadTimeZoneConstructor_2) {
+    std::string a_date_string("2014-12-07T12:34:56.78-13.987");
     try {
-      Coords::DateTime a("2014-12-07T12:34:56.78-13.987");
+      Coords::DateTime a_datetime(a_date_string);
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]");
+      std::stringstream emsg;
+      emsg << a_date_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
+
 
   TEST(DateTime, GoodTimeZoneConstructor_1) {
     std::string a_string("2014-12-07T12:34:56.78+04");

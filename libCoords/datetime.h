@@ -42,7 +42,7 @@ namespace Coords {
     static const std::string ISO8601_format;
     static const std::regex  ISO8601_rx;
 
-    explicit DateTime(const std::string& a_iso8601_time);
+    explicit DateTime(const std::string& an_iso8601_time);
 
     // numeric constructor has no range checks. ISO-8601 only or remove? bug or feature?
     explicit DateTime(const int& a_year = 1970, // Unix epoch
@@ -51,7 +51,7 @@ namespace Coords {
 		      const int& a_hour = 0,
 		      const int& a_minute = 0,
 		      const double& a_second = 0,
-		      const double& a_time_zone = 0) // TODO timezone as hh:mm
+		      const double& a_time_zone = 0)
       : m_year(a_year), m_month(a_month), m_day(a_day),
       m_hour(a_hour), m_minute(a_minute), m_second(a_second),
       m_is_zulu(false), m_has_time_zone_colon(false), m_time_zone(a_time_zone), m_is_leap_year(false)
