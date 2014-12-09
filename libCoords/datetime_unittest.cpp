@@ -453,6 +453,12 @@ namespace {
     EXPECT_DOUBLE_EQ(2299160.5, a_datetime.asJulianDate()); // Montenbruck
   }
 
+  TEST(DateTime, JulianDate_3) {
+    std::string a_string("1968-05-23T00:00:00");
+    Coords::DateTime a_datetime(a_string);
+    EXPECT_DOUBLE_EQ(2440000, a_datetime.asJulianDate()); // Numerical Recipes in C
+  }
+
 
 
 } // end anonymous namespace
