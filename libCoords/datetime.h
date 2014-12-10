@@ -83,6 +83,9 @@ namespace Coords {
 
     // Julian date methods
 
+    double toJulianDate() const;
+    void   fromJulianDate(const double& jdays);
+
     double toJulianDateNRC() const;
     void   fromJulianDateNRC(const double& jdays);
 

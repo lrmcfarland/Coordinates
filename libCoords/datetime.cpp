@@ -180,6 +180,66 @@ Coords::DateTime& Coords::DateTime::operator=(const Coords::DateTime& rhs) {
 
 // ----- as Julian Date -----
 
+double Coords::DateTime::toJulianDate() const {
+
+  // from http://en.wikipedia.org/wiki/Julian_day
+
+  const long int a(floor(14 - m_month)/12);
+  const long int y(m_year + 4800 - a);
+  const long int m(m_month + 12*a - 3);
+
+  long int jdays(0);
+
+  if (m_day + 31L*(m_month + 12L*m_year) >= s_LilianDate) {
+
+    jdays = m_day + floor((153*m + 2)/5) + 365*y + floor(y/4) - floor(y/100) + floor(y/400) - 32045;
+
+  } else {
+
+    jdays = m_day + floor((153*m + 2)/5) + 365*y + floor(y/4) - 32083;
+
+  }
+
+  double partial_day((Coords::degrees2seconds(m_hour, m_minute, m_second) + timeZone()*3600)/86400.0);
+
+  return static_cast<double>(jdays) + partial_day;
+
+}
+
+
+void Coords::DateTime::fromJulianDate(const double& jdays) {
+
+  // from http://en.wikipedia.org/wiki/Julian_day
+  const long int y(4716);
+  const long int j(1401);
+  const long int m(2);
+  const long int n(12);
+  const long int r(4);
+  const long int p(1461);
+  const long int v(3);
+  const long int u(5);
+  const long int s(153);
+  const long int w(2);
+  const long int B(274277);
+  const long int C(-38);
+
+  long int f(jdays + j + (((4*jdays + B) / 146097)*3)/4 + C);
+  long int e(r*f+v);
+  long int g((e%p)/r);
+  long int h(u*g+w);
+
+  m_day = (h%s)/u + 1;
+
+  m_month = (h/s + m) % n + 1;
+
+  m_year = e/p - y + (n + m - m_month)/n;
+
+  // TODO partial day
+
+
+}
+
+
 double Coords::DateTime::toJulianDateNRC() const {
 
   // Calculates Julian day number from Gregorian calendar date.
