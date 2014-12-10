@@ -62,7 +62,7 @@ namespace Coords {
     DateTime& operator=(const DateTime& rhs);
 
     // accessors
-    void isValid(const std::string& an_iso8601_time = "");
+    void isValid(const std::string& an_iso8601_time = "") throw (Error);
     const int& year() const {return m_year;}
     const int& month() const {return m_month;}
     const int& day() const {return m_day;}

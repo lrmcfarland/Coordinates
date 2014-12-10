@@ -111,7 +111,7 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
   isValid(an_iso8601_time);
 }
 
-void Coords::DateTime::isValid(const std::string& an_iso8601_time) {
+void Coords::DateTime::isValid(const std::string& an_iso8601_time) throw (Error) {
 
   if ((m_month == 9 || m_month == 4 || m_month == 6 || m_month == 11) && m_day > 30) {
     std::stringstream emsg;
