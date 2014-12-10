@@ -71,35 +71,11 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
   m_month = Coords::stoi(m[3]);
   m_day = Coords::stoi(m[4]);
 
-  if ((m_month == 9 || m_month == 4 || m_month == 6 || m_month == 11) && m_day > 30) {
-    std::stringstream emsg;
-    emsg << an_iso8601_time << ": Thirty days hath September, April, June and November";
-    throw Coords::Error(emsg.str());
-  }
-
   if (m_year % 4 == 0 && m_year % 100 != 0)
     m_is_leap_year = true;
 
   if (m_year % 4 == 0 && m_year % 100 == 0 && m_year % 400 == 0)
     m_is_leap_year = true;
-
-  if (m_is_leap_year) {
-
-    if (m_month == 2 && m_day > 29) {
-      std::stringstream emsg;
-      emsg << an_iso8601_time << ": Except for February all alone. It has 28, but 29 each _leap_ year.";
-      throw Coords::Error(emsg.str());
-    }
-
-  } else {
-
-    if (m_month == 2 && m_day > 28) {
-      std::stringstream emsg;
-      emsg << an_iso8601_time << ": Except for February all alone. It has _28_, but 29 each leap year.";
-      throw Coords::Error(emsg.str());
-    }
-
-  }
 
   m_hour = Coords::stoi(m[5]);
   m_minute = Coords::stoi(m[6]);
@@ -131,6 +107,35 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
   for (int i = 0; i < 15; ++i)
     std::cout << "m[" << i << "]" << m[i] << std::endl;
 #endif
+
+  isValid(an_iso8601_time);
+}
+
+void Coords::DateTime::isValid(const std::string& an_iso8601_time) {
+
+  if ((m_month == 9 || m_month == 4 || m_month == 6 || m_month == 11) && m_day > 30) {
+    std::stringstream emsg;
+    emsg << an_iso8601_time << ": Thirty days hath September, April, June and November";
+    throw Coords::Error(emsg.str());
+  }
+
+  if (m_is_leap_year) {
+
+    if (m_month == 2 && m_day > 29) {
+      std::stringstream emsg;
+      emsg << an_iso8601_time << ": Except for February all alone. It has 28, but 29 each _leap_ year.";
+      throw Coords::Error(emsg.str());
+    }
+
+  } else {
+
+    if (m_month == 2 && m_day > 28) {
+      std::stringstream emsg;
+      emsg << an_iso8601_time << ": Except for February all alone. It has _28_, but 29 each leap year.";
+      throw Coords::Error(emsg.str());
+    }
+
+  }
 
 }
 
@@ -306,7 +311,7 @@ void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
     c = a + 1524; // Julian calendar
   } else {
     b = static_cast<long int>((a - 1867216.25)/36524.25);
-    c = a + b - (b/4) + 1525;
+    c = a + b - (b/4) + 1525; // Gregorian calendar
   }
 
   d = static_cast<long int>((c - 122.1)/365.25);
@@ -317,7 +322,7 @@ void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
   m_month = f - 1 - 12*(f/14);
   m_year = d - 4715 - ((7+m_month)/10);
 
-  double d_hour = 24.0 * (jdays - floor(jdays));
+  double d_hour = 24.0 * (jdays - floor(jdays)) + timeZone();
   m_hour = d_hour; // implicit cast to int
 
   double d_minute = 60.0 * (d_hour - floor(d_hour));
@@ -325,7 +330,7 @@ void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
 
   m_second = 60.0 * (d_minute - floor(d_minute));
 
-  if (m_second < 0.001)
+  if (m_second < 0.00001)
     m_second = 0; // meh.
 
 }
