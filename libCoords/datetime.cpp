@@ -171,21 +171,23 @@ Coords::DateTime& Coords::DateTime::operator=(const Coords::DateTime& rhs) {
 
 // ----- as Julian Date -----
 
-double Coords::DateTime::asNRCJulianDate() {
+double Coords::DateTime::toJulianDateNRC() const {
 
+  // Calculates Julian day number from Gregorian calendar date.
   // From Numerical Recipes in C, pp. 11-12
-  // WARNING: this rounds to the day
 
-  long int l_year(static_cast<long int>(m_year));   // long and local. does not alter m_year.
+  // WARNING: this rounds to the nearest day. See datetime_unittest.cpp for details.
+
+  long int l_year(static_cast<long int>(m_year));   // long and local
   long int l_month(static_cast<long int>(m_month));
   long int l_day(static_cast<long int>(m_day));
 
-  long int jd_days(0);
+  long int jdays(0);
 
   const long int iGreg (15+31L*(10+12L*1582)); // Gregorian calendar adopted Oct. 15, 1582, first in Catholic countries.
 
   if (m_year == 0)
-    throw Coords::Error("There is no year zero, but there should be.");
+    throw Coords::Error("There is no year zero in this algorithm, but there should be.");
 
   if (l_year < 0)
     ++l_year;
@@ -197,30 +199,71 @@ double Coords::DateTime::asNRCJulianDate() {
     l_month = m_month + 13;
   }
 
-  jd_days = static_cast<long int>(floor(365.25*l_year) + floor(30.6001*l_month) + l_day + 1720995);
+  jdays = static_cast<long int>(floor(365.25*l_year) + floor(30.6001*l_month) + l_day + 1720995);
 
   if (m_day + 31L*(m_month + 12L*m_year) >= iGreg) {
     int ja = static_cast<int>(0.01*l_year);
-    jd_days += 2 - ja + static_cast<int>(0.25*ja);
+    jdays += 2 - ja + static_cast<int>(0.25*ja);
   }
 
   double partial_day((Coords::degrees2seconds(m_hour, m_minute, m_second) + m_time_zone*3600)/86400.0);
 
-  return static_cast<double>(jd_days) + partial_day;
+  return static_cast<double>(jdays) + partial_day;
 
 }
 
-double Coords::DateTime::asAPCModifiedJulianDate() {
+void Coords::DateTime::fromJulianDateNRC(const double& jdays) {
 
-  // from Astronomy on a Personal Computer, Montenbruck and Pfleger, p. 15
-  // WARNING: this seems to be 0.5 day off from http://www.imcce.fr/en/grandpublic/temps/jour_julien.php.
-  // Not correcting for noon vs. midnight?
+  // Calculates Gregorian calendar date from Julian day number.
+  // From Numerical Recipes in C, pp. 14-15
+
+  const long int iGreg (15+31L*(10+12L*1582)); // Gregorian calendar adopted Oct. 15, 1582, first in Catholic countries.
+
+  long int ja(0);
+  long int jalpha(0);
+  long int jb(0);
+  long int jc(0);
+  long int jd(0);
+  long int je(0);
+
+
+  if (jdays >= iGreg) {
+    jalpha = static_cast<long int>((static_cast<float>(jdays - 1867216) - 0.25)/36524.25);
+    ja = jdays + 1 + jalpha - static_cast<long int>(0.25*jalpha);
+  } else
+    ja = jdays;
+  jb = ja + 1524;
+  jc = static_cast<long int>(6680.0 + (static_cast<float>(jb - 2439870) - 122.1)/365.25);
+  jd = static_cast<long int>(365 * jc + (0.25*jc));
+  je = static_cast<long int>((jb - jd)/30.6001);
+
+  m_day = jb - jd - static_cast<long int>(30.6001*je);
+  m_month = je - 1;
+
+  if (m_month > 12)
+    m_month -= 12;
+
+  m_year = jc - 4715;
+
+  if (m_month > 2)
+    --m_year;
+
+  if (m_year <= 0)
+    --m_year;
+
+}
+
+
+double Coords::DateTime::toModifiedJulianDateAPC() const {
+
+  // Calculates Julian day number from Gregorian calendar date.
+  // from Astronomy on the Personal Computer, Montenbruck and Pfleger, p. 15
 
   long int l_year(static_cast<long int>(m_year));   // long and local. does not alter m_year.
   long int l_month(static_cast<long int>(m_month));
   long int l_day(static_cast<long int>(m_day));
 
-  long int jd_days(0);
+  long int jdays(0);
   long int b(0);
 
   if (m_month <= 2) {
@@ -233,45 +276,59 @@ double Coords::DateTime::asAPCModifiedJulianDate() {
   else
     b = (l_year/400) - (l_year/100) + (l_year/4); // Gregorian calendar
 
-  jd_days = 365L*l_year - 679004L + b + static_cast<int>(30.6001*(l_month+1)) + l_day; // at midnight
+  jdays = 365L*l_year - 679004L + b + static_cast<int>(30.6001*(l_month+1)) + l_day; // at midnight
 
   double partial_day((Coords::degrees2seconds(m_hour, m_minute, m_second) + m_time_zone*3600)/86400.0);
 
-  return static_cast<double>(jd_days) + partial_day;
+  return static_cast<double>(jdays) + partial_day;
 
 }
 
 
-#if NOVAS
+void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
 
-  // TODO my implementation of this is off by 2 to 6 months depending on how far back you go.
+  // Calculates Gregorian calendar date from Julian day number.
+  // from Astronomy on the Personal Computer, Montenbruck and Pfleger, p. 15-16
 
-  jd_days = (1461L * (l_year + 4800L + (l_month - 14L)/12L)) / 4L
-    + (367L * (l_month - 2L - 12L*(l_month - 14L)/12L)) / 12L
-    - (3L * ((l_year + 4900L + (l_month - 14L)/12L)/100L)) / 4L
-    + l_day - 32075L;
+  // ASSUMES: jdays are Modified Julian Days
 
+  long int a(0);
+  long int b(0);
+  long int c(0);
+  long int d(0);
+  long int e(0);
+  long int f(0);
 
-  // http://aa.usno.navy.mil/software/novas/novas_c/novas.c
-  // from Fliegel, H. & Van Flandern, T.  Comm. of the ACM, Vol. 11, No. 10, October 1968, p. 657.
+  a = static_cast<long int>(jdays + 2400001.0);
 
-  // jd12h = (long) day - 32075L +
-  //  1461L * ((long) year + 4800L + ((long) month - 14L) / 12L) / 4L
-  //  + 367L * ((long) month - 2L - ((long) month - 14L) / 12L * 12L) / 12L
-  //  - 3L * (((long) year + 4900L + ((long) month - 14L) / 12L) / 100L) / 4L;
+  if (a < 2299161) {
+    b = 0;
+    c = a + 1524; // Julian calendar
+  } else {
+    b = static_cast<long int>((a - 1867216.25)/36524.25);
+    c = a + b - (b/4) + 1525;
+  }
 
+  d = static_cast<long int>((c - 122.1)/365.25);
+  e = 365*d + d/4;
+  f = static_cast<long int>((c - e)/30.6001);
 
-  // and http://www.stiltner.org/book/bookcalc.htm.
-  // stiltner
-  // TODO only valid from -4900-03-01 G onward
+  m_day = c - e - static_cast<int>(30.6001 * f);
+  m_month = f - 1 - 12*(f/14);
+  m_year = d - 4715 - ((7+m_month)/10);
 
-  // jd = ( 1461 * ( y + 4800 + ( m - 14 ) / 12 ) ) / 4 +
-  //   ( 367 * ( m - 2 - 12 * ( ( m - 14 ) / 12 ) ) ) / 12 -
-  //  ( 3 * ( ( y + 4900 + ( m - 14 ) / 12 ) / 100 ) ) / 4 +
-  //  d - 32075
+  double d_hour = 24.0 * (jdays - floor(jdays));
+  m_hour = d_hour; // implicit cast to int
 
+  double d_minute = 60.0 * (d_hour - floor(d_hour));
+  m_minute = d_minute; // implicit cast to int
 
-#endif
+  m_second = 60.0 * (d_minute - floor(d_minute));
+
+  if (m_second < 0.001)
+    m_second = 0; // meh.
+
+}
 
 
 // ----- string utility -----

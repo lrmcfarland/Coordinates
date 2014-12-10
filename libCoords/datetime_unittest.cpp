@@ -344,11 +344,11 @@ namespace {
   // time zones
 
   TEST(DateTime, GoodTimeZoneConstructor_Zulu) {
-    std::string a_string("2014-12-07T12:34:56.78Z");
-    Coords::DateTime a_datetime(a_string);
+    std::string a_date_string("2014-12-07T12:34:56.78Z");
+    Coords::DateTime a_datetime(a_date_string);
     std::stringstream out;
     out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
 
@@ -377,175 +377,291 @@ namespace {
 
 
   TEST(DateTime, GoodTimeZoneConstructor_1) {
-    std::string a_string("2014-12-07T12:34:56.78+04");
-    Coords::DateTime a_datetime(a_string);
+    std::string a_date_string("2014-12-07T12:34:56.78+04");
+    Coords::DateTime a_datetime(a_date_string);
     std::stringstream out;
     out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
 
   TEST(DateTime, GoodTimeZoneConstructor_2) {
-    std::string a_string("2014-12-07T12:34:56.78+0430");
-    Coords::DateTime a_datetime(a_string);
+    std::string a_date_string("2014-12-07T12:34:56.78+0430");
+    Coords::DateTime a_datetime(a_date_string);
     std::stringstream out;
     out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
     EXPECT_DOUBLE_EQ(4.5, a_datetime.timeZone());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_3) {
-    std::string a_string("2014-12-07T12:34:56.78+04:15");
-    Coords::DateTime a_datetime(a_string);
+    std::string a_date_string("2014-12-07T12:34:56.78+04:15");
+    Coords::DateTime a_datetime(a_date_string);
     std::stringstream out;
     out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
     EXPECT_DOUBLE_EQ(4.25, a_datetime.timeZone());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_4) {
-    std::string a_string("2014-12-07T12:34:56.78-04");
-    Coords::DateTime a_datetime(a_string);
+    std::string a_date_string("2014-12-07T12:34:56.78-04");
+    Coords::DateTime a_datetime(a_date_string);
     std::stringstream out;
     out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
 
   TEST(DateTime, GoodTimeZoneConstructor_5) {
-    std::string a_string("2014-12-07T12:34:56.78-0430");
-    Coords::DateTime a_datetime(a_string);
+    std::string a_date_string("2014-12-07T12:34:56.78-0430");
+    Coords::DateTime a_datetime(a_date_string);
     std::stringstream out;
     out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
     EXPECT_DOUBLE_EQ(-4.5, a_datetime.timeZone());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_6) {
-    std::string a_string("2014-12-07T12:34:56.78-04:45");
-    Coords::DateTime a_datetime(a_string);
+    std::string a_date_string("2014-12-07T12:34:56.78-04:45");
+    Coords::DateTime a_datetime(a_date_string);
     std::stringstream out;
     out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
     EXPECT_DOUBLE_EQ(-4.75, a_datetime.timeZone());
   }
 
   TEST(DateTime, LetsGetBiblical_1) {
-    std::string a_string("-5579-03-20T12:00:00");
-    Coords::DateTime a_datetime(a_string);
+    std::string a_date_string("-5579-03-20T12:00:00");
+    Coords::DateTime a_datetime(a_date_string);
     std::stringstream out;
     out << a_datetime;
-    EXPECT_STREQ(a_string.c_str(), out.str().c_str());
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
   // NRC Julian dates
-  // Actual dates take from http://www.imcce.fr/en/grandpublic/temps/jour_julien.php
+  // Actual dates taken from http://www.imcce.fr/en/grandpublic/temps/jour_julien.php
 
   TEST(DISABLED_DateTime, NRCJulianDate_0) {
-    std::string a_string("-4712-01-01T12:00:00");
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_DOUBLE_EQ(0.5, a_datetime.asNRCJulianDate());
-    // asNRCJulianDate() rounds to nearest day. Does not start at noon? Does not account for year 0?
+    std::string a_date_string("-4712-01-01T12:00:00");
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(0.5, a_datetime.toJulianDateNRC());
+    // toJulianDateNRC() rounds to nearest day. Does not start at noon? Does not account for year 0?
   }
 
   TEST(DISABLED_DateTime, NRCJulianDate_pre_Julian2Gregorian) {
-    std::string a_string("1582-10-14T00:00:00"); // Gregorian replaces Julian
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_NEAR(2299159.5, a_datetime.asNRCJulianDate(), 0.5);
+    std::string a_date_string("1582-10-14T00:00:00"); // Gregorian replaces Julian
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_NEAR(2299159.5, a_datetime.toJulianDateNRC(), 0.5);
     // does not account for 10 day "gap" in calendar change.
   }
 
   TEST(DateTime, NRCJulianDate_post_Julian2Gregorian) {
-    std::string a_string("1582-10-15T00:00:00"); // Gregorian replaces Julian
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_NEAR(2299160.5, a_datetime.asNRCJulianDate(), 0.5);
-    // asNRCJulianDate() rounds to nearest day
+    std::string a_date_string("1582-10-15T00:00:00"); // Gregorian replaces Julian
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_NEAR(2299160.5, a_datetime.toJulianDateNRC(), 0.5);
+    // toJulianDateNRC() rounds to nearest day
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
+
   }
 
   TEST(DateTime, NRCJulianDate_pre_reduced) {
-    std::string a_string("1858-11-16T12:00:00"); // modified date change switches from noon to midnight
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_NEAR(2400000, a_datetime.asNRCJulianDate(), 0.5);
-   // asNRCJulianDate() rounds to nearest day
+    std::string a_date_string("1858-11-16T12:00:00"); // modified date change switches from noon to midnight
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_NEAR(2400000, a_datetime.toJulianDateNRC(), 0.5);
+   // toJulianDateNRC() rounds to nearest day
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("1858-11-16T00:00:00", out.str().c_str());
+    // switches noon to midnight
   }
 
   TEST(DateTime, NRCJulianDate_post_reduced) {
-    std::string a_string("1858-11-17T00:00:00"); // modified date change switches from noon to midnight
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_NEAR(2400000.5, a_datetime.asNRCJulianDate(), 0.5);
-   // asNRCJulianDate() rounds to nearest day
+    std::string a_date_string("1858-11-17T00:00:00"); // modified date change switches from noon to midnight
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_NEAR(2400000.5, a_datetime.toJulianDateNRC(), 0.5);
+   // toJulianDateNRC() rounds to nearest day
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
+
   }
 
   TEST(DateTime, NRCJulianDate_modified) {
-    std::string a_string("1968-05-23T12:00:00"); // truncated Julian date
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_NEAR(2440000, a_datetime.asNRCJulianDate(), 0.5);
-   // asNRCJulianDate() rounds to nearest day
+    std::string a_date_string("1968-05-23T12:00:00"); // truncated Julian date
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_NEAR(2440000, a_datetime.toJulianDateNRC(), 0.5);
+   // toJulianDateNRC() rounds to nearest day
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("1968-05-23T00:00:00", out.str().c_str()); // rounds to midnight
   }
 
   TEST(DateTime, NRCJulianDate_3) {
-    std::string a_string("2013-01-01T00:30:00");
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_NEAR(2456293.5208333335, a_datetime.asNRCJulianDate(), 0.500001);
-    // asNRCJulianDate() rounds to nearest day. Does not start at noon.
+    std::string a_date_string("2013-01-01T00:30:00");
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_NEAR(2456293.5208333335, a_datetime.toJulianDateNRC(), 0.500001);
+    // toJulianDateNRC() rounds to nearest day. Does not start at noon.
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("2013-01-01T00:00:00", out.str().c_str()); // rounds to midnight
   }
 
   TEST(DateTime, NRCJulianDate_4) {
-    std::string a_string("2014-12-09T00:00:00");
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_NEAR(2457000.5, a_datetime.asNRCJulianDate(), 0.5);
-    // asNRCJulianDate() rounds to nearest day
+    std::string a_date_string("2014-12-09T00:00:00");
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_NEAR(2457000.5, a_datetime.toJulianDateNRC(), 0.5);
+    // toJulianDateNRC() rounds to nearest day
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
   // APC Modified Julian Dates
 
   TEST(DateTime, APCModifiedJulianDate_0) {
-    std::string a_string("-4712-01-01T12:00:00");
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_DOUBLE_EQ(-2400000.5, a_datetime.asAPCModifiedJulianDate());
+    std::string a_date_string("-4712-01-01T12:00:00");
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(-2400000.5, a_datetime.toModifiedJulianDateAPC());
     // TODO asAPCJulianDate() differs from IMCEE on noon vs. midnight on this date?
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
   TEST(DateTime, APCModifiedJulianDate_pre_Julian2Gregorian) {
-    std::string a_string("1582-10-14T00:00:00"); // Gregorian replaces Julian
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_DOUBLE_EQ(2299159.5 - 2400000.5, a_datetime.asAPCModifiedJulianDate());
+    std::string a_date_string("1582-10-14T00:00:00"); // Gregorian replaces Julian
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(2299159.5 - 2400000.5, a_datetime.toModifiedJulianDateAPC());
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("1582-10-04T00:00:00", out.str().c_str()); // skips 10 days
   }
 
   TEST(DateTime, APCModifiedJulianDate_post_Julian2Gregorian) {
-    std::string a_string("1582-10-15T00:00:00"); // Gregorian replaces Julian
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_DOUBLE_EQ(2299160.5 - 2400000.5, a_datetime.asAPCModifiedJulianDate());
+    std::string a_date_string("1582-10-15T00:00:00"); // Gregorian replaces Julian
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(2299160.5 - 2400000.5, a_datetime.toModifiedJulianDateAPC());
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
   TEST(DateTime, APCModifiedJulianDate_pre_reduced) {
-    std::string a_string("1858-11-16T12:00:00"); // modified date change switches from noon to midnight
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_DOUBLE_EQ(2400000 - 2400000.5, a_datetime.asAPCModifiedJulianDate());
+    std::string a_date_string("1858-11-16T12:00:00"); // modified date change switches from noon to midnight
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(2400000 - 2400000.5, a_datetime.toModifiedJulianDateAPC());
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
   TEST(DateTime, APCModifiedJulianDate_post_reduced) {
-    std::string a_string("1858-11-17T00:00:00"); // modified date change switches from noon to midnight
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_DOUBLE_EQ(2400000.5 - 2400000.5, a_datetime.asAPCModifiedJulianDate());
+    std::string a_date_string("1858-11-17T00:00:00"); // modified date change switches from noon to midnight
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(2400000.5 - 2400000.5, a_datetime.toModifiedJulianDateAPC());
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
   TEST(DateTime, APCJulianDate_2) {
-    std::string a_string("1968-05-23T12:00:00"); // truncated Julian date
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_DOUBLE_EQ(2440000 - 2400000.5, a_datetime.asAPCModifiedJulianDate());
+    std::string a_date_string("1968-05-23T12:00:00"); // truncated Julian date
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(2440000 - 2400000.5, a_datetime.toModifiedJulianDateAPC());
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
   TEST(DateTime, APCModifiedJulianDate_3) {
-    std::string a_string("2013-01-01T00:30:00");
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_NEAR(2456293.5208333335 - 2400000.5, a_datetime.asAPCModifiedJulianDate(), 0.000000001);
+    std::string a_date_string("2013-01-01T00:30:00");
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_NEAR(2456293.5208333335 - 2400000.5, a_datetime.toModifiedJulianDateAPC(), 0.000000001);
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
   TEST(DateTime, APCModifiedJulianDate_4) {
-    std::string a_string("2014-12-09T00:00:00");
-    Coords::DateTime a_datetime(a_string);
-    EXPECT_DOUBLE_EQ(2457000.5 - 2400000.5, a_datetime.asAPCModifiedJulianDate());
+    std::string a_date_string("2014-12-09T00:00:00");
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(2457000.5 - 2400000.5, a_datetime.toModifiedJulianDateAPC());
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
+
   }
 
 

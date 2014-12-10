@@ -78,10 +78,17 @@ namespace Coords {
     const double& timeZone() const {return m_time_zone;}
 
 
-    // TODO Julian Date, Modified Julian date, J1950, J2000
+    // Julian date methods
 
-    double asNRCJulianDate();
-    double asAPCModifiedJulianDate();
+    double toJulianDateNRC() const;
+    void   fromJulianDateNRC(const double& jdays);
+
+    double toModifiedJulianDateAPC() const;
+    void   fromModifiedJulianDateAPC(const double& jdays);
+
+
+    // TODO J1950, J2000
+
 
 
   private:
