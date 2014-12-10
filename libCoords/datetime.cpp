@@ -37,17 +37,21 @@
 
 // ----- static data members -----
 
-const std::string Coords::DateTime::ISO8601_format("((?:-)){0,1}(\\d*)-" // year
-						   "((?:0[1-9]|1[012]))-" // month
-						   "((?:0[1-9]|1[0-9]|2[0-9]|3[01]))"  // day
-						   "T"
-						   "([0-5]\\d):" // hour
-						   "([0-5]\\d):" // minute
-						   "([0-5]\\d(\\.\\d*){0,1})" // second
-						   "(?:((?:Z)|(\\+|-)((?:0[1-9]|1[12]))(\\:){0,1}(\\d\\d){0,1})){0,1}" // time zone
-						   );
+const std::string Coords::DateTime::s_ISO8601_format("((?:-)){0,1}(\\d*)-" // year
+						     "((?:0[1-9]|1[012]))-" // month
+						     "((?:0[1-9]|1[0-9]|2[0-9]|3[01]))"  // day
+						     "T"
+						     "([0-5]\\d):" // hour
+						     "([0-5]\\d):" // minute
+						     "([0-5]\\d(\\.\\d*){0,1})" // second
+						     "(?:((?:Z)|(\\+|-)((?:0[1-9]|1[12]))(\\:){0,1}(\\d\\d){0,1})){0,1}" // time zone
+						     );
 
-const std::regex Coords::DateTime::ISO8601_rx(Coords::DateTime::ISO8601_format);
+const std::regex Coords::DateTime::s_ISO8601_rx(Coords::DateTime::s_ISO8601_format);
+
+const long int Coords::DateTime::s_LilianDate(15+31L*(10+12L*1582));
+const double Coords::DateTime::s_ModifiedJulianDate(2400000.5);
+const double Coords::DateTime::s_TruncatedJulianDate(2440000.5);
 
 Coords::DateTime::DateTime(const std::string& an_iso8601_time)
   : m_year(1970), m_month(1), m_day(1),
@@ -57,7 +61,7 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
 
   std::smatch m;
 
-  if (!regex_match(an_iso8601_time, m, ISO8601_rx)) {
+  if (!regex_match(an_iso8601_time, m, s_ISO8601_rx)) {
     std::stringstream emsg;
     emsg << an_iso8601_time << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
     throw Coords::Error(emsg.str());
@@ -189,8 +193,6 @@ double Coords::DateTime::toJulianDateNRC() const {
 
   long int jdays(0);
 
-  const long int iGreg (15+31L*(10+12L*1582)); // Gregorian calendar adopted Oct. 15, 1582, first in Catholic countries.
-
   if (m_year == 0)
     throw Coords::Error("There is no year zero in this algorithm, but there should be.");
 
@@ -206,12 +208,12 @@ double Coords::DateTime::toJulianDateNRC() const {
 
   jdays = static_cast<long int>(floor(365.25*l_year) + floor(30.6001*l_month) + l_day + 1720995);
 
-  if (m_day + 31L*(m_month + 12L*m_year) >= iGreg) {
+  if (m_day + 31L*(m_month + 12L*m_year) >= s_LilianDate) {
     int ja = static_cast<int>(0.01*l_year);
     jdays += 2 - ja + static_cast<int>(0.25*ja);
   }
 
-  double partial_day((Coords::degrees2seconds(m_hour, m_minute, m_second) + m_time_zone*3600)/86400.0);
+  double partial_day((Coords::degrees2seconds(m_hour, m_minute, m_second) + timeZone()*3600)/86400.0);
 
   return static_cast<double>(jdays) + partial_day;
 
@@ -222,8 +224,6 @@ void Coords::DateTime::fromJulianDateNRC(const double& jdays) {
   // Calculates Gregorian calendar date from Julian day number.
   // From Numerical Recipes in C, pp. 14-15
 
-  const long int iGreg (15+31L*(10+12L*1582)); // Gregorian calendar adopted Oct. 15, 1582, first in Catholic countries.
-
   long int ja(0);
   long int jalpha(0);
   long int jb(0);
@@ -232,11 +232,12 @@ void Coords::DateTime::fromJulianDateNRC(const double& jdays) {
   long int je(0);
 
 
-  if (jdays >= iGreg) {
+  if (jdays >= s_LilianDate) {
     jalpha = static_cast<long int>((static_cast<float>(jdays - 1867216) - 0.25)/36524.25);
     ja = jdays + 1 + jalpha - static_cast<long int>(0.25*jalpha);
   } else
     ja = jdays;
+
   jb = ja + 1524;
   jc = static_cast<long int>(6680.0 + (static_cast<float>(jb - 2439870) - 122.1)/365.25);
   jd = static_cast<long int>(365 * jc + (0.25*jc));
@@ -283,7 +284,7 @@ double Coords::DateTime::toModifiedJulianDateAPC() const {
 
   jdays = 365L*l_year - 679004L + b + static_cast<int>(30.6001*(l_month+1)) + l_day; // at midnight
 
-  double partial_day((Coords::degrees2seconds(m_hour, m_minute, m_second) + m_time_zone*3600)/86400.0);
+  double partial_day((Coords::degrees2seconds(m_hour, m_minute, m_second) + timeZone()*3600)/86400.0);
 
   return static_cast<double>(jdays) + partial_day;
 

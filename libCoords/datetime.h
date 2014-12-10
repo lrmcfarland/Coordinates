@@ -39,8 +39,12 @@ namespace Coords {
 
   public:
 
-    static const std::string ISO8601_format;
-    static const std::regex  ISO8601_rx;
+    static const std::string s_ISO8601_format;
+    static const std::regex  s_ISO8601_rx;
+
+    static const long int s_LilianDate; // Gregorian calendar adopted Oct. 15, 1582, first in Catholic countries.
+    static const double   s_ModifiedJulianDate; // 1858-11-17T00:00:00
+    static const double   s_TruncatedJulianDate; // 1968-05-23T12:00:00
 
     explicit DateTime(const std::string& an_iso8601_time);
 
