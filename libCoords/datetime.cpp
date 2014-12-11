@@ -208,11 +208,6 @@ Coords::DateTime Coords::operator-(const Coords::DateTime& lhs, const double& rh
   return temp;
 }
 
-Coords::DateTime Coords::operator-(const double& lhs, const Coords::DateTime& rhs) {
-  return rhs - lhs; // commute
-}
-
-
 
 // ----- as Julian Date -----
 

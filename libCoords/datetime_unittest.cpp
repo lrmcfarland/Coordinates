@@ -1065,7 +1065,7 @@ namespace {
     EXPECT_STREQ("2014-11-09T14:00:00", out.str().c_str());
   }
 
-  TEST(DateTime, operator_plus_1) {
+  TEST(DateTime, operator_date_plus_1) {
     std::string a_date_string("2014-12-09T00:00:00");
 
     Coords::DateTime a_datetime(a_date_string);
@@ -1081,7 +1081,23 @@ namespace {
     EXPECT_STREQ("2014-12-10T00:00:00", out.str().c_str());
   }
 
-  TEST(DateTime, operator_plus_30) {
+  TEST(DateTime, operator_1_plus_date) {
+    std::string a_date_string("2014-12-09T00:00:00");
+
+    Coords::DateTime a_datetime(a_date_string);
+    Coords::DateTime another_datetime;
+
+    another_datetime = 1 + a_datetime;
+
+    EXPECT_DOUBLE_EQ(2457000.5 + 1, another_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("2014-12-10T00:00:00", out.str().c_str());
+  }
+
+  TEST(DateTime, operator_date_plus_30) {
     std::string a_date_string("2014-12-09T14:50:00");
 
     Coords::DateTime a_datetime(a_date_string);
@@ -1098,7 +1114,24 @@ namespace {
   }
 
 
-  TEST(DateTime, operator_minus_1) {
+  TEST(DateTime, operator_30_plus_date) {
+    std::string a_date_string("2014-12-09T14:50:00");
+
+    Coords::DateTime a_datetime(a_date_string);
+    Coords::DateTime another_datetime;
+
+    another_datetime = 30 + a_datetime;
+
+    EXPECT_DOUBLE_EQ(2457001.1180555555, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("2015-01-08T14:49:60", out.str().c_str()); // TODO rounding error
+  }
+
+
+  TEST(DateTime, operator_date_minus_1) {
     std::string a_date_string("2014-12-09T00:00:00");
 
     Coords::DateTime a_datetime(a_date_string);
@@ -1114,7 +1147,8 @@ namespace {
     EXPECT_STREQ("2014-12-08T00:00:00", out.str().c_str());
   }
 
-  TEST(DateTime, operator_minus_30) {
+
+  TEST(DateTime, operator_date_minus_30) {
     std::string a_date_string("2014-12-09T14:50:00");
 
     Coords::DateTime a_datetime(a_date_string);
@@ -1129,8 +1163,6 @@ namespace {
 
     EXPECT_STREQ("2014-11-09T14:49:60", out.str().c_str()); // TODO rounding error
   }
-
-
 
 
 } // end anonymous namespace
