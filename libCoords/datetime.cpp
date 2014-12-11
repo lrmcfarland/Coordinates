@@ -49,7 +49,8 @@ const std::string Coords::DateTime::s_ISO8601_format("((?:-)){0,1}(\\d*)-" // ye
 
 const std::regex Coords::DateTime::s_ISO8601_rx(Coords::DateTime::s_ISO8601_format);
 
-const long int Coords::DateTime::s_LilianDate(15+31L*(10+12L*1582));
+const long int Coords::DateTime::s_gDateNRC(15+31L*(10+12L*1582));
+const double Coords::DateTime::s_LilianDate(2299160.5);
 const double Coords::DateTime::s_ModifiedJulianDate(2400000.5);
 const double Coords::DateTime::s_TruncatedJulianDate(2440000.5);
 
@@ -190,7 +191,7 @@ double Coords::DateTime::toJulianDateWiki() const {
 
   long int jdays(0);
 
-  if (m_day + 31L*(m_month + 12L*m_year) >= s_LilianDate) {
+  if (m_day + 31L*(m_month + 12L*m_year) >= s_gDateNRC) {
 
     jdays = m_day + floor((153*m + 2)/5) + 365*y + floor(y/4) - floor(y/100) + floor(y/400) - 32045;
 
@@ -210,6 +211,9 @@ double Coords::DateTime::toJulianDateWiki() const {
 void Coords::DateTime::fromJulianDateWiki(const double& jdays) {
 
   // from http://en.wikipedia.org/wiki/Julian_day
+
+  // TODO: this does not correct for the Lilian date change. See unit tests.
+
   const long int y(4716);
   const long int j(1401);
   const long int m(2);
@@ -236,8 +240,6 @@ void Coords::DateTime::fromJulianDateWiki(const double& jdays) {
 
   double d_hour = 24.0 * (jdays - floor(jdays)) + timeZone();
   m_hour = d_hour; // implicit cast to int
-
-
 
   double d_minute = 60.0 * (d_hour - floor(d_hour));
   m_minute = d_minute; // implicit cast to int
@@ -278,7 +280,7 @@ double Coords::DateTime::toJulianDateNRC() const {
 
   jdays = static_cast<long int>(floor(365.25*l_year) + floor(30.6001*l_month) + l_day + 1720995);
 
-  if (m_day + 31L*(m_month + 12L*m_year) >= s_LilianDate) {
+  if (m_day + 31L*(m_month + 12L*m_year) >= s_gDateNRC) {
     int ja = static_cast<int>(0.01*l_year);
     jdays += 2 - ja + static_cast<int>(0.25*ja);
   }
@@ -302,7 +304,7 @@ void Coords::DateTime::fromJulianDateNRC(const double& jdays) {
   long int je(0);
 
 
-  if (jdays >= s_LilianDate) {
+  if (jdays >= s_gDateNRC) {
     jalpha = static_cast<long int>((static_cast<float>(jdays - 1867216) - 0.25)/36524.25);
     ja = jdays + 1 + jalpha - static_cast<long int>(0.25*jalpha);
   } else

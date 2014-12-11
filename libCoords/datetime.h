@@ -42,7 +42,9 @@ namespace Coords {
     static const std::string s_ISO8601_format;
     static const std::regex  s_ISO8601_rx;
 
-    static const long int s_LilianDate; // Gregorian calendar adopted Oct. 15, 1582, first in Catholic countries.
+    static const long int s_gDateNRC; // used in NRC Julian Date calculations.
+
+    static const double   s_LilianDate; // Gregorian calendar adopted Oct. 15, 1582
     static const double   s_ModifiedJulianDate; // 1858-11-17T00:00:00
     static const double   s_TruncatedJulianDate; // 1968-05-23T12:00:00
 
@@ -82,6 +84,10 @@ namespace Coords {
 
 
     // Julian date methods
+
+    double toJulianDate() const {return toModifiedJulianDateAPC() + s_ModifiedJulianDate;}
+    void   fromJulianDate(const double& jdays) {fromModifiedJulianDateAPC(jdays - s_ModifiedJulianDate);}
+
 
     double toJulianDateWiki() const;
     void   fromJulianDateWiki(const double& jdays);
