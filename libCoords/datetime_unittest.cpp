@@ -271,7 +271,7 @@ namespace {
   // hours
 
   TEST(DateTime, GoodHourConstructors) {
-    for (int i(0); i < 60; ++i) {
+    for (int i(0); i < 24; ++i) {
       std::stringstream a_date_string;
       a_date_string << "2014-01-01T" << std::setw(2) << std::setfill('0') << i << ":34:56";
       Coords::DateTime a_datetime(a_date_string.str());
@@ -284,7 +284,7 @@ namespace {
 
 
   TEST(DateTime, BadHourConstructor_1) {
-    std::string a_date_string("2014-12-31T60:34:56");
+    std::string a_date_string("2014-12-31T24:34:56");
     try {
       Coords::DateTime a_datetime(a_date_string);
     } catch (Coords::Error& err) {
