@@ -180,7 +180,7 @@ Coords::DateTime& Coords::DateTime::operator=(const Coords::DateTime& rhs) {
 
 // ----- as Julian Date -----
 
-double Coords::DateTime::toJulianDate() const {
+double Coords::DateTime::toJulianDateWiki() const {
 
   // from http://en.wikipedia.org/wiki/Julian_day
 
@@ -207,7 +207,7 @@ double Coords::DateTime::toJulianDate() const {
 }
 
 
-void Coords::DateTime::fromJulianDate(const double& jdays) {
+void Coords::DateTime::fromJulianDateWiki(const double& jdays) {
 
   // from http://en.wikipedia.org/wiki/Julian_day
   const long int y(4716);
@@ -234,8 +234,18 @@ void Coords::DateTime::fromJulianDate(const double& jdays) {
 
   m_year = e/p - y + (n + m - m_month)/n;
 
-  // TODO partial day
+  double d_hour = 24.0 * (jdays - floor(jdays)) + timeZone();
+  m_hour = d_hour; // implicit cast to int
 
+
+
+  double d_minute = 60.0 * (d_hour - floor(d_hour));
+  m_minute = d_minute; // implicit cast to int
+
+  m_second = 60.0 * (d_minute - floor(d_minute));
+
+  if (m_second < 0.0001)
+    m_second = 0; // meh.
 
 }
 
@@ -316,6 +326,8 @@ void Coords::DateTime::fromJulianDateNRC(const double& jdays) {
 
   if (m_year <= 0)
     --m_year;
+
+  // TODO partial day?
 
 }
 

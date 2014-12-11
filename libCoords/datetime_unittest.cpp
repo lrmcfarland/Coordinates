@@ -29,6 +29,10 @@
 
 namespace {
 
+  // ------------------------
+  // ----- constructors -----
+  // ------------------------
+
   TEST(DateTime, DefaultConstructor) {
     Coords::DateTime a_datetime;
     std::stringstream out;
@@ -438,53 +442,42 @@ namespace {
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
+  // ------------------------
+  // ----- Julian dates -----
+  // ------------------------
 
   // "Actual" dates taken from http://www.imcce.fr/en/grandpublic/temps/jour_julien.php
 
-  // Julian Date
+  // Julian Date Wikipedia
 
-  TEST(DateTime, JulianDate_0) {
+  TEST(DateTime, JulianDateWiki_0) {
     std::string a_date_string("-4712-01-01T12:00:00");
 
     Coords::DateTime a_datetime(a_date_string);
-    EXPECT_DOUBLE_EQ(0.5, a_datetime.toJulianDate());
-    // toJulianDate() rounds to nearest day. Starts at midnight. Does count for year 0.
+    EXPECT_DOUBLE_EQ(0.5, a_datetime.toJulianDateWiki());
 
     Coords::DateTime another_datetime;
-    another_datetime.fromJulianDate(a_datetime.toJulianDate());
+    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
 
     std::stringstream out;
     out << another_datetime;
 
-    EXPECT_STREQ("-4713-11-25T00:00:00", out.str().c_str());
-    // TODO way out
+    EXPECT_STREQ("-4713-11-25T12:00:00", out.str().c_str());
+    // TODO this is way out
   }
 
-  TEST(DateTime, JulianDate_pre_Julian2Gregorian) {
-    std::string a_date_string("1582-10-14T00:00:00"); // Gregorian replaces Julian
+  TEST(DISABLED_DateTime, JulianDateWiki_0_tbd) {
+
+    // TODO date calculation is ok, but reverse cacluation is out of
+    // range for this case: "-4713-11-25T12:00:00"
+
+    std::string a_date_string("-4712-01-01T12:00:00");
 
     Coords::DateTime a_datetime(a_date_string);
-    EXPECT_NEAR(2299159.5 + 10, a_datetime.toJulianDate(), 0.5);
-    // does not account for 10 day "gap" in calendar change.
+    EXPECT_DOUBLE_EQ(0.5, a_datetime.toJulianDateWiki());
 
     Coords::DateTime another_datetime;
-    another_datetime.fromJulianDate(a_datetime.toJulianDate());
-
-    std::stringstream out;
-    out << another_datetime;
-
-    EXPECT_STREQ("1582-10-24T00:00:00", out.str().c_str());
-  }
-
-  TEST(DateTime, JulianDate_post_Julian2Gregorian) {
-    std::string a_date_string("1582-10-15T00:00:00"); // Gregorian replaces Julian
-
-    Coords::DateTime a_datetime(a_date_string);
-    EXPECT_NEAR(2299160.5, a_datetime.toJulianDate(), 0.5);
-    // toJulianDateNRC() rounds to nearest day
-
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDate(a_datetime.toJulianDate());
+    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
 
     std::stringstream out;
     out << another_datetime;
@@ -492,15 +485,47 @@ namespace {
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
-  TEST(DateTime, JulianDate_modified) {
+  TEST(DateTime, JulianDateWiki_pre_Julian2Gregorian) {
+    std::string a_date_string("1582-10-14T00:00:00"); // Gregorian replaces Julian
+
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_NEAR(2299159.5 + 10, a_datetime.toJulianDateWiki(), 0.5);
+    // Does not account for 10 day "gap" in calendar change.
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("1582-10-24T00:00:00", out.str().c_str());
+  }
+
+  TEST(DateTime, JulianDateWiki_post_Julian2Gregorian) {
+    std::string a_date_string("1582-10-15T00:00:00"); // Gregorian replaces Julian
+
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_NEAR(2299160.5, a_datetime.toJulianDateWiki(), 0.5);
+    // toJulianDateWiki() rounds to nearest day
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
+  }
+
+  TEST(DateTime, JulianDateWiki_modified) {
     std::string a_date_string("1968-05-24T00:00:00"); // truncated Julian date
 
     Coords::DateTime a_datetime(a_date_string);
-    EXPECT_NEAR(Coords::DateTime::s_TruncatedJulianDate, a_datetime.toJulianDateNRC(), 0.5);
-   // toJulianDate() rounds to nearest day
+    EXPECT_NEAR(Coords::DateTime::s_TruncatedJulianDate, a_datetime.toJulianDateWiki(), 0.5);
+   // toJulianDateWiki() rounds to nearest day
 
     Coords::DateTime another_datetime;
-    another_datetime.fromJulianDate(a_datetime.toJulianDate());
+    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
 
     std::stringstream out;
     out << another_datetime;
@@ -508,31 +533,31 @@ namespace {
     EXPECT_STREQ("1968-05-24T00:00:00", out.str().c_str()); // rounds to midnight
   }
 
-  TEST(DateTime, JulianDate_3) {
+  TEST(DateTime, JulianDateWiki_3) {
     std::string a_date_string("2013-01-01T00:30:00");
 
     Coords::DateTime a_datetime(a_date_string);
-    EXPECT_NEAR(2456293.5208333335, a_datetime.toJulianDate(), 0.500001);
-    // toJulianDate() rounds to nearest day. Does not start at noon.
+    EXPECT_NEAR(2456293.5208333335, a_datetime.toJulianDateWiki(), 0.500001);
+    // toJulianDateWiki() rounds to nearest day. Does not start at noon.
 
     Coords::DateTime another_datetime;
-    another_datetime.fromJulianDate(a_datetime.toJulianDate());
+    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
 
     std::stringstream out;
     out << another_datetime;
 
-    EXPECT_STREQ("2013-01-01T00:00:00", out.str().c_str()); // rounds to midnight
+    EXPECT_STREQ("2013-01-01T00:30:00", out.str().c_str()); // rounds to midnight
   }
 
-  TEST(DateTime, JulianDate_4) {
+  TEST(DateTime, JulianDateWiki_4) {
     std::string a_date_string("2014-12-09T00:00:00");
 
     Coords::DateTime a_datetime(a_date_string);
-    EXPECT_NEAR(2457000.5, a_datetime.toJulianDate(), 0.5);
+    EXPECT_NEAR(2457000.5, a_datetime.toJulianDateWiki(), 0.5);
     // rounds to nearest day
 
     Coords::DateTime another_datetime;
-    another_datetime.fromJulianDate(a_datetime.toJulianDate());
+    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
 
     std::stringstream out;
     out << another_datetime;
@@ -637,7 +662,7 @@ namespace {
     std::stringstream out;
     out << another_datetime;
 
-    EXPECT_STREQ("1968-05-24T00:00:00", out.str().c_str()); // rounds to midnight
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str()); // rounds to midnight
   }
 
   TEST(DateTime, JulianDateNRC_3) {
@@ -771,7 +796,7 @@ namespace {
 
     Coords::DateTime a_datetime(a_date_string);
     EXPECT_NEAR(2456293.5208333335 - Coords::DateTime::s_ModifiedJulianDate,
-		a_datetime.toModifiedJulianDateAPC(), 0.000000001);
+		a_datetime.toModifiedJulianDateAPC(), 0.000000001); // very near
 
     Coords::DateTime another_datetime;
     another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
