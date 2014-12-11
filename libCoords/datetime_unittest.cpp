@@ -457,40 +457,6 @@ namespace {
   //
   // Lilian date: Oct 15, 1582
 
-  // Julian Date wrapper
-
-  TEST(DateTime, JulianDate_0) {
-    std::string a_date_string("-4712-01-01T12:00:00");
-
-    Coords::DateTime a_datetime(a_date_string);
-    EXPECT_DOUBLE_EQ(0.0, a_datetime.toJulianDate());
-
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDate(a_datetime.toJulianDate());
-
-    std::stringstream out;
-    out << another_datetime;
-
-    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
-  }
-
-
-  TEST(DateTime, JulianDate_4) {
-    std::string a_date_string("2014-12-09T00:00:00");
-
-    Coords::DateTime a_datetime(a_date_string);
-    EXPECT_DOUBLE_EQ(2457000.5, a_datetime.toJulianDate());
-
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDate(a_datetime.toJulianDate());
-
-    std::stringstream out;
-    out << another_datetime;
-
-    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
-  }
-
-
   // ---------------------------------
   // ----- Julian Date Wikipedia -----
   // ---------------------------------
@@ -1004,6 +970,165 @@ namespace {
   }
 
 
+  // ---------------------------------
+  // ----- Julian Date operators -----
+  // ---------------------------------
+
+  TEST(DateTime, JulianDate_0) {
+    std::string a_date_string("-4712-01-01T12:00:00");
+
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(0.0, a_datetime.toJulianDate());
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromJulianDate(a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
+  }
+
+
+  TEST(DateTime, JulianDate_4) {
+    std::string a_date_string("2014-12-09T00:00:00");
+
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(2457000.5, a_datetime.toJulianDate());
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromJulianDate(a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
+  }
+
+  TEST(DateTime, operator_plus_eq_1) {
+    std::string a_date_string("2014-12-09T00:00:00");
+
+    Coords::DateTime a_datetime(a_date_string);
+
+    a_datetime += 1;
+
+    EXPECT_DOUBLE_EQ(2457000.5 + 1, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << a_datetime;
+
+    EXPECT_STREQ("2014-12-10T00:00:00", out.str().c_str());
+  }
+
+  TEST(DateTime, operator_plus_eq_30) {
+    std::string a_date_string("2014-12-09T14:30:00");
+
+    Coords::DateTime a_datetime(a_date_string);
+
+    a_datetime += 30;
+
+    EXPECT_DOUBLE_EQ(2457031.1041666665, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << a_datetime;
+
+    EXPECT_STREQ("2015-01-08T14:29:60", out.str().c_str()); // TODO rounding error
+  }
+
+  TEST(DateTime, operator_minus_eq_1) {
+    std::string a_date_string("2014-12-09T00:00:00");
+
+    Coords::DateTime a_datetime(a_date_string);
+
+    a_datetime -= 1;
+
+    EXPECT_DOUBLE_EQ(2457000.5 - 1, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << a_datetime;
+
+    EXPECT_STREQ("2014-12-08T00:00:00", out.str().c_str());
+  }
+
+  TEST(DateTime, operator_minus_eq_30) {
+    std::string a_date_string("2014-12-09T14:00:00");
+
+    Coords::DateTime a_datetime(a_date_string);
+
+    a_datetime -= 30;
+
+    EXPECT_DOUBLE_EQ(2456971.0833333335, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << a_datetime;
+
+    EXPECT_STREQ("2014-11-09T14:00:00", out.str().c_str());
+  }
+
+  TEST(DateTime, operator_plus_1) {
+    std::string a_date_string("2014-12-09T00:00:00");
+
+    Coords::DateTime a_datetime(a_date_string);
+    Coords::DateTime another_datetime;
+
+    another_datetime = a_datetime + 1;
+
+    EXPECT_DOUBLE_EQ(2457000.5 + 1, another_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("2014-12-10T00:00:00", out.str().c_str());
+  }
+
+  TEST(DateTime, operator_plus_30) {
+    std::string a_date_string("2014-12-09T14:50:00");
+
+    Coords::DateTime a_datetime(a_date_string);
+    Coords::DateTime another_datetime;
+
+    another_datetime = a_datetime + 30;
+
+    EXPECT_DOUBLE_EQ(2457001.1180555555, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("2015-01-08T14:49:60", out.str().c_str()); // TODO rounding error
+  }
+
+
+  TEST(DateTime, operator_minus_1) {
+    std::string a_date_string("2014-12-09T00:00:00");
+
+    Coords::DateTime a_datetime(a_date_string);
+    Coords::DateTime another_datetime;
+
+    another_datetime = a_datetime - 1;
+
+    EXPECT_DOUBLE_EQ(2457000.5 - 1, another_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("2014-12-08T00:00:00", out.str().c_str());
+  }
+
+  TEST(DateTime, operator_minus_30) {
+    std::string a_date_string("2014-12-09T14:50:00");
+
+    Coords::DateTime a_datetime(a_date_string);
+    Coords::DateTime another_datetime;
+
+    another_datetime = a_datetime - 30;
+
+    EXPECT_DOUBLE_EQ(2457001.1180555555, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("2014-11-09T14:49:60", out.str().c_str()); // TODO rounding error
+  }
 
 
 

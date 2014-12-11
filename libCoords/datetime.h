@@ -67,8 +67,10 @@ namespace Coords {
     DateTime(const DateTime& a);
     DateTime& operator=(const DateTime& rhs);
 
-    // accessors
+    // ----- accessors -----
+
     void isValid(const std::string& an_iso8601_time = "") throw (Error);
+
     const int& year() const {return m_year;}
     const int& month() const {return m_month;}
     const int& day() const {return m_day;}
@@ -82,8 +84,12 @@ namespace Coords {
     const bool& hasTimeZoneColon() const {return m_has_time_zone_colon;}
     const double& timeZone() const {return m_time_zone;}
 
+    // ----- in-place operators -----
 
-    // Julian date methods
+    DateTime& operator+=(const double& rhs);
+    DateTime& operator-=(const double& rhs);
+
+    // ----- Julian date methods -----
 
     double toJulianDate() const {return toModifiedJulianDateAPC() + s_ModifiedJulianDate;}
     void   fromJulianDate(const double& jdays) {fromModifiedJulianDateAPC(jdays - s_ModifiedJulianDate);}
@@ -122,6 +128,18 @@ namespace Coords {
     bool m_is_leap_year;
 
   };
+
+
+
+  // ---------------------
+  // ----- operators -----
+  // ---------------------
+
+  DateTime operator+(const DateTime& lhs, const double& rhs);
+  DateTime operator+(const double& lhs, const DateTime& rhs);
+
+  DateTime operator-(const DateTime& lhs, const double& rhs);
+  DateTime operator-(const double& lhs, const DateTime& rhs);
 
 
 

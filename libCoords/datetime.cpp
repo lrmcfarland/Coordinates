@@ -162,6 +162,7 @@ Coords::DateTime::DateTime(const Coords::DateTime& a) {
 }
 
 // ----- copy assignment -----
+
 Coords::DateTime& Coords::DateTime::operator=(const Coords::DateTime& rhs) {
   if (this == &rhs) return *this;
   m_year = rhs.m_year;
@@ -178,6 +179,40 @@ Coords::DateTime& Coords::DateTime::operator=(const Coords::DateTime& rhs) {
   m_is_leap_year = rhs.m_is_leap_year;
   return *this;
 }
+
+// ----- operators -----
+
+Coords::DateTime& Coords::DateTime::operator+=(const double& rhs) {
+  this->fromJulianDate(this->toJulianDate() + rhs);
+  return *this;
+}
+
+Coords::DateTime& Coords::DateTime::operator-=(const double& rhs) {
+  this->fromJulianDate(this->toJulianDate() - rhs);
+  return *this;
+}
+
+Coords::DateTime Coords::operator+(const Coords::DateTime& lhs, const double& rhs) {
+  Coords::DateTime temp(lhs);
+  temp += rhs;
+  return temp;
+}
+
+Coords::DateTime Coords::operator+(const double& lhs, const Coords::DateTime& rhs) {
+  return rhs + lhs; // commute
+}
+
+Coords::DateTime Coords::operator-(const Coords::DateTime& lhs, const double& rhs) {
+  Coords::DateTime temp(lhs);
+  temp -= rhs;
+  return temp;
+}
+
+Coords::DateTime Coords::operator-(const double& lhs, const Coords::DateTime& rhs) {
+  return rhs - lhs; // commute
+}
+
+
 
 // ----- as Julian Date -----
 
@@ -405,7 +440,7 @@ void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
 
   m_second = 60.0 * (d_minute - floor(d_minute));
 
-  if (m_second < 0.00001)
+  if (m_second < 0.001)
     m_second = 0; // meh.
 
 }
