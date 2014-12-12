@@ -139,6 +139,7 @@ namespace Coords {
   DateTime operator+(const double& lhs, const DateTime& rhs);
 
   DateTime operator-(const DateTime& lhs, const double& rhs);
+  double operator-(const DateTime& lhs, const DateTime& rhs);
 
 
   // -------------------------------

@@ -194,8 +194,7 @@ Coords::DateTime& Coords::DateTime::operator-=(const double& rhs) {
 
 Coords::DateTime Coords::operator+(const Coords::DateTime& lhs, const double& rhs) {
   Coords::DateTime temp(lhs);
-  temp += rhs;
-  return temp;
+  return temp += rhs;
 }
 
 Coords::DateTime Coords::operator+(const double& lhs, const Coords::DateTime& rhs) {
@@ -204,8 +203,11 @@ Coords::DateTime Coords::operator+(const double& lhs, const Coords::DateTime& rh
 
 Coords::DateTime Coords::operator-(const Coords::DateTime& lhs, const double& rhs) {
   Coords::DateTime temp(lhs);
-  temp -= rhs;
-  return temp;
+  return temp -= rhs;
+}
+
+double Coords::operator-(const Coords::DateTime& lhs, const Coords::DateTime& rhs) {
+  return lhs.toJulianDate() - rhs.toJulianDate();
 }
 
 

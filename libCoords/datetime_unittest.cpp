@@ -1165,6 +1165,41 @@ namespace {
   }
 
 
+  TEST(DateTime, operator_date_minus_date_1) {
+
+    Coords::DateTime a_datetime("2014-12-01T00:00:00");
+    Coords::DateTime b_datetime("2015-01-01T00:00:00");
+
+    double days = b_datetime - a_datetime;
+
+    EXPECT_DOUBLE_EQ(31, days);
+
+  }
+
+  TEST(DateTime, operator_date_minus_date_2) {
+
+    Coords::DateTime a_datetime("2014-01-01T00:00:00");
+    Coords::DateTime b_datetime("2015-01-01T00:00:00");
+
+    double days = b_datetime - a_datetime;
+
+    EXPECT_DOUBLE_EQ(365, days);
+
+  }
+
+  TEST(DateTime, operator_date_minus_date_3) {
+    // leap year
+    Coords::DateTime a_datetime("2012-01-01T00:00:00");
+    Coords::DateTime b_datetime("2013-01-01T00:00:00");
+
+    double days = b_datetime - a_datetime;
+
+    EXPECT_DOUBLE_EQ(366, days);
+
+  }
+
+
+
 } // end anonymous namespace
 
 

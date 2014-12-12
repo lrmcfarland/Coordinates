@@ -229,6 +229,7 @@ BOOST_PYTHON_MODULE(coords) {
     .def(double() + self)
 
     .def(self - double())
+    .def(self - Coords::DateTime())
 
 
     // other methods

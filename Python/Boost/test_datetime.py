@@ -98,6 +98,26 @@ class TestDateTime(unittest.TestCase):
         self.assertEqual('1961-07-10T17:30:00+05:00', str(a))
 
 
+    def test_operator_minus_datetime_1(self):
+        """Test operator minus date time"""
+        a = coords.datetime('1962-07-10T07:30:00+05:00')
+        b = coords.datetime('1963-07-10T07:30:00+05:00')
+        self.assertEqual(365, b - a)
+
+
+    def test_operator_minus_datetime_2(self):
+        """Test operator minus date time"""
+        a = coords.datetime('1962-07-10T07:30:00+05:00')
+        b = coords.datetime('1963-07-10T07:30:00+05:00')
+        self.assertEqual(-365, a - b)
+
+
+    def test_operator_minus_datetime_2(self):
+        """Test operator minus date time"""
+        a = coords.datetime('1962-07-10T07:30:00+05:00')
+        b = coords.datetime('2012-07-10T07:30:00+05:00')
+        self.assertEqual(18263.0, b - a)
+
 
 
 if __name__ == '__main__':
