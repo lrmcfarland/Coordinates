@@ -73,11 +73,26 @@ class TestDateTime(unittest.TestCase):
         self.assertEqual('1962-01-01T00:00:00', str(a))
 
 
-    def test_julian_date(self):
-        """Test operator plus equal"""
+    def test_to_julian_modified_date(self):
+        """Test to modified Julian date"""
         a_date_string = '1858-11-17T00:00:00'
         a = coords.datetime(a_date_string)
-        self.assertEqual(coords.datetime.ModifiedJulianDate(), a.toJulianDate())
+        self.assertEqual(a.ModifiedJulianDate, a.JulianDate)
+
+
+    def test_to_julian_date_1(self):
+        """Test to Julian date"""
+        a_date_string = '2014-12-09T00:00:00'
+        a = coords.datetime(a_date_string)
+        self.assertEqual(2457000.5, a.JulianDate)
+
+
+    def test_from_julian_date(self):
+        """Test from Julian date"""
+        a = coords.datetime()
+        a.JulianDate = a.ModifiedJulianDate
+        self.assertEqual(a.ModifiedJulianDate, a.JulianDate)
+        # TODO different from boost as attribute not method
 
 
     def test_operator_plus_equal(self):

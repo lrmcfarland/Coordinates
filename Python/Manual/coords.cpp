@@ -117,6 +117,7 @@ static char sDayStr[]   = "day";
 static char sHourStr[]  = "hour";
 static char sTimeZoneStr[]  = "timezone";
 
+static char sJulianDateStr[]  = "JulianDate";
 static char sLilianDateStr[]  = "LilianDate";
 static char sModifiedJulianDateStr[]  = "ModifiedJulianDate";
 static char sTruncatedJulianDateStr[]  = "TruncatedJulianDate";
@@ -290,7 +291,7 @@ static int Angle_setValue(Angle* self, PyObject* value, void* closure) {
   }
 
   if (!PyFloat_Check(value) && !PyInt_Check(value)) {
-    PyErr_SetString(sCoordsException, "value must be a float");
+    PyErr_SetString(sCoordsException, "value must be a float or int");
     return -1;
   }
 
@@ -313,7 +314,7 @@ static int Angle_setRadians(Angle* self, PyObject* radians, void* closure) {
   }
 
   if (!PyFloat_Check(radians) && !PyInt_Check(radians)) {
-    PyErr_SetString(sCoordsException, "radians must be a float");
+    PyErr_SetString(sCoordsException, "radians must be a float or int");
     return -1;
   }
 
@@ -532,8 +533,6 @@ static PyObject* Angle_nb_inplace_divide(PyObject* o1, PyObject* o2) {
 
 // ----- deg2rad -----
 
-PyDoc_STRVAR(coords_deg2rad__doc__, "converts degrees into radians");
-
 static PyObject* deg2rad(PyObject* self, PyObject *args) {
   double radians(0);
   if (!PyArg_ParseTuple(args, "d", &radians))
@@ -557,6 +556,8 @@ static PyObject* rad2deg(PyObject* self, PyObject *args) {
 // --------------------------
 // ----- Python structs -----
 // --------------------------
+
+PyDoc_STRVAR(coords_deg2rad__doc__, "converts degrees into radians");
 
 static PyMethodDef Angle_methods[] = {
   {"deg2rad", (PyCFunction) deg2rad, METH_VARARGS, coords_deg2rad__doc__},
@@ -785,7 +786,7 @@ static int Latitude_setValue(Latitude* self, PyObject* value, void* closure) {
   }
 
   if (!PyFloat_Check(value) && !PyInt_Check(value)) {
-    PyErr_SetString(sCoordsException, "value must be a float");
+    PyErr_SetString(sCoordsException, "value must be a float or int");
     return -1;
   }
 
@@ -808,7 +809,7 @@ static int Latitude_setRadians(Latitude* self, PyObject* radians, void* closure)
   }
 
   if (!PyFloat_Check(radians) && !PyInt_Check(radians)) {
-    PyErr_SetString(sCoordsException, "radians must be a float");
+    PyErr_SetString(sCoordsException, "radians must be a float or int");
     return -1;
   }
 
@@ -1270,7 +1271,7 @@ static int Cartesian_setx(Cartesian* self, PyObject* value, void* closure) {
   }
 
   if (!PyFloat_Check(value) && !PyInt_Check(value)) {
-    PyErr_SetString(sCoordsException, "x must be a float");
+    PyErr_SetString(sCoordsException, "x must be a float or int");
     return -1;
   }
 
@@ -1293,7 +1294,7 @@ static int Cartesian_sety(Cartesian* self, PyObject* value, void* closure) {
   }
 
   if (!PyFloat_Check(value) && !PyInt_Check(value)) {
-    PyErr_SetString(sCoordsException, "y must be a float");
+    PyErr_SetString(sCoordsException, "y must be a float or int");
     return -1;
   }
 
@@ -1316,7 +1317,7 @@ static int Cartesian_setz(Cartesian* self, PyObject* value, void* closure) {
   }
 
   if (!PyFloat_Check(value) && !PyInt_Check(value)) {
-    PyErr_SetString(sCoordsException, "z must be a float");
+    PyErr_SetString(sCoordsException, "z must be a float or int");
     return -1;
   }
 
@@ -1894,7 +1895,7 @@ static int spherical_setR(spherical* self, PyObject* value, void* closure) {
   }
 
   if (!PyFloat_Check(value) && !PyInt_Check(value)) {
-    PyErr_SetString(sCoordsException, "r must be a float");
+    PyErr_SetString(sCoordsException, "r must be a float or int");
     return 0;
   }
 
@@ -2428,6 +2429,31 @@ PyObject* datetime_repr(PyObject* self) {
 // ----- getters and setters -----
 // -------------------------------
 
+// ----- Julian Date -----
+
+static PyObject* datetime_getJulianDate(datetime* self, void* closure) {
+  return PyFloat_FromDouble(self->m_datetime.toJulianDate());
+}
+
+static int datetime_setJulianDate(datetime* self, PyObject* value, void* closure) {
+
+  if (value == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete Julian Date");
+    return -1;
+  }
+
+  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+    PyErr_SetString(sCoordsException, "Julian Date must be float or int");
+    return -1;
+  }
+
+  self->m_datetime.fromJulianDate(PyFloat_AsDouble(value));
+
+  return 0;
+}
+
+
+
 // ----- Lilian Date -----
 
 static PyObject* datetime_getLilianDate(datetime* self, void* closure) {
@@ -2536,6 +2562,7 @@ static PyMemberDef datetime_members[] = {
 };
 
 static PyGetSetDef datetime_getseters[] = {
+  {sJulianDateStr, (getter)datetime_getJulianDate, (setter)datetime_setJulianDate, sJulianDateStr, NULL},
   {sLilianDateStr, (getter)datetime_getLilianDate, NULL, sLilianDateStr, NULL},
   {sModifiedJulianDateStr, (getter)datetime_getModifiedJulianDate, NULL, sModifiedJulianDateStr, NULL},
   {sTruncatedJulianDateStr, (getter)datetime_getTruncatedJulianDate, NULL, sTruncatedJulianDateStr, NULL},
@@ -2646,7 +2673,6 @@ static int is_datetimeType(PyObject* an_angle) {
   //wrapper for type check
   return PyObject_TypeCheck(an_angle, &datetimeType);
 }
-
 
 
 // --------------------------
