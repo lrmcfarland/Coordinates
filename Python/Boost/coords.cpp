@@ -234,7 +234,7 @@ BOOST_PYTHON_MODULE(coords) {
 
     // other methods
     .def("toJulianDate", &Coords::DateTime::toJulianDate)
-    .def("FromJulianDate", &Coords::DateTime::fromJulianDate)
+    .def("fromJulianDate", &Coords::DateTime::fromJulianDate)
 
     // TODO other Julian Date methods, Wiki, NRC, APC
 

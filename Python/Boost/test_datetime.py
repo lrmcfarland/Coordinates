@@ -66,10 +66,17 @@ class TestDateTime(unittest.TestCase):
         self.assertEqual('1962-01-01T00:00:00', str(a))
 
 
-    def test_julian_date(self):
-        """Test operator plus equal"""
+    def test_to_julian_date(self):
+        """Test to Julian date"""
         a_date_string = '1858-11-17T00:00:00'
         a = coords.datetime(a_date_string)
+        self.assertEqual(coords.datetime.ModifiedJulianDate, a.toJulianDate())
+
+
+    def test_from_julian_date(self):
+        """Test from Julian date"""
+        a = coords.datetime()
+        a.fromJulianDate(coords.datetime.ModifiedJulianDate)
         self.assertEqual(coords.datetime.ModifiedJulianDate, a.toJulianDate())
 
 
