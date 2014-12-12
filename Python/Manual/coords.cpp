@@ -19,6 +19,7 @@
 
 #include <angle.h>
 #include <Cartesian.h>
+#include <datetime.h>
 #include <spherical.h>
 
 // ===================
@@ -106,6 +107,29 @@ static void new_sphericalType(spherical** a_spherical);
 static int is_sphericalType(PyObject* a_spherical);
 
 
+// --------------------
+// ----- datetime -----
+// --------------------
+
+static char sYearStr[]  = "year";
+static char sMonthStr[] = "month";
+static char sDayStr[]   = "day";
+static char sHourStr[]  = "hour";
+static char sTimeZoneStr[]  = "timezone";
+
+// reuse minutes, seconds above
+
+// object definition.
+typedef struct {
+  PyObject_HEAD
+  Coords::DateTime m_datetime;
+} datetime;
+
+// Forward declarations for as_number methods. Wraps datetimeType definition.
+static void new_datetimeType(datetime** a_datetime);
+static int is_datetimeType(PyObject* a_datetime);
+
+
 // =================
 // ===== Angle =====
 // =================
@@ -181,7 +205,7 @@ static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
     } else {
-      PyErr_SetString(sCoordsException, "unsupported arg1 type");
+      PyErr_SetString(sCoordsException, "unsupported arg2 type");
       return -1;
     }
 
@@ -201,8 +225,6 @@ static void Angle_dealloc(Angle* self) {
 // -----------------
 // ----- print -----
 // -----------------
-
-// TODO switch repr and str so repr is xml and str is (x, y, z)?
 
 PyObject* Angle_str(PyObject* self) {
   std::stringstream result;
@@ -628,11 +650,6 @@ static int is_AngleType(PyObject* an_angle) {
 }
 
 
-
-
-
-// TODO better than copy/paste of Angle for Latitude
-
 // ====================
 // ===== Latitude =====
 // ====================
@@ -708,7 +725,7 @@ static int Latitude_init(Latitude* self, PyObject* args, PyObject* kwds) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
     } else {
-      PyErr_SetString(sCoordsException, "unsupported arg1 type");
+      PyErr_SetString(sCoordsException, "unsupported arg2 type");
       return -1;
     }
 
@@ -728,8 +745,6 @@ static void Latitude_dealloc(Latitude* self) {
 // -----------------
 // ----- print -----
 // -----------------
-
-// TODO switch repr and str so repr is xml and str is (x, y, z)?
 
 PyObject* Latitude_str(PyObject* self) {
   std::stringstream result;
@@ -1076,7 +1091,7 @@ static PyNumberMethods Latitude_as_number = {
 PyTypeObject LatitudeType = {
   PyObject_HEAD_INIT(NULL)
   0,                                 /* ob_size */
-  "angle",                           /* tp_name */
+  "Latitude",                           /* tp_name */
   sizeof(Latitude),                     /* tp_basicsize */
   0,                                 /* tp_itemsize */
   (destructor) Latitude_dealloc,        /* tp_dealloc */
@@ -1095,7 +1110,7 @@ PyTypeObject LatitudeType = {
   0,                                 /* tp_setattro */
   0,                                 /* tp_as_buffer */
   Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
-  "angle objects",                   /* tp_doc */
+  "Latitude objects",                   /* tp_doc */
   0,                                 /* tp_traverse */
   0,                                 /* tp_clear */
   Latitude_tp_richcompare,              /* tp_richcompare */
@@ -2297,6 +2312,422 @@ static int is_sphericalType(PyObject* a_spherical) {
   return PyObject_TypeCheck(a_spherical, &sphericalType);
 }
 
+// ====================
+// ===== datetime =====
+// ====================
+
+// ------------------------
+// ----- constructors -----
+// ------------------------
+
+static PyObject* datetime_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
+  datetime* self(NULL);
+  self = (datetime*)type->tp_alloc(type, 0);
+  return (PyObject*)self;
+}
+
+
+
+
+
+
+static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
+
+  static char* kwlist[] = {sYearStr, sMonthStr, sDayStr, sHourStr, sMinuteStr, sSecondStr, sTimeZoneStr, NULL};
+
+  int    year(1970);  // default value
+  int    month(1);    // default value
+  int    day(1);      // default value
+  int    hour(0);     // default value
+  int    minute(0);   // default value
+  double second(0);   // default value
+  double timezone(0); // default value
+
+  PyObject* arg0(NULL);
+  PyObject* arg1(NULL);
+  PyObject* arg2(NULL);
+  PyObject* arg3(NULL);
+  PyObject* arg4(NULL);
+  PyObject* arg5(NULL);
+  PyObject* arg6(NULL);
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOOOOO", kwlist, &arg0, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6))
+    return -1;
+
+  if (arg0) {
+
+    if (PyString_Check(arg0)) {
+
+      // ISO-8601 string constructor
+      try {
+
+	Coords::DateTime a_datetime(PyString_AsString(arg0));
+	self->m_datetime = a_datetime;
+
+      } catch (Coords::Error err) {
+	PyErr_SetString(sCoordsException, err.what());
+	return -1;
+      }
+
+      return 0;
+
+    } else if (is_datetimeType(arg0)) {
+
+      // copy constrctor
+      self->m_datetime = ((datetime*)arg0)->m_datetime;
+      return 0;
+
+    } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
+      year = PyFloat_AsDouble(arg0);
+
+    } else {
+
+      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      return -1;
+    }
+
+  }
+
+  // TODO void parse_numeric_arg(PyObject** arg, int/double val)
+
+  if (arg1) {
+
+    if (PyFloat_Check(arg1) || PyInt_Check(arg1)) {
+      month = PyFloat_AsDouble(arg1);
+
+    } else if (PyString_Check(arg1)) {
+
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+      return -1;
+
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg1 type");
+      return -1;
+    }
+
+  }
+
+  if (arg2) {
+
+    if (PyFloat_Check(arg2) || PyInt_Check(arg2)) {
+      day = PyFloat_AsDouble(arg2);
+
+    } else if (PyString_Check(arg2)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+      return -1;
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg2 type");
+      return -1;
+    }
+
+  }
+
+  if (arg3) {
+
+    if (PyFloat_Check(arg3) || PyInt_Check(arg3)) {
+      hour = PyFloat_AsDouble(arg3);
+
+    } else if (PyString_Check(arg3)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+      return -1;
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg3 type");
+      return -1;
+    }
+
+  }
+
+
+  if (arg4) {
+
+    if (PyFloat_Check(arg4) || PyInt_Check(arg4)) {
+      minute = PyFloat_AsDouble(arg4);
+
+    } else if (PyString_Check(arg4)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+      return -1;
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg4 type");
+      return -1;
+    }
+
+  }
+
+  if (arg5) {
+
+    if (PyFloat_Check(arg5) || PyInt_Check(arg5)) {
+      second = PyFloat_AsDouble(arg5);
+
+    } else if (PyString_Check(arg5)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+      return -1;
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg5 type");
+      return -1;
+    }
+
+  }
+
+  if (arg6) {
+
+    if (PyFloat_Check(arg6) || PyInt_Check(arg6)) {
+      timezone = PyFloat_AsDouble(arg6);
+
+    } else if (PyString_Check(arg6)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+      return -1;
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg6 type");
+      return -1;
+    }
+
+  }
+
+  // create datetime
+
+  try {
+
+    Coords::DateTime a_datetime(year, month, day, hour, minute, second, timezone);
+    self->m_datetime = a_datetime;
+
+  } catch (Coords::Error err) {
+    PyErr_SetString(sCoordsException, err.what());
+    return -1;
+  }
+
+  return 0;
+
+}
+
+
+static void datetime_dealloc(datetime* self) {
+  self->ob_type->tp_free((PyObject*)self);
+}
+
+// -----------------
+// ----- print -----
+// -----------------
+
+PyObject* datetime_str(PyObject* self) {
+  std::stringstream result;
+  result.precision(sPrintPrecision);
+  result << ((datetime*)self)->m_datetime;
+  return PyString_FromString(result.str().c_str());
+}
+
+// TODO a different repr? for constructor?
+PyObject* datetime_repr(PyObject* self) {
+  std::stringstream result;
+  result.precision(sPrintPrecision);
+  result << ((datetime*)self)->m_datetime;
+  return PyString_FromString(result.str().c_str());
+}
+
+// -------------------------------
+// ----- getters and setters -----
+// -------------------------------
+
+
+// --------------------------
+// ----- number methods -----
+// --------------------------
+
+
+static PyObject* datetime_nb_add(PyObject* o1, PyObject* o2) {
+
+  datetime* result_datetime(NULL);
+  new_datetimeType(&result_datetime);
+
+  if (result_datetime == NULL) {
+    PyErr_SetString(sCoordsException, "add failed to create coord.datetime");
+    return NULL;
+  }
+
+  if (is_datetimeType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+    result_datetime->m_datetime = ((datetime*)o1)->m_datetime + PyFloat_AsDouble(o2);
+    return (PyObject*) result_datetime;
+  }
+
+  if ((PyFloat_Check(o1) || PyInt_Check(o1)) && is_datetimeType(o2)) {
+    result_datetime->m_datetime = PyFloat_AsDouble(o1) + ((datetime*)o2)->m_datetime;
+    return (PyObject*) result_datetime;
+
+  }
+
+  Py_INCREF(Py_NotImplemented);
+  return Py_NotImplemented;
+
+}
+
+
+static PyObject* datetime_nb_subtract(PyObject* o1, PyObject* o2) {
+
+  datetime* result_datetime(NULL);
+  new_datetimeType(&result_datetime);
+
+  if (result_datetime == NULL) {
+    PyErr_SetString(sCoordsException, "subtract failed to create coord.datetime");
+    return NULL;
+  }
+
+
+  if (is_datetimeType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+    result_datetime->m_datetime = ((datetime*)o1)->m_datetime - PyFloat_AsDouble(o2);
+    return (PyObject*) result_datetime;
+  }
+
+  if (is_datetimeType(o1) && is_datetimeType(o2)) {
+    double delta = ((datetime*)o1)->m_datetime - ((datetime*)o2)->m_datetime;
+    return (PyObject*) Py_BuildValue("d", delta);
+  }
+
+  Py_INCREF(Py_NotImplemented);
+  return Py_NotImplemented;
+
+}
+
+
+// ---------------------------
+// ----- inplace methods -----
+// ---------------------------
+
+static PyObject* datetime_nb_inplace_add(PyObject* o1, PyObject* o2) {
+  // TODO can this be implement directly using space::operator+=()?
+  // problem with refence going out of scope, segfault.
+  return datetime_nb_add(o1, o2);
+}
+
+static PyObject* datetime_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
+  // TOOD implement directly?
+  return datetime_nb_subtract(o1, o2);
+}
+
+// --------------------------
+// ----- Python structs -----
+// --------------------------
+
+static PyMethodDef datetime_methods[] = {
+  {NULL}  /* Sentinel */
+};
+
+
+static PyMemberDef datetime_members[] = {
+
+  // TODO Lilian, modified, truncated
+
+  {NULL}  /* Sentinel */
+};
+
+static PyGetSetDef datetime_getseters[] = {
+  {NULL}  /* Sentinel */
+};
+
+
+// see http://docs.python.org/c-api/typeobj.html
+static PyNumberMethods datetime_as_number = {
+  (binaryfunc) datetime_nb_add,
+  (binaryfunc) datetime_nb_subtract,
+  (binaryfunc) 0,   // nb_multiply,
+  (binaryfunc) 0,   // nb_divide,
+  (binaryfunc) 0,   // nb_remainder
+  (binaryfunc) 0,   // nb_divmod
+  (ternaryfunc) 0,  // nb_power
+  (unaryfunc) 0,    // nb_negative,
+  (unaryfunc) 0,    // nb_positive
+  (unaryfunc) 0,    // nb_absolute
+  (inquiry) 0,      // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,    // nb_invert
+  (binaryfunc) 0,   // nb_lshift
+  (binaryfunc) 0,   // nb_rshift
+  (binaryfunc) 0,   // nb_and
+  (binaryfunc) 0,   // nb_xor
+  (binaryfunc) 0,   // nb_or
+  (coercion) 0,     // Used by the coerce() function
+  (unaryfunc) 0,    // nb_int
+  (unaryfunc) 0,    // nb_long
+  (unaryfunc) 0,    // nb_float
+  (unaryfunc) 0,    // nb_oct
+  (unaryfunc) 0,    // nb_hex
+
+  // added in release 2.0
+
+  (binaryfunc) datetime_nb_inplace_add,
+  (binaryfunc) datetime_nb_inplace_subtract,
+  (binaryfunc) 0,  // nb_inplace_multiply,
+  (binaryfunc) 0,  // nb_inplace_divide,
+  (binaryfunc) 0,  // nb_inplace_remainder
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  // added in release 2.2
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) 0,  // nb_true_divide
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+};
+
+
+PyTypeObject datetimeType = {
+  PyObject_HEAD_INIT(NULL)
+  0,                                 /* ob_size */
+  "datetime",                        /* tp_name */
+  sizeof(datetime),                  /* tp_basicsize */
+  0,                                 /* tp_itemsize */
+  (destructor) datetime_dealloc,     /* tp_dealloc */
+  0,                                 /* tp_print */
+  0,                                 /* tp_getattr */
+  0,                                 /* tp_setattr */
+  0,                                 /* tp_compare */
+  datetime_repr,                        /* tp_repr */
+  &datetime_as_number,                  /* tp_as_number */
+  0,                                 /* tp_as_sequence */
+  0,                                 /* tp_as_mapping */
+  0,                                 /* tp_hash */
+  0,                                 /* tp_call */
+  datetime_str,                         /* tp_str */
+  0,                                 /* tp_getattro */
+  0,                                 /* tp_setattro */
+  0,                                 /* tp_as_buffer */
+  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  "angle objects",                   /* tp_doc */
+  0,                                 /* tp_traverse */
+  0,                                 /* tp_clear */
+  0,                                 /* tp_richcompare */
+  0,                                 /* tp_weaklistoffset */
+  0,                                 /* tp_iter */
+  0,                                 /* tp_iternext */
+  datetime_methods,                     /* tp_methods */
+  datetime_members,                     /* tp_members */
+  datetime_getseters,                   /* tp_getset */
+  0,                                 /* tp_base */
+  0,                                 /* tp_dict */
+  0,                                 /* tp_descr_get */
+  0,                                 /* tp_descr_set */
+  0,                                 /* tp_dictoffset */
+  (initproc)datetime_init,              /* tp_init */
+  0,                                 /* tp_alloc */
+  datetime_new,                         /* tp_new */
+};
+
+// ------------------------------------------
+// ----- implement forward declarations -----
+// ------------------------------------------
+
+static void new_datetimeType(datetime** an_angle) {
+  *an_angle = PyObject_New(datetime, &datetimeType);
+}
+
+static int is_datetimeType(PyObject* an_angle) {
+  //wrapper for type check
+  return PyObject_TypeCheck(an_angle, &datetimeType);
+}
+
+
 
 // --------------------------
 // ----- module methods -----
@@ -2386,6 +2817,12 @@ PyMODINIT_FUNC initcoords(void) {
   Py_INCREF(&sphericalType);
   PyModule_AddObject(m, "spherical", (PyObject *)&sphericalType);
 
+  // datetime
+  datetimeType.tp_new = PyType_GenericNew;
+  if (PyType_Ready(&datetimeType) < 0)
+    return;
+  Py_INCREF(&datetimeType);
+  PyModule_AddObject(m, "datetime", (PyObject *)&datetimeType);
 
   // module unit vector constants
 
