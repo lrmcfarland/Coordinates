@@ -117,6 +117,10 @@ static char sDayStr[]   = "day";
 static char sHourStr[]  = "hour";
 static char sTimeZoneStr[]  = "timezone";
 
+static char sLilianDateStr[]  = "LilianDate";
+static char sModifiedJulianDateStr[]  = "ModifiedJulianDate";
+static char sTruncatedJulianDateStr[]  = "TruncatedJulianDate";
+
 // reuse minutes, seconds above
 
 // object definition.
@@ -2362,7 +2366,6 @@ static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
 
   }
 
-
   if (parse_int_arg(arg1, month))
       return -1;
 
@@ -2424,6 +2427,25 @@ PyObject* datetime_repr(PyObject* self) {
 // -------------------------------
 // ----- getters and setters -----
 // -------------------------------
+
+// ----- Lilian Date -----
+
+static PyObject* datetime_getLilianDate(datetime* self, void* closure) {
+  return PyFloat_FromDouble(self->m_datetime.LilianDate());
+}
+
+// ----- Modified Julian Date -----
+
+static PyObject* datetime_getModifiedJulianDate(datetime* self, void* closure) {
+  return PyFloat_FromDouble(self->m_datetime.ModifiedJulianDate());
+}
+
+// ----- Truncated Julian Date -----
+
+static PyObject* datetime_getTruncatedJulianDate(datetime* self, void* closure) {
+  return PyFloat_FromDouble(self->m_datetime.TruncatedJulianDate());
+}
+
 
 
 // --------------------------
@@ -2510,13 +2532,13 @@ static PyMethodDef datetime_methods[] = {
 
 
 static PyMemberDef datetime_members[] = {
-
-  // TODO Lilian, modified, truncated
-
   {NULL}  /* Sentinel */
 };
 
 static PyGetSetDef datetime_getseters[] = {
+  {sLilianDateStr, (getter)datetime_getLilianDate, NULL, sLilianDateStr, NULL},
+  {sModifiedJulianDateStr, (getter)datetime_getModifiedJulianDate, NULL, sModifiedJulianDateStr, NULL},
+  {sTruncatedJulianDateStr, (getter)datetime_getTruncatedJulianDate, NULL, sTruncatedJulianDateStr, NULL},
   {NULL}  /* Sentinel */
 };
 

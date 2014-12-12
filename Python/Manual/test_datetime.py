@@ -31,15 +31,22 @@ class TestDateTime(unittest.TestCase):
 
     def test_lilian_date_accessor(self):
         """Test lilian date accessor"""
-        self.assertEqual(2299160.5, coords.datetime.LilianDate)
+        a = coords.datetime()
+        self.assertEqual(2299160.5, a.LilianDate)
+
+        # TODO different from Boost's access to static data member
+        # e.g. self.assertEqual(2440000.5, coords.datetime.TruncatedJulianDate)
 
     def test_modified_date_accessor(self):
         """Test modified date accessor"""
-        self.assertEqual(2400000.5, coords.datetime.ModifiedJulianDate)
+        a = coords.datetime()
+        self.assertEqual(2400000.5, a.ModifiedJulianDate)
+
 
     def test_truncated_date_accessor(self):
         """Test truncated date accessor"""
-        self.assertEqual(2440000.5, coords.datetime.TruncatedJulianDate)
+        a = coords.datetime()
+        self.assertEqual(2440000.5, a.TruncatedJulianDate)
 
 
     def test_default_constructor(self):
@@ -70,7 +77,7 @@ class TestDateTime(unittest.TestCase):
         """Test operator plus equal"""
         a_date_string = '1858-11-17T00:00:00'
         a = coords.datetime(a_date_string)
-        self.assertEqual(coords.datetime.ModifiedJulianDate, a.toJulianDate())
+        self.assertEqual(coords.datetime.ModifiedJulianDate(), a.toJulianDate())
 
 
     def test_operator_plus_equal(self):

@@ -84,6 +84,12 @@ namespace Coords {
     const bool& hasTimeZoneColon() const {return m_has_time_zone_colon;}
     const double& timeZone() const {return m_time_zone;}
 
+    // helpers for Python manual wrappers
+    const double& LilianDate() const {return s_LilianDate;}
+    const double& ModifiedJulianDate() const {return s_ModifiedJulianDate;}
+    const double& TruncatedJulianDate() const {return s_TruncatedJulianDate;}
+
+
     // ----- in-place operators -----
 
     DateTime& operator+=(const double& rhs);
