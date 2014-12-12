@@ -130,6 +130,58 @@ static void new_datetimeType(datetime** a_datetime);
 static int is_datetimeType(PyObject* a_datetime);
 
 
+// ---------------------
+// ----- utilities -----
+// ---------------------
+
+// helper functions for parsing numeric arguments. Allows arg to be
+// double or int.
+
+int parse_int_arg(PyObject* arg, int& val) {
+
+  if (arg) {
+
+    if (PyFloat_Check(arg) || PyInt_Check(arg)) {
+      val = PyFloat_AsDouble(arg);
+      return 0;
+
+    } else if (PyString_Check(arg)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+      return -1;
+
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg type");
+      return -1;
+    }
+
+  }
+
+  return 0; // fall through to leave default val unchanged
+}
+
+int parse_double_arg(PyObject* arg, double& val) {
+
+  if (arg) {
+
+    if (PyFloat_Check(arg) || PyInt_Check(arg)) {
+      val = PyFloat_AsDouble(arg);
+      return 0;
+
+    } else if (PyString_Check(arg)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+      return -1;
+
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg type");
+      return -1;
+    }
+
+  }
+
+  return 0; // fall through to leave default val unchanged
+}
+
+
 // =================
 // ===== Angle =====
 // =================
@@ -180,36 +232,11 @@ static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
 
   }
 
-  if (arg1) {
-
-    if (PyFloat_Check(arg1) || PyInt_Check(arg1)) {
-      minutes = PyFloat_AsDouble(arg1);
-
-    } else if (PyString_Check(arg1)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+  if (parse_double_arg(arg1, minutes))
       return -1;
 
-    } else {
-      PyErr_SetString(sCoordsException, "unsupported arg1 type");
+  if (parse_double_arg(arg2, seconds))
       return -1;
-    }
-
-  }
-
-  if (arg2) {
-
-    if (PyFloat_Check(arg2) || PyInt_Check(arg2)) {
-      seconds = PyFloat_AsDouble(arg2);
-
-    } else if (PyString_Check(arg2)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
-      return -1;
-    } else {
-      PyErr_SetString(sCoordsException, "unsupported arg2 type");
-      return -1;
-    }
-
-  }
 
   self->m_angle.value(Coords::degrees2seconds(degrees, minutes, seconds)/3600);
 
@@ -700,36 +727,11 @@ static int Latitude_init(Latitude* self, PyObject* args, PyObject* kwds) {
 
   }
 
-  if (arg1) {
-
-    if (PyFloat_Check(arg1) || PyInt_Check(arg1)) {
-      minutes = PyFloat_AsDouble(arg1);
-
-    } else if (PyString_Check(arg1)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+  if (parse_double_arg(arg1, minutes))
       return -1;
 
-    } else {
-      PyErr_SetString(sCoordsException, "unsupported arg1 type");
+  if (parse_double_arg(arg2, seconds))
       return -1;
-    }
-
-  }
-
-  if (arg2) {
-
-    if (PyFloat_Check(arg2) || PyInt_Check(arg2)) {
-      seconds = PyFloat_AsDouble(arg2);
-
-    } else if (PyString_Check(arg2)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
-      return -1;
-    } else {
-      PyErr_SetString(sCoordsException, "unsupported arg2 type");
-      return -1;
-    }
-
-  }
 
   self->m_angle.value(Coords::degrees2seconds(degrees, minutes, seconds)/3600);
 
@@ -1204,35 +1206,11 @@ static int Cartesian_init(Cartesian* self, PyObject* args, PyObject* kwds) {
 
   }
 
-  if (arg1) {
-
-    if (PyFloat_Check(arg1) || PyInt_Check(arg1)) {
-      y = PyFloat_AsDouble(arg1);
-
-    } else if (PyString_Check(arg1)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+  if (parse_double_arg(arg1, y))
       return -1;
-    } else {
-      PyErr_SetString(sCoordsException, "unsupported arg1 type");
+
+  if (parse_double_arg(arg2, z))
       return -1;
-    }
-
-  }
-
-  if (arg2) {
-
-    if (PyFloat_Check(arg2) || PyInt_Check(arg2)) {
-      z = PyFloat_AsDouble(arg2);
-
-    } else if (PyString_Check(arg2)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
-      return -1;
-    } else {
-      PyErr_SetString(sCoordsException, "unsupported arg2 type");
-      return -1;
-    }
-
-  }
 
   self->m_Cartesian.x(x);
   self->m_Cartesian.y(y);
@@ -1843,6 +1821,7 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
 
   }
 
+
   if (arg2) {
 
     if (is_AngleType(arg2)) {
@@ -2326,11 +2305,6 @@ static PyObject* datetime_new(PyTypeObject* type, PyObject* args, PyObject* kwds
   return (PyObject*)self;
 }
 
-
-
-
-
-
 static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
 
   static char* kwlist[] = {sYearStr, sMonthStr, sDayStr, sHourStr, sMinuteStr, sSecondStr, sTimeZoneStr, NULL};
@@ -2388,100 +2362,24 @@ static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
 
   }
 
-  // TODO void parse_numeric_arg(PyObject** arg, int/double val)
 
-  if (arg1) {
-
-    if (PyFloat_Check(arg1) || PyInt_Check(arg1)) {
-      month = PyFloat_AsDouble(arg1);
-
-    } else if (PyString_Check(arg1)) {
-
-      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+  if (parse_int_arg(arg1, month))
       return -1;
 
-    } else {
-      PyErr_SetString(sCoordsException, "unsupported arg1 type");
+  if (parse_int_arg(arg2, day))
       return -1;
-    }
 
-  }
-
-  if (arg2) {
-
-    if (PyFloat_Check(arg2) || PyInt_Check(arg2)) {
-      day = PyFloat_AsDouble(arg2);
-
-    } else if (PyString_Check(arg2)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+  if (parse_int_arg(arg3, hour))
       return -1;
-    } else {
-      PyErr_SetString(sCoordsException, "unsupported arg2 type");
+
+  if (parse_int_arg(arg4, minute))
       return -1;
-    }
 
-  }
-
-  if (arg3) {
-
-    if (PyFloat_Check(arg3) || PyInt_Check(arg3)) {
-      hour = PyFloat_AsDouble(arg3);
-
-    } else if (PyString_Check(arg3)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+  if (parse_double_arg(arg5, second))
       return -1;
-    } else {
-      PyErr_SetString(sCoordsException, "unsupported arg3 type");
+
+  if (parse_double_arg(arg6, timezone))
       return -1;
-    }
-
-  }
-
-
-  if (arg4) {
-
-    if (PyFloat_Check(arg4) || PyInt_Check(arg4)) {
-      minute = PyFloat_AsDouble(arg4);
-
-    } else if (PyString_Check(arg4)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
-      return -1;
-    } else {
-      PyErr_SetString(sCoordsException, "unsupported arg4 type");
-      return -1;
-    }
-
-  }
-
-  if (arg5) {
-
-    if (PyFloat_Check(arg5) || PyInt_Check(arg5)) {
-      second = PyFloat_AsDouble(arg5);
-
-    } else if (PyString_Check(arg5)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
-      return -1;
-    } else {
-      PyErr_SetString(sCoordsException, "unsupported arg5 type");
-      return -1;
-    }
-
-  }
-
-  if (arg6) {
-
-    if (PyFloat_Check(arg6) || PyInt_Check(arg6)) {
-      timezone = PyFloat_AsDouble(arg6);
-
-    } else if (PyString_Check(arg6)) {
-      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
-      return -1;
-    } else {
-      PyErr_SetString(sCoordsException, "unsupported arg6 type");
-      return -1;
-    }
-
-  }
 
   // create datetime
 
