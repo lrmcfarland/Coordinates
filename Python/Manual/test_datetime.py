@@ -93,10 +93,24 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime(a_date_string)
         self.assertEqual(2457000.5, a.toJulianDate())
 
+
+    def test_from_julian_date_as_attribute(self):
+        """Test from Julian date as attribute"""
         a = coords.datetime()
         a.JulianDate = a.ModifiedJulianDate
         self.assertEqual(a.ModifiedJulianDate, a.JulianDate)
-        # TODO different from boost as attribute not method
+
+    def test_from_julian_date_as_method(self):
+        """Test from Julian date as method"""
+        a = coords.datetime()
+        a.fromJulianDate(a.ModifiedJulianDate)
+        self.assertEqual(a.ModifiedJulianDate, a.toJulianDate())
+
+
+    def test_from_julian_date_as_method_exception(self):
+        """Test from Julian date as method exception"""
+        a_datetime = coords.datetime()
+        self.assertRaises(TypeError, lambda a: a.fromJulianDate('asdf'), a_datetime)
 
 
     def test_operator_plus_equal(self):

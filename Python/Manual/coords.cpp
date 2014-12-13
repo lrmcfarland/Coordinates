@@ -2548,14 +2548,29 @@ static PyObject* datetime_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
   return datetime_nb_subtract(o1, o2);
 }
 
+
+static PyObject* datetime_fromJulianDate(PyObject* o1, PyObject* o2) {
+
+  double jdate(0);
+  if (!PyArg_ParseTuple(o2, "d", &jdate))
+        return NULL;
+
+  ((datetime*)o1)->m_datetime.fromJulianDate(jdate);
+
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
 // --------------------------
 // ----- Python structs -----
 // --------------------------
 
 PyDoc_STRVAR(datetime_toJulianDate__doc__, "Returns the Julian date of the datetime object");
+PyDoc_STRVAR(datetime_fromJulianDate__doc__, "Sets the Julian date of the datetime object");
 
 static PyMethodDef datetime_methods[] = {
   {"toJulianDate", (PyCFunction) datetime_getJulianDate, METH_VARARGS, datetime_toJulianDate__doc__},
+  {"fromJulianDate", (PyCFunction) datetime_fromJulianDate, METH_VARARGS, datetime_fromJulianDate__doc__},
   {NULL}  /* Sentinel */
 };
 
