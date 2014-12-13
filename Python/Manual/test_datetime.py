@@ -80,15 +80,19 @@ class TestDateTime(unittest.TestCase):
         self.assertEqual(a.ModifiedJulianDate, a.JulianDate)
 
 
-    def test_to_julian_date_1(self):
-        """Test to Julian date"""
+    def test_to_julian_date_as_attribute(self):
+        """Test to Julian date as attribute"""
         a_date_string = '2014-12-09T00:00:00'
         a = coords.datetime(a_date_string)
         self.assertEqual(2457000.5, a.JulianDate)
 
 
-    def test_from_julian_date(self):
-        """Test from Julian date"""
+    def test_to_julian_date_as_method(self):
+        """Test to Julian date as method"""
+        a_date_string = '2014-12-09T00:00:00'
+        a = coords.datetime(a_date_string)
+        self.assertEqual(2457000.5, a.toJulianDate())
+
         a = coords.datetime()
         a.JulianDate = a.ModifiedJulianDate
         self.assertEqual(a.ModifiedJulianDate, a.JulianDate)

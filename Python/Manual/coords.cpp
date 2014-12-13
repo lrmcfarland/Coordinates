@@ -2552,7 +2552,10 @@ static PyObject* datetime_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
 // ----- Python structs -----
 // --------------------------
 
+PyDoc_STRVAR(datetime_toJulianDate__doc__, "Returns the Julian date of the datetime object");
+
 static PyMethodDef datetime_methods[] = {
+  {"toJulianDate", (PyCFunction) datetime_getJulianDate, METH_VARARGS, datetime_toJulianDate__doc__},
   {NULL}  /* Sentinel */
 };
 
