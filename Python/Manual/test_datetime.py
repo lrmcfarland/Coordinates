@@ -24,10 +24,7 @@ class TestDateTime(unittest.TestCase):
         self.places = 7 # precision
 
 
-
-    # -----------------------------
-    # ----- test constructors -----
-    # -----------------------------
+    # constructors
 
     def test_lilian_date_accessor(self):
         """Test lilian date accessor"""
@@ -61,17 +58,51 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime(a_date_string)
         self.assertEqual(a_date_string, str(a))
 
-
     def test_string_constructor_exception(self):
         """Test string constructor exception"""
         self.assertRaises(coords.Error, lambda a: coords.datetime(a), 'some_string')
 
+    def test_string_constructor_exception_2(self):
+        """Test string constructor exception"""
+        self.assertRaises(coords.Error, lambda a: coords.datetime(a), '1962-60-10T07:30:00+05:00')
 
-    def test_year_constructor(self):
-        """Test default constructor"""
+    def test_year_constructor_year(self):
+        """Test year constructor"""
         a = coords.datetime(1962)
         self.assertEqual('1962-01-01T00:00:00', str(a))
 
+    def test_year_month_constructor(self):
+        """Test year, month constructor"""
+        a = coords.datetime(1962, 7)
+        self.assertEqual('1962-07-01T00:00:00', str(a))
+
+    def test_year_month_day_constructor(self):
+        """Test year month day constructor"""
+        a = coords.datetime(1962, 7, 10)
+        self.assertEqual('1962-07-10T00:00:00', str(a))
+
+    def test_year_month_day_hour_constructor(self):
+        """Test year month day hour constructor"""
+        a = coords.datetime(1962, 7, 10, 14)
+        self.assertEqual('1962-07-10T14:00:00', str(a))
+
+    def test_year_month_day_hour_minute_constructor(self):
+        """Test year month day hour constructor"""
+        a = coords.datetime(1962, 7, 10, 14, 30)
+        self.assertEqual('1962-07-10T14:30:00', str(a))
+
+    def test_year_month_day_hour_minute_second_constructor(self):
+        """Test year month day hour constructor"""
+        a = coords.datetime(1962, 7, 10, 14, 30, 25)
+        self.assertEqual('1962-07-10T14:30:25', str(a))
+
+    # TODO this should raise an exception
+    def DISABLED_test_year_month_day_hour_minute_second_constructor_exception(self):
+        """Test year month day hour constructor"""
+        a = coords.datetime(1962, 25, 66, 14, 30, 25)
+        self.assertEqual('1962-07-10T14:30:25', str(a))
+
+    # Julian date methods
 
     def test_to_julian_modified_date(self):
         """Test to modified Julian date"""
@@ -79,20 +110,17 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime(a_date_string)
         self.assertEqual(a.ModifiedJulianDate, a.JulianDate)
 
-
     def test_to_julian_date_as_attribute(self):
         """Test to Julian date as attribute"""
         a_date_string = '2014-12-09T00:00:00'
         a = coords.datetime(a_date_string)
         self.assertEqual(2457000.5, a.JulianDate)
 
-
     def test_to_julian_date_as_method(self):
         """Test to Julian date as method"""
         a_date_string = '2014-12-09T00:00:00'
         a = coords.datetime(a_date_string)
         self.assertEqual(2457000.5, a.toJulianDate())
-
 
     def test_from_julian_date_as_attribute(self):
         """Test from Julian date as attribute"""
@@ -111,6 +139,9 @@ class TestDateTime(unittest.TestCase):
         a_datetime = coords.datetime()
         self.assertRaises(TypeError, lambda a: a.fromJulianDate('asdf'), a_datetime)
 
+    # operators
+
+    # add
 
     def test_operator_inplace_plus_double(self):
         """Test operator plus equal"""
@@ -147,6 +178,8 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime('1962-07-10T07:30:00+05:00')
         b = a + 365 # commute
         self.assertEqual('1963-07-10T17:30:00+05:00', str(b))
+
+    # minus
 
     def test_operator_inplace_minus_double(self):
         """Test operator-=(double)"""
