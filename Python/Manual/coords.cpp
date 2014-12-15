@@ -331,6 +331,7 @@ static int Angle_setRadians(Angle* self, PyObject* radians, void* closure) {
 static PyObject* Angle_nb_add(PyObject* o1, PyObject* o2) {
 
   if (!is_AngleType(o1) || !is_AngleType(o2)) {
+    // TODO coords.Error?
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
   }
@@ -403,6 +404,8 @@ static PyObject* Angle_nb_negative(PyObject* o1) {
 
 static PyObject* Angle_nb_multiply(PyObject* o1, PyObject* o2) {
 
+  // TODO support o2 as double?
+
   if (!is_AngleType(o1) || !is_AngleType(o2)) {
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
@@ -423,6 +426,8 @@ static PyObject* Angle_nb_multiply(PyObject* o1, PyObject* o2) {
 
 
 static PyObject* Angle_nb_divide(PyObject* o1, PyObject* o2) {
+
+  // TODO support o2 as double?
 
   if (!is_AngleType(o1) || !is_AngleType(o2)) {
     Py_INCREF(Py_NotImplemented);
@@ -511,24 +516,51 @@ static PyObject* Angle_tp_richcompare(PyObject* o1, PyObject* o2, int op) {
 // ---------------------------
 
 static PyObject* Angle_nb_inplace_add(PyObject* o1, PyObject* o2) {
-  // TODO can this be implement directly using space::operator+=()?
-  // problem with refence going out of scope, segfault.
-  return Angle_nb_add(o1, o2);
+  // TODO o1 is implicitly always angleType?
+  // TODO support o2 as double?
+  if (is_AngleType(o1) && is_AngleType(o2)) {
+    ((Angle*)o1)->m_angle.operator+=(((Angle*)o2)->m_angle);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "angle::operator-=() called with unsupported type");
+  return NULL;
 }
 
 static PyObject* Angle_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
-  // TOOD implement directly?
-  return Angle_nb_subtract(o1, o2);
+  // TODO o1 is implicitly always angleType?
+  // TODO support o2 as double?
+  if (is_AngleType(o1) && is_AngleType(o2)) {
+    ((Angle*)o1)->m_angle.operator-=(((Angle*)o2)->m_angle);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "angle::operator-=() called with unsupported type");
+  return NULL;
 }
 
 static PyObject* Angle_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
-  // TOOD implement directly?
-  return Angle_nb_multiply(o1, o2);
+  // TODO o1 is implicitly always angleType?
+  // TODO support o2 as double?
+  if (is_AngleType(o1) && is_AngleType(o2)) {
+    ((Angle*)o1)->m_angle.operator*=(((Angle*)o2)->m_angle);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "angle::operator-=() called with unsupported type");
+  return NULL;
 }
 
 static PyObject* Angle_nb_inplace_divide(PyObject* o1, PyObject* o2) {
-  // TOOD implement directly?
-  return Angle_nb_divide(o1, o2);
+  // TODO o1 is implicitly always angleType?
+  // TODO support o2 as double?
+  if (is_AngleType(o1) && is_AngleType(o2)) {
+    ((Angle*)o1)->m_angle.operator/=(((Angle*)o2)->m_angle);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "angle::operator-=() called with unsupported type");
+  return NULL;
 }
 
 // ----- deg2rad -----
@@ -2562,7 +2594,7 @@ static PyObject* datetime_fromJulianDate(PyObject* o1, PyObject* o2) {
 
   double jdate(0);
   if (!PyArg_ParseTuple(o2, "d", &jdate))
-        return NULL;
+    return NULL;
 
   ((datetime*)o1)->m_datetime.fromJulianDate(jdate);
 

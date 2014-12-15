@@ -135,7 +135,6 @@ class TestAngle(unittest.TestCase):
 
     # constructors
 
-
     def test_copy_constructor(self):
         """Test copy constructor"""
         an_angle = coords.angle(self.rd1)
@@ -240,23 +239,69 @@ class TestAngle(unittest.TestCase):
 
     # operators
 
-    # add
+    # plus
 
-    def test_inplace_add(self):
+    def test_inplace_plus(self):
         """Test angle += angle"""
         a1 = coords.angle(self.rd1)
         a2 = coords.angle(self.rd2)
         a1 += a2
         self.assertAlmostEqual(self.rd1 + self.rd2, a1.value, self.places)
 
+    def test_inplace_plus_exception_string(self):
+        """Test angle += string exception"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a1 += 'asdf'
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+    def test_inplace_plus_exception_double(self):
+        """Test angle += double exception"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a1 += 30.0
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
     def test_angle_plus_angle(self):
         """Test angle + angle"""
         a1 = coords.angle(self.rd1)
         a2 = coords.angle(self.rd2)
-        a3 = coords.angle()
         a3 = a1 + a2
         self.assertAlmostEqual(self.rd1 + self.rd2, a3.value, self.places)
 
+    def test_angle_plus_string_exception(self):
+        """Test angle + string"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = a1 + 'asdf'
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
+
+    def test_string_plus_angle_exception(self):
+        """Test string + angle"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = 'asdf' + a1
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
+
+    def test_angle_plus_double_exception(self):
+        """Test angle + double"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = a1 + 24.5
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
+
+    def test_double_plus_angle_exception(self):
+        """Test double + angle"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = 24.5 + a1
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
 
     # subtract
 
@@ -267,14 +312,63 @@ class TestAngle(unittest.TestCase):
         a1 -= a2
         self.assertAlmostEqual(self.rd1 - self.rd2, a1.value, self.places)
 
+    def test_inplace_minus_exception_string(self):
+        """Test angle -= string exception"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a1 -= 'asdf'
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+    def test_inplace_minus_exception_double(self):
+        """Test angle -= double exception"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a1 -= 30.0
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
     def test_angle_minus_angle(self):
         """Test angle - angle"""
         a1 = coords.angle(self.rd1)
         a2 = coords.angle(self.rd2)
-        a3 = coords.angle()
         a3 = a1 - a2
         self.assertAlmostEqual(self.rd1 - self.rd2, a3.value, self.places)
 
+
+    def test_angle_minus_string_exception(self):
+        """Test angle + string"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = a1 - 'asdf'
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
+
+    def test_string_minus_angle_exception(self):
+        """Test string + angle"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = 'asdf' - a1
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
+
+    def test_angle_minus_double_exception(self):
+        """Test angle + double"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = a1 - 24.5
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
+
+    def test_double_minus_angle_exception(self):
+        """Test double + angle"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = 24.5 - a1
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
+
+    # unitary minus
 
     def test_unitary_minus(self):
         """Test angle = -angle"""
@@ -291,14 +385,60 @@ class TestAngle(unittest.TestCase):
         a1 *= a2
         self.assertAlmostEqual(self.rd1 * self.rd2, a1.value, self.places)
 
+    def test_inplace_multiply_exception_string(self):
+        """Test angle += string exception"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a1 *= 'asdf'
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
 
-    def test_angle_times_angle(self):
+    def test_inplace_multiply_exception_double(self):
+        """Test angle += double exception"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a1 *= 30.0
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+    def test_angle_multiply_angle(self):
         """Test angle * angle"""
         a1 = coords.angle(self.rd1)
         a2 = coords.angle(self.rd2)
         a3 = a1 * a2
         self.assertAlmostEqual(self.rd1 * self.rd2, a3.value, self.places)
 
+    def test_angle_multiply_string_exception(self):
+        """Test angle + string"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = a1 * 'asdf'
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
+
+    def test_string_multiply_angle_exception(self):
+        """Test string + angle"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = 'asdf' * a1
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
+
+    def test_angle_multiply_double_exception(self):
+        """Test angle + double"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = a1 * 24.5
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
+
+    def test_double_multiply_angle_exception(self):
+        """Test double + angle"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = 24.5 * a1
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
 
     # divide
 
@@ -309,6 +449,21 @@ class TestAngle(unittest.TestCase):
         a1 /= a2
         self.assertAlmostEqual(self.rd1 / self.rd2, a1.value, self.places)
 
+    def test_inplace_divide_exception_string(self):
+        """Test angle /= string exception"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a1 /= 'asdf'
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+    def test_inplace_divide_exception_double(self):
+        """Test angle /= double exception"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a1 /= 30.0
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
 
     def test_angle_divide_angle(self):
         """Test angle / angle"""
@@ -317,6 +472,39 @@ class TestAngle(unittest.TestCase):
         a3 = a1 / a2
         self.assertAlmostEqual(self.rd1 / self.rd2, a3.value, self.places)
 
+    def test_angle_divide_string_exception(self):
+        """Test angle + string"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = a1 / 'asdf'
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
+
+    def test_string_divide_angle_exception(self):
+        """Test string + angle"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = 'asdf' / a1
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
+
+    def test_angle_divide_double_exception(self):
+        """Test angle + double"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = a1 / 24.5
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
+
+    def test_double_divide_angle_exception(self):
+        """Test double + angle"""
+        a1 = coords.angle(self.rd1)
+        try:
+            a3 = 24.5 / a1
+        except TypeError, err:
+            self.assertTrue(TypeError == type(err))
+
+    # divide by zero
 
     def test_angle_divide_zero(self):
         """Test angle / 0"""
@@ -381,7 +569,7 @@ class TestLatitude(unittest.TestCase):
             self.assertTrue(RuntimeError == type(err))
 
 
-    def test_inplace_add_1(self):
+    def test_inplace_plus_1(self):
         """Test latitude += latitude"""
         a1 = coords.latitude(10)
         a2 = coords.latitude(10)
@@ -389,7 +577,7 @@ class TestLatitude(unittest.TestCase):
         self.assertAlmostEqual(20, a1.value, self.places)
 
     @unittest.skip('TODO works in Boost. TypeError here')
-    def test_inplace_add_2(self):
+    def test_inplace_plus_2(self):
         """Test latitude += angle"""
         a1 = coords.latitude(10)
         a2 = coords.angle(10)
@@ -397,7 +585,7 @@ class TestLatitude(unittest.TestCase):
         self.assertAlmostEqual(20, a1.value, self.places)
 
 
-    def test_inplace_add_over_limit(self):
+    def test_inplace_plus_over_limit(self):
         """Test latitude += latitude"""
         # TODO doesn't prevent this. See Angles with templates repo.
         a1 = coords.latitude(50)
