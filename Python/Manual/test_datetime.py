@@ -106,58 +106,84 @@ class TestDateTime(unittest.TestCase):
         a.fromJulianDate(a.ModifiedJulianDate)
         self.assertEqual(a.ModifiedJulianDate, a.toJulianDate())
 
-
     def test_from_julian_date_as_method_exception(self):
         """Test from Julian date as method exception"""
         a_datetime = coords.datetime()
         self.assertRaises(TypeError, lambda a: a.fromJulianDate('asdf'), a_datetime)
 
 
-    def test_operator_plus_equal(self):
+    def test_operator_inplace_plus_double(self):
         """Test operator plus equal"""
         a_date_string = '1962-07-10T07:30:00+05:00'
         a = coords.datetime(a_date_string)
-        a += 365
+        a += 365.0
         self.assertEqual('1963-07-10T17:30:00+05:00', str(a))
 
+    def test_operator_inplace_plus_exception_string(self):
+        """Test operator+=(string) exception"""
+        a = coords.datetime('1962-07-10T07:30:00+05:00')
+        try:
+            a += 'asdf'
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
 
-    def test_operator_plus(self):
-        """Test operator plus"""
-        a_date_string = '1962-07-10T07:30:00+05:00'
-        a = coords.datetime(a_date_string)
-        b = coords.datetime
+    def test_operator_inplace_plus_exception_datetime(self):
+        """Test operator+=(datetime) exception"""
+        a = coords.datetime('1962-07-10T07:30:00+05:00')
+        b = coords.datetime('1962-07-10T07:30:00+05:00')
+        try:
+            a += b
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+    def test_datetime_plus_datetime_1(self):
+        """Test datetime + datetime"""
+        a = coords.datetime('1962-07-10T07:30:00+05:00')
         b = 365 + a
         self.assertEqual('1963-07-10T17:30:00+05:00', str(b))
 
+    def test_datetime_plus_datetime_2(self):
+        """Test datetime + datetime"""
+        a = coords.datetime('1962-07-10T07:30:00+05:00')
+        b = a + 365 # commute
+        self.assertEqual('1963-07-10T17:30:00+05:00', str(b))
 
-    def test_operator_minus_equal(self):
-        """Test operator minus equal"""
-        a_date_string = '1962-07-10T07:30:00+05:00'
-        a = coords.datetime(a_date_string)
+    def test_operator_inplace_minus_double(self):
+        """Test operator-=(double)"""
+        a = coords.datetime('1962-07-10T07:30:00+05:00')
         a -= 365
         self.assertEqual('1961-07-10T17:30:00+05:00', str(a))
 
+    def test_operator_inplace_minus_exception_string(self):
+        """Test operator-=(string) exception"""
+        a_date_string = '1962-07-10T07:30:00+05:00'
+        a = coords.datetime(a_date_string)
+        try:
+            a -= 'asdf'
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
 
-    def test_operator_minus_datetime_1(self):
-        """Test operator minus date time"""
+    def test_operator_inplace_minus_exception_datetime(self):
+        """Test operator-=(string) exception"""
+        a = coords.datetime('1962-07-10T07:30:00+05:00')
+        b = coords.datetime('1962-07-10T07:30:00+05:00')
+        try:
+            a -= b
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+    def test_datetime_minus_datetime_1(self):
+        """Test datetime - datetime"""
         a = coords.datetime('1962-07-10T07:30:00+05:00')
         b = coords.datetime('1963-07-10T07:30:00+05:00')
         self.assertEqual(365, b - a)
 
 
-    def test_operator_minus_datetime_2(self):
-        """Test operator minus date time"""
+    def test_datetime_minus_datetime_2(self):
+        """Test datetime - datetime"""
         a = coords.datetime('1962-07-10T07:30:00+05:00')
         b = coords.datetime('1963-07-10T07:30:00+05:00')
-        self.assertEqual(-365, a - b)
-
-
-    def test_operator_minus_datetime_2(self):
-        """Test operator minus date time"""
-        a = coords.datetime('1962-07-10T07:30:00+05:00')
-        b = coords.datetime('2012-07-10T07:30:00+05:00')
-        self.assertEqual(18263.0, b - a)
-
+        self.assertEqual(-365.0, a - b)
 
 
 if __name__ == '__main__':

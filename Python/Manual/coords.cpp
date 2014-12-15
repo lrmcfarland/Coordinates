@@ -2497,7 +2497,6 @@ static PyObject* datetime_nb_add(PyObject* o1, PyObject* o2) {
   if ((PyFloat_Check(o1) || PyInt_Check(o1)) && is_datetimeType(o2)) {
     result_datetime->m_datetime = PyFloat_AsDouble(o1) + ((datetime*)o2)->m_datetime;
     return (PyObject*) result_datetime;
-
   }
 
   Py_INCREF(Py_NotImplemented);
@@ -2515,7 +2514,6 @@ static PyObject* datetime_nb_subtract(PyObject* o1, PyObject* o2) {
     PyErr_SetString(sCoordsException, "subtract failed to create coord.datetime");
     return NULL;
   }
-
 
   if (is_datetimeType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
     result_datetime->m_datetime = ((datetime*)o1)->m_datetime - PyFloat_AsDouble(o2);
@@ -2538,14 +2536,25 @@ static PyObject* datetime_nb_subtract(PyObject* o1, PyObject* o2) {
 // ---------------------------
 
 static PyObject* datetime_nb_inplace_add(PyObject* o1, PyObject* o2) {
-  // TODO can this be implement directly using space::operator+=()?
-  // problem with refence going out of scope, segfault.
-  return datetime_nb_add(o1, o2);
+  if (is_datetimeType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+    double jdate = PyFloat_AsDouble(o2);
+    ((datetime*)o1)->m_datetime.operator+=(jdate);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "datetime::operator-=() called with unsupported type");
+  return NULL;
 }
 
 static PyObject* datetime_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
-  // TOOD implement directly?
-  return datetime_nb_subtract(o1, o2);
+  if (is_datetimeType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+    double jdate = PyFloat_AsDouble(o2);
+    ((datetime*)o1)->m_datetime.operator-=(jdate);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "datetime::operator-=() called with unsupported type");
+  return NULL;
 }
 
 
