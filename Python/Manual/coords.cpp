@@ -856,6 +856,7 @@ static int Latitude_setRadians(Latitude* self, PyObject* radians, void* closure)
 
 
 static PyObject* Latitude_nb_add(PyObject* o1, PyObject* o2) {
+  // TODO support o2 as angle? double?
 
   if (!is_LatitudeType(o1) || !is_LatitudeType(o2)) {
     Py_INCREF(Py_NotImplemented);
@@ -880,6 +881,7 @@ static PyObject* Latitude_nb_add(PyObject* o1, PyObject* o2) {
 
 
 static PyObject* Latitude_nb_subtract(PyObject* o1, PyObject* o2) {
+  // TODO support o2 as angle? double?
 
   if (!is_LatitudeType(o1) || !is_LatitudeType(o2)) {
     Py_INCREF(Py_NotImplemented);
@@ -929,6 +931,7 @@ static PyObject* Latitude_nb_negative(PyObject* o1) {
 
 
 static PyObject* Latitude_nb_multiply(PyObject* o1, PyObject* o2) {
+  // TODO support o2 as angle? double?
 
   if (!is_LatitudeType(o1) || !is_LatitudeType(o2)) {
     Py_INCREF(Py_NotImplemented);
@@ -950,6 +953,7 @@ static PyObject* Latitude_nb_multiply(PyObject* o1, PyObject* o2) {
 
 
 static PyObject* Latitude_nb_divide(PyObject* o1, PyObject* o2) {
+  // TODO support o2 as angle? double?
 
   if (!is_LatitudeType(o1) || !is_LatitudeType(o2)) {
     Py_INCREF(Py_NotImplemented);
@@ -1038,24 +1042,47 @@ static PyObject* Latitude_tp_richcompare(PyObject* o1, PyObject* o2, int op) {
 // ---------------------------
 
 static PyObject* Latitude_nb_inplace_add(PyObject* o1, PyObject* o2) {
-  // TODO can this be implement directly using space::operator+=()?
-  // problem with refence going out of scope, segfault.
-  return Latitude_nb_add(o1, o2);
+  // TODO support o2 as angle? double?
+  if (is_LatitudeType(o1) && is_LatitudeType(o2)) {
+    ((Latitude*)o1)->m_angle.operator+=(((Latitude*)o2)->m_angle);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "Latitude::operator+=() called with unsupported type");
+  return NULL;
 }
 
 static PyObject* Latitude_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
-  // TOOD implement directly?
-  return Latitude_nb_subtract(o1, o2);
+  // TODO support o2 as angle? double?
+  if (is_LatitudeType(o1) && is_LatitudeType(o2)) {
+    ((Latitude*)o1)->m_angle.operator-=(((Latitude*)o2)->m_angle);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "Latitude::operator-=() called with unsupported type");
+  return NULL;
 }
 
 static PyObject* Latitude_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
-  // TOOD implement directly?
-  return Latitude_nb_multiply(o1, o2);
+  // TODO support o2 as angle? double?
+  if (is_LatitudeType(o1) && is_LatitudeType(o2)) {
+    ((Latitude*)o1)->m_angle.operator*=(((Latitude*)o2)->m_angle);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "Latitude::operator*=() called with unsupported type");
+  return NULL;
 }
 
 static PyObject* Latitude_nb_inplace_divide(PyObject* o1, PyObject* o2) {
-  // TOOD implement directly?
-  return Latitude_nb_divide(o1, o2);
+  // TODO support o2 as angle? double?
+  if (is_LatitudeType(o1) && is_LatitudeType(o2)) {
+    ((Latitude*)o1)->m_angle.operator/=(((Latitude*)o2)->m_angle);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "Latitude::operator/=() called with unsupported type");
+  return NULL;
 }
 
 // --------------------------
