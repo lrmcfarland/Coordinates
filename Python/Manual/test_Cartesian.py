@@ -164,6 +164,7 @@ class TestCartesian(unittest.TestCase):
     def test_magnitude(self):
         """Test space magnitude"""
         root_sum_square = math.sqrt(self.p1.x*self.p1.x + self.p1.y*self.p1.y + self.p1.z*self.p1.z)
+        # TODO implement as instance method
         a = coords.Cartesian().magnitude(self.p1)
         self.assertAlmostEqual(root_sum_square, a, self.places)
 
@@ -175,6 +176,7 @@ class TestCartesian(unittest.TestCase):
                                       self.p1.y/root_sum_square,
                                       self.p1.z/root_sum_square)
 
+        # TODO implement as instance method
         a = coords.Cartesian().normalized(self.p1)
         self.assertSpacesAreEqual(normalized, a)
 
@@ -193,7 +195,7 @@ class TestCartesian(unittest.TestCase):
         """Test space != space"""
         a = coords.Cartesian(1, 2, 3)
         b = coords.Cartesian(-1, 2, 3)
-        self.assertTrue(a != b) # True because comparing memory addresses not value.
+        self.assertTrue(a != b) # May also be true because comparing memory addresses not value.
 
 
     def test_space_eq_space1(self):
@@ -237,23 +239,33 @@ class TestCartesian(unittest.TestCase):
     # ----- test math operators -----
     # -------------------------------
 
+    # plus
+
+    def test_inplace_plus(self):
+        """Test space += space"""
+        result = coords.Cartesian(self.p1.x + self.p2.x,
+                                  self.p1.y + self.p2.y,
+                                  self.p1.z + self.p2.z)
+        a = self.p1
+        a += self.p2
+        self.assertTrue(result == a)
+
+    def test_inplace_plus_exception_string(self):
+        """Test space += string exception"""
+        a1 = coords.Cartesian()
+        try:
+            a1 += 'asdf'
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+
     def test_space_plus_space(self):
         """Test space + space"""
         result = coords.Cartesian(self.p1.x + self.p2.x,
                                   self.p1.y + self.p2.y,
                                   self.p1.z + self.p2.z)
         a = self.p1 + self.p2
-        self.assertSpacesAreEqual(result, a)
-
-
-    def test_inplace_add(self):
-        """Test space +="""
-        result = coords.Cartesian(self.p1.x + self.p2.x,
-                                  self.p1.y + self.p2.y,
-                                  self.p1.z + self.p2.z)
-        a = self.p1
-        a += self.p2
-        self.assertSpacesAreEqual(result, a)
+        self.assertTrue(result == a)
 
 
     def test_space_plus_double(self):
@@ -261,6 +273,24 @@ class TestCartesian(unittest.TestCase):
         # c++ explicit conversion constructor not defined for double
         self.assertRaises(TypeError, lambda: self.p1 + self.p2.x)
 
+    # minus
+
+    def test_inplace_minus(self):
+        """Test space -= space"""
+        result = coords.Cartesian(self.p1.x - self.p2.x,
+                                  self.p1.y - self.p2.y,
+                                  self.p1.z - self.p2.z)
+        a = self.p1
+        a -= self.p2
+        self.assertSpacesAreEqual(result, a)
+
+    def test_inplace_minus_exception_string(self):
+        """Test space -= string exception"""
+        a1 = coords.Cartesian()
+        try:
+            a1 -= 'asdf'
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
 
     def test_space_minus_space(self):
         """Test space - space"""
@@ -270,16 +300,13 @@ class TestCartesian(unittest.TestCase):
         a = self.p1 - self.p2
         self.assertSpacesAreEqual(result, a)
 
+    def test_space_minus_double(self):
+        """Test space - double"""
+        # c++ explicit conversion constructor not defined for double
+        self.assertRaises(TypeError, lambda: self.p1 - self.p2.x)
 
-    def test_inplace_subtract(self):
-        """Test space -="""
-        result = coords.Cartesian(self.p1.x - self.p2.x,
-                                  self.p1.y - self.p2.y,
-                                  self.p1.z - self.p2.z)
-        a = self.p1
-        a -= self.p2
-        self.assertSpacesAreEqual(result, a)
 
+    # unitary minus
 
     def test_unitary_minus(self):
         """Test space = -space"""
@@ -289,32 +316,44 @@ class TestCartesian(unittest.TestCase):
         a = -self.p1
         self.assertTrue(result == a)
 
+    # multiply
 
-    def test_space_minus_double(self):
-        """Test space - double"""
-        # c++ explicit conversion constructor not defined for double
-        self.assertRaises(TypeError, lambda: self.p1 - self.p2.x)
-
-
-    def test_space_times_double_0(self):
+    def test_inplace_multiply_by_double(self):
         """Test space * double (scale)"""
         result = coords.Cartesian(0.5, 0.5, 0.5)
         a = coords.Cartesian(1,1,1) # positive to avoid unitary minus problem
-        scale = 0.5
-        a *= scale
-        self.assertSpacesAreEqual(result, a)
+        a *= 0.5
+        self.assertTrue(result, a)
 
 
-    def test_space_times_double_1(self):
-        """Test space * double (scale)"""
+    def test_inplace_multiply_by_space_exception(self):
+        """Test space *= space"""
+        # don't change a from space to double from dot product
+        a = self.p1
+        try:
+            a *= self.p2
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+    def test_inplace_multiply_by_string_exception(self):
+        """Test space *= string"""
+        # don't change a from space to double from dot product
+        a = self.p1
+        try:
+            a *= 'asdf'
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+
+    def test_double_multiply_space(self):
+        """Test double * space (scale)"""
         result = coords.Cartesian(0.5, 0.5, 0.5)
         a = coords.Cartesian(1,1,1) # positive to avoid unitary minus problem
         scale = 0.5
-        a = a * scale
+        a = scale * a
         self.assertSpacesAreEqual(result, a)
 
-
-    def test_double_times_space_2(self):
+    def test_space_multiply_double(self):
         """Test space * double (scale)"""
         result = coords.Cartesian(0.5, 0.5, 0.5)
         a = coords.Cartesian(1,1,1) # positive to avoid unitary minus problem
@@ -323,20 +362,58 @@ class TestCartesian(unittest.TestCase):
         self.assertSpacesAreEqual(result, a)
 
 
-    def test_space_times_space(self):
+    def test_space_multiply_space(self):
         """Test space * space dot product"""
         result = self.p1.x * self.p2.x + self.p1.y * self.p2.y + self.p1.z * self.p2.z
         a = self.p1 * self.p2
         self.assertAlmostEqual(result, a, self.places)
 
+    # divide
 
-    def test_inplace_multiply(self):
-        """Test space *= dot product"""
-        result = self.p1.x * self.p2.x + self.p1.y * self.p2.y + self.p1.z * self.p2.z
+    def test_inplace_divide(self):
+        """Test inplace divide (scale)"""
+        result = coords.Cartesian(self.p1.x / 2.0,
+                                  self.p1.y / 2.0,
+                                  self.p1.z / 2.0)
         a = self.p1
-        a *= self.p2
-        self.assertAlmostEqual(result, a, self.places)
+        a /= 2.0
+        self.assertSpacesAreEqual(result, a)
 
+
+    def test_inplace_divide_by_space_exception(self):
+        """Test space /= space"""
+        # don't change a from space to double from dot product
+        a = self.p1
+        try:
+            a /= self.p2
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+    def test_inplace_divide_by_string_exception(self):
+        """Test space /= string"""
+        # don't change a from space to double from dot product
+        a = self.p1
+        try:
+            a /= 'asdf'
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+    def test_divide(self):
+        """Test divide (scale)"""
+        result = coords.Cartesian(self.p1.x / 2.0,
+                                  self.p1.y / 2.0,
+                                  self.p1.z / 2.0)
+        a = self.p1 / 2.0
+        self.assertSpacesAreEqual(result, a)
+
+    def test_divide_by_zero_exception(self):
+        """Test space / 0"""
+        a1 = self.p1
+        self.assertRaises(coords.Error, lambda a: a / 0, a1)
+        # Note: different from Boost catching RuntimeError
+
+
+    # vector methods
 
     def test_dot_product(self):
         """Test space dot product function"""
@@ -370,31 +447,6 @@ class TestCartesian(unittest.TestCase):
         c = coords.Cartesian().cross(a, b)
         self.assertSpacesAreEqual(coords.Cartesian(0.5, -0.5, 0), c)
 
-
-    def test_divide(self):
-        """Test divide (scale)"""
-        result = coords.Cartesian(self.p1.x / 2.0,
-                                  self.p1.y / 2.0,
-                                  self.p1.z / 2.0)
-        a = self.p1 / 2.0
-        self.assertSpacesAreEqual(result, a)
-
-
-    def test_inplace_divide(self):
-        """Test inplace divide (scale)"""
-        result = coords.Cartesian(self.p1.x / 2.0,
-                                  self.p1.y / 2.0,
-                                  self.p1.z / 2.0)
-        a = self.p1
-        a /= 2.0
-        self.assertSpacesAreEqual(result, a)
-
-
-    def test_divide_by_zero(self):
-        """Test space / 0"""
-        a1 = self.p1
-        self.assertRaises(coords.Error, lambda a: a / 0, a1)
-        # Note: different from Boost catching RuntimeError
 
 
 if __name__ == '__main__':

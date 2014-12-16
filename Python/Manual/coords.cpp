@@ -523,7 +523,7 @@ static PyObject* Angle_nb_inplace_add(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "angle::operator-=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "angle::operator+=() called with unsupported type");
   return NULL;
 }
 
@@ -1570,24 +1570,53 @@ static PyObject* Cartesian_tp_richcompare(PyObject* o1, PyObject* o2, int op) {
 // ---------------------------
 
 static PyObject* Cartesian_nb_inplace_add(PyObject* o1, PyObject* o2) {
-  // TODO can this be implement directly using Cartesian::operator+=()?
-  // problem with refence going out of scope, segfault.
-  return Cartesian_nb_add(o1, o2);
+  if (is_CartesianType(o1) && is_CartesianType(o2)) {
+    ((Cartesian*)o1)->m_Cartesian.operator+=(((Cartesian*)o2)->m_Cartesian);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "Cartesian::operator+=() called with unsupported type");
+  return NULL;
 }
 
 static PyObject* Cartesian_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
-  // TOOD implement directly?
-  return Cartesian_nb_subtract(o1, o2);
+  if (is_CartesianType(o1) && is_CartesianType(o2)) {
+    ((Cartesian*)o1)->m_Cartesian.operator-=(((Cartesian*)o2)->m_Cartesian);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "Cartesian::operator-=() called with unsupported type");
+  return NULL;
 }
 
 static PyObject* Cartesian_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
-  // TOOD implement directly?
-  return Cartesian_nb_multiply(o1, o2);
+
+  // This only scales the vector. If it returned the dot product, it
+  // would switch the object to type double.
+
+  if (is_CartesianType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+    ((Cartesian*)o1)->m_Cartesian.operator*=(PyFloat_AsDouble(o2));
+    Py_INCREF(o1);
+    return o1;
+  }
+
+  PyErr_SetString(sCoordsException, "Cartesian::operator*=() called with unsupported type");
+  return NULL;
+
 }
 
 static PyObject* Cartesian_nb_inplace_divide(PyObject* o1, PyObject* o2) {
-  // TOOD implement directly?
-  return Cartesian_nb_divide(o1, o2);
+  // This only scales the vector.
+
+  if (is_CartesianType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+    ((Cartesian*)o1)->m_Cartesian.operator/=(PyFloat_AsDouble(o2));
+    Py_INCREF(o1);
+    return o1;
+  }
+
+  PyErr_SetString(sCoordsException, "Cartesian::operator/=() called with unsupported type");
+  return NULL;
+
 }
 
 // --------------------------
