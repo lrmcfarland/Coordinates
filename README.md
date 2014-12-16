@@ -13,6 +13,30 @@ dividing by a double will scale the vector. Constructors for copy
 and copy assign are provided along with conversion constructors
 to transform Cartesian into Spherical coordinates and vice versa.
 
+## To Install
+
+Coordinates uses [gtest](https://code.google.com/p/googletest/) to
+validate the C++ library libCoords. Details on this can be found
+in [libCoords](libCoords/README.md##googletest).
+
+The Python modules use the native Python unit test module.
+
+To build the Boost wrappers you will, of course, need to install
+[Boost](http://www.boost.org) with python. Details on this can be found
+in [Python/Boost](Python/Boost/README.md##Boost).
+
+
+### OSX
+
+I built this on my iMac using the g++ compiler that comes with
+[Xcode](https://developer.apple.com/xcode/), but there is nothing special
+that should cause a problem for other compilers.
+
+### Linux
+
+TODO
+
+
 ## To Build
 
 Each directory has its own Makefile with 'build', 'test', and 'clean'
@@ -36,23 +60,6 @@ $ ./build.sh clean
 $ ./build.sh test
 ```
 
-Each directory has a suite of unit tests. libCoords uses
-[gtest](https://code.google.com/p/googletest/). The Python
-modules use the native Python unit test.
-
-To build the Boost wrappers you will, of course, need to install
-[Boost](http://www.boost.org).
-
-
-### OSX
-
-I built this on my iMac using the g++ compiler that comes with
-[Xcode](https://developer.apple.com/xcode/), but there is nothing special
-that should cause a problem for other compilers.
-
-### Linux
-
-TODO
 
 ## To Run
 
