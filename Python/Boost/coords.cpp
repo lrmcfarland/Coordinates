@@ -12,6 +12,7 @@
 
 #include "angle.h"
 #include "Cartesian.h"
+#include "datetime.h"
 #include "spherical.h"
 
 using namespace boost::python;
@@ -197,5 +198,48 @@ BOOST_PYTHON_MODULE(coords) {
     .def("zero", &Coords::spherical::zero)
 
     ; // end of class_
+
+
+  class_<Coords::DateTime>("datetime")
+
+    // static members
+    .def_readonly("LilianDate", &Coords::DateTime::s_LilianDate)
+    .def_readonly("ModifiedJulianDate", &Coords::DateTime::s_ModifiedJulianDate)
+    .def_readonly("TruncatedJulianDate", &Coords::DateTime::s_TruncatedJulianDate)
+
+    // constructors
+    .def(init<std::string>()) // default
+
+    .def(init<>()) // default
+    .def(init<int>()) // year
+    .def(init<int, int>()) // year, month
+    .def(init<int, int, int>()) // year, month, day
+    .def(init<int, int, int, int>()) // year, month, day, hour
+    .def(init<int, int, int, int, int>()) // year, month, day, hour, minute
+    .def(init<int, int, int, int, int, double>()) // year, month, day, hour, minute, second
+    .def(init<int, int, int, int, int, double, double>()) // year, month, day, hour, minute, second, time zone
+
+    .def(init<Coords::DateTime>()) // copy
+
+    // operator<<(), str not repr
+    .def(self_ns::str(self_ns::self))
+
+    // operators
+    .def(self + double())
+    .def(double() + self)
+
+    .def(self - double())
+    .def(self - Coords::DateTime())
+
+
+    // other methods
+    .def("toJulianDate", &Coords::DateTime::toJulianDate)
+    .def("fromJulianDate", &Coords::DateTime::fromJulianDate)
+
+    // TODO other Julian Date methods, Wiki, NRC, APC
+
+    ; // end of class_
+
+
 
 };

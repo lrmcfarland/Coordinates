@@ -4,5 +4,6 @@
 
 python test_angle.py "$@"
 python test_Cartesian.py "$@"
+python test_datetime.py "$@"
 python test_spherical.py "$@"
 

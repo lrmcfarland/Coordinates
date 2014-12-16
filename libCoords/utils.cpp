@@ -20,16 +20,20 @@
 //  along with Coords.  If not, see <http://www.gnu.org/licenses/>.
 // ================================================================
 
-#include <iomanip> // for std::setw() and std::setfill()
 #include <cmath>
+#include <iomanip> // for std::setw() and std::setfill()
 #include <stdlib.h> // strtod
 
 #include <utils.h>
 
 double Coords::stod(const std::string& a_string) {
+
   // TODO stand-ins until c++ 11
   // doesn't catch syntax errors
   // but no worse than m_current_x = atof(m_current_characters.c_str());
+
+  // TODO use regex?
+
   double a_double;
 
 #if 0
@@ -46,6 +50,9 @@ double Coords::stod(const std::string& a_string) {
 }
 
 int Coords::stoi(const std::string& a_string) {
+
+  // TODO check with regex
+
   int an_int;
   std::stringstream(a_string) >> an_int;
   return an_int;
@@ -153,7 +160,9 @@ void Coords::value2HMSString(const double& a_value, std::stringstream& a_string)
     degrees = floor(degrees);
 
   a_string << std::setw(2) << std::setfill('0') << degrees
-	   << ":" << std::setw(2) << std::setfill('0') << floor(minutes)
-	   << ":" << std::setw(2) << std::setfill('0') << seconds;
+	   << ":"
+	   << std::setw(2) << std::setfill('0') << floor(minutes)
+	   << ":"
+	   << std::setw(2) << std::setfill('0') << seconds;
 
 }

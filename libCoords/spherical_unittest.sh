@@ -7,5 +7,5 @@
 
 . ./setenv.sh
 
-./spherical_unittest
+./spherical_unittest "$@"
 

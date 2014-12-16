@@ -7,5 +7,5 @@
 
 . ./setenv.sh
 
-./Cartesian_unittest "$@"
+./datetime_unittest "$@"
 

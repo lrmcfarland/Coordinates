@@ -15,10 +15,10 @@
 GTEST_DIR = /usr/local/gtest-1.7.0
 
 # programs and flags
-CXX      = g++
-CXXFLAGS = -g -W -Wall -fPIC -I.
+CXX      = g++ # TODO clang++ for OS X
+CXXFLAGS = -g -W -Wall -fPIC -I. # TODO -std=c++11 -stdlib=libc++
 
-LINK     = g++
+LINK     = g++ # TODO clang++ for OS X
 DYLFLAGS  = -headerpad_max_install_names -single_module -dynamiclib -compatibility_version 1.0 -current_version 1.0.0 -install_name libCoords.1.dylib
 
 RM       = rm -f
@@ -28,9 +28,9 @@ RANLIB   = ranlib -s
 
 # targets
 
-INCLUDES = angle.h Cartesian.h spherical.h utils.h
-SOURCES = angle.cpp Cartesian.cpp spherical.cpp utils.cpp
-OBJECTS = angle.o Cartesian.o spherical.o utils.o
+INCLUDES = angle.h Cartesian.h datetime.h spherical.h utils.h
+SOURCES = angle.cpp Cartesian.cpp datetime.cpp spherical.cpp utils.cpp
+OBJECTS = angle.o Cartesian.o datetime.o spherical.o utils.o
 
 TARGET_A = libCoords.a
 
@@ -64,9 +64,10 @@ $(TARGET_D): $(OBJECTS) $(INCLUDES) $(SOURCES)
 	-$(LN) $(TARGET_D) $(TARGET_D2)
 
 
-test: angle_unittest Cartesian_unittest spherical_unittest
+test: angle_unittest Cartesian_unittest datetime_unittest spherical_unittest
 	./angle_unittest.sh
 	./Cartesian_unittest.sh
+	./datetime_unittest.sh
 	./spherical_unittest.sh
 
 
@@ -81,6 +82,12 @@ Cartesian_unittest: Cartesian_unittest.o $(TARGET_D)
 
 Cartesian_unittest.o: Cartesian_unittest.cpp
 	g++ -I$(GTEST_DIR)/include -I . -g -c Cartesian_unittest.cpp
+
+datetime_unittest: datetime_unittest.o $(TARGET_D)
+	g++ -L$(GTEST_DIR) -lgtest -L. -lCoords datetime_unittest.o -o datetime_unittest
+
+datetime_unittest.o: datetime_unittest.cpp
+	g++ -I$(GTEST_DIR)/include -I . -g -c datetime_unittest.cpp
 
 spherical_unittest: spherical_unittest.o $(TARGET_D)
 	g++ -L$(GTEST_DIR) -lgtest -L. -lCoords spherical_unittest.o -o spherical_unittest
@@ -100,6 +107,8 @@ clean:
 	-$(RM) angle_unittest.o
 	-$(RM) Cartesian_unittest
 	-$(RM) Cartesian_unittest.o
+	-$(RM) datetime_unittest
+	-$(RM) datetime_unittest.o
 	-$(RM) spherical_unittest
 	-$(RM) spherical_unittest.o
 	-$(RM) mepsilon
