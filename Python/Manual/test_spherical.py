@@ -245,6 +245,30 @@ class TestSpherical(unittest.TestCase):
     # ----- test math operators -----
     # -------------------------------
 
+    # plus
+
+    def test_inplace_plus(self):
+        """Test space +="""
+
+        r1 = coords.spherical(self.p1)
+        r2 = coords.spherical(self.p2)
+        r12 = r1 + r2
+        result = coords.spherical(r12)
+
+        a = self.p1
+        a += self.p2
+
+        self.assertTrue(result == a)
+
+    def test_inplace_plus_exception_string(self):
+        """Test space += string exception"""
+        a1 = coords.spherical()
+        try:
+            a1 += 'asdf'
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+
     def test_space_plus_space(self):
         """Test space + space"""
         r1 = coords.spherical(self.p1)
@@ -256,26 +280,32 @@ class TestSpherical(unittest.TestCase):
 
         self.assertSpacesAreEqual(result, a)
 
-
-    def test_inplace_add(self):
-        """Test space +="""
-
-        r1 = coords.spherical(self.p1)
-        r2 = coords.spherical(self.p2)
-        r12 = r1 + r2
-        result = coords.spherical(r12)
-
-        a = self.p1
-        a += self.p2
-
-        self.assertSpacesAreEqual(result, a)
-
-
     def test_space_plus_double(self):
         """Test space + double"""
         # c++ explicit conversion constructor not definded for double
         self.assertRaises(TypeError, lambda: self.p1 + self.p2.r)
 
+    # minus
+
+    def test_inplace_minus(self):
+        """Test space -= space"""
+        r1 = coords.spherical(self.p1)
+        r2 = coords.spherical(self.p2)
+        r12 = r1 - r2
+        result = coords.spherical(r12)
+
+        a = self.p1
+        a -= self.p2
+
+        self.assertTrue(result == a)
+
+    def test_inplace_minus_exception_string(self):
+        """Test space -= string exception"""
+        a1 = coords.spherical()
+        try:
+            a1 -= 'asdf'
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
 
     def test_space_minus_space(self):
         """Test space - space"""
@@ -288,19 +318,12 @@ class TestSpherical(unittest.TestCase):
 
         self.assertSpacesAreEqual(result, a)
 
+    def test_space_plus_double(self):
+        """Test space + double"""
+        # c++ explicit conversion constructor not definded for double
+        self.assertRaises(TypeError, lambda: self.p1 - self.p2.r)
 
-    def test_inplace_subtract(self):
-        """Test space -="""
-        r1 = coords.spherical(self.p1)
-        r2 = coords.spherical(self.p2)
-        r12 = r1 - r2
-        result = coords.spherical(r12)
-
-        a = self.p1
-        a -= self.p2
-
-        self.assertSpacesAreEqual(result, a)
-
+    # unitary minus
 
     def test_unitary_minus(self):
         """Test space = -space"""
@@ -310,47 +333,51 @@ class TestSpherical(unittest.TestCase):
         a = -self.p1
         self.assertTrue(result == a)
 
+    # multiply
 
-    def test_space_minus_double(self):
-        """Test space - double"""
-        # c++ explicit conversion constructor not definded for double
-        self.assertRaises(TypeError, lambda: self.p1 - self.p2.r)
-
-
-    def test_space_times_double_0(self):
+    def test_inplace_multiply_by_double(self):
         """Test space * double (scale)"""
         result = coords.spherical(0.5, coords.angle(1), coords.angle(1))
         a = coords.spherical(1, coords.angle(1), coords.angle(1)) # positive to avoid unitary minus problem
-        scale = 0.5
-        a *= scale
+        a *= 0.5
         self.assertSpacesAreEqual(result, a)
 
 
-    def test_space_times_double_1(self):
+    def test_inplace_multiply_by_space_exception(self):
+        """Test space *= space"""
+        # don't change a from space to double from dot product
+        a = coords.spherical(0.5, coords.angle(1), coords.angle(1))
+        try:
+            a *= self.p2
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+
+    def test_inplace_multiply_by_string_exception(self):
+        """Test space *= string"""
+        # don't change a from space to double from dot product
+        a = coords.spherical(0.5, coords.angle(1), coords.angle(1))
+        try:
+            a *= 'asdf'
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+    def test_space_multiply_by_double(self):
         """Test space * double (scale)"""
         result = coords.spherical(0.5, coords.angle(1), coords.angle(1))
         a = coords.spherical(1, coords.angle(1), coords.angle(1)) # positive to avoid unitary minus problem
-        scale = 0.5
-        a = a * scale
-        self.assertSpacesAreEqual(result, a)
+        b = a * 0.5
+        self.assertSpacesAreEqual(result, b)
 
-
-    def test_double_times_space_2(self):
+    def test_double_multiply_by_space(self):
         """Test space * double (scale)"""
         result = coords.spherical(0.5, coords.angle(1), coords.angle(1))
         a = coords.spherical(1, coords.angle(1), coords.angle(1)) # positive to avoid unitary minus problem
-        scale = 0.5
-        a = scale * a
-        self.assertSpacesAreEqual(result, a)
+        b = 0.5 * a
+        self.assertSpacesAreEqual(result, b)
 
 
-    def test_divide(self):
-        """Test divide (scale)"""
-        result = coords.spherical(self.p1.r / 2.0,
-                                  coords.angle(self.p1.theta.value),
-                                  coords.angle(self.p1.phi.value))
-        a = self.p1 / 2.0
-        self.assertSpacesAreEqual(result, a)
+    # divide
 
 
     def test_inplace_divide(self):
@@ -362,6 +389,21 @@ class TestSpherical(unittest.TestCase):
         a /= 2.0
         self.assertSpacesAreEqual(result, a)
 
+    def test_inplace_divide_by_space_exception(self):
+        """Test inplace divide (scale)"""
+        try:
+            self.p1 /= self.p2
+        except coords.Error, err:
+            self.assertTrue(coords.Error == type(err))
+
+    def test_divide(self):
+        """Test divide (scale)"""
+        result = coords.spherical(self.p1.r / 2.0,
+                                  coords.angle(self.p1.theta.value),
+                                  coords.angle(self.p1.phi.value))
+        a = self.p1 / 2.0
+        self.assertSpacesAreEqual(result, a)
+
 
     def test_divide_by_zero(self):
         """Test space / 0"""
@@ -369,6 +411,9 @@ class TestSpherical(unittest.TestCase):
         self.assertRaises(coords.Error, lambda a: a / 0, a1)
         # Note: different from Boost catching RuntimeError
 
+
+
+    # Latitude constructors
 
     def test_construct_from_latitude_north(self):
         """Test construct from latitude north"""
