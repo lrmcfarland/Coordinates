@@ -2240,25 +2240,55 @@ static PyObject* spherical_tp_richcompare(PyObject* o1, PyObject* o2, int op) {
 // ---------------------------
 
 static PyObject* spherical_nb_inplace_add(PyObject* o1, PyObject* o2) {
-  // TODO can this be implement directly using spherical::operator+=()?
-  // problem with refence going out of scope, segfault.
-  return spherical_nb_add(o1, o2);
+  if (is_sphericalType(o1) && is_sphericalType(o2)) {
+    ((spherical*)o1)->m_spherical.operator+=(((spherical*)o2)->m_spherical);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "Cartesian::operator+=() called with unsupported type");
+  return NULL;
 }
 
 static PyObject* spherical_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
-  // TOOD implement directly?
-  return spherical_nb_subtract(o1, o2);
+  if (is_sphericalType(o1) && is_sphericalType(o2)) {
+    ((spherical*)o1)->m_spherical.operator-=(((spherical*)o2)->m_spherical);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "spherical::operator-=() called with unsupported type");
+  return NULL;
 }
 
 static PyObject* spherical_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
-  // TOOD implement directly?
-  return spherical_nb_multiply(o1, o2);
+  // This only scales the vector. If it returned the dot product, it
+  // would switch the object to type double.
+
+  if (is_sphericalType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+    ((spherical*)o1)->m_spherical.operator*=(PyFloat_AsDouble(o2));
+    Py_INCREF(o1);
+    return o1;
+  }
+
+  PyErr_SetString(sCoordsException, "spherical::operator*=() called with unsupported type");
+  return NULL;
+
 }
 
 static PyObject* spherical_nb_inplace_divide(PyObject* o1, PyObject* o2) {
-  // TOOD implement directly?
-  return spherical_nb_divide(o1, o2);
+
+    // This only scales the vector.
+
+  if (is_sphericalType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+    ((spherical*)o1)->m_spherical.operator/=(PyFloat_AsDouble(o2));
+    Py_INCREF(o1);
+    return o1;
+  }
+
+  PyErr_SetString(sCoordsException, "spherical::operator/=() called with unsupported type");
+  return NULL;
+
 }
+
 
 // --------------------------
 // ----- Python structs -----
