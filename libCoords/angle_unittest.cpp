@@ -213,21 +213,21 @@ namespace {
   // operators
 
   // add
-  TEST(angle, InplaceAddangle) {
+  TEST(angle, InplaceAddAngle) {
     Coords::angle a(45);
     Coords::angle b(45);
     a += b;
     EXPECT_DOUBLE_EQ(90, a.value());
   }
 
-  TEST(angle, InplaceAddangleNeg) {
+  TEST(angle, InplaceAddAngleNeg) {
     Coords::angle a(45);
     Coords::angle b(-45);
     a += b;
     EXPECT_DOUBLE_EQ(0, a.value());
   }
 
-  TEST(angle, anglePlusanglePos) {
+  TEST(angle, AnglePlusAnglePos) {
     Coords::angle a(44.5);
     Coords::angle b(44.5);
     Coords::angle c;
@@ -235,7 +235,7 @@ namespace {
     EXPECT_DOUBLE_EQ(89, c.value());
   }
 
-  TEST(angle, anglePlusangleNeg) {
+  TEST(angle, AnglePlusAngleNeg) {
     Coords::angle a(45);
     Coords::angle b(-45);
     Coords::angle c;
@@ -244,21 +244,21 @@ namespace {
   }
 
   // subtract
-  TEST(angle, InplaceSubtractanglePos) {
+  TEST(angle, InplaceSubtractAnglePos) {
     Coords::angle a(45);
     Coords::angle b(40);
     a -= b;
     EXPECT_DOUBLE_EQ(5, a.value());
   }
 
-  TEST(angle, InplaceSubtractangleNeg) {
+  TEST(angle, InplaceSubtractAngleNeg) {
     Coords::angle a(45);
     Coords::angle b(-45);
     a -= b;
     EXPECT_DOUBLE_EQ(90, a.value());
   }
 
-  TEST(angle, angleMinusanglePos) {
+  TEST(angle, AngleMinusAnglePos) {
     Coords::angle a(45);
     Coords::angle b(45);
     Coords::angle c;
@@ -266,7 +266,7 @@ namespace {
     EXPECT_DOUBLE_EQ(0, c.value());
   }
 
-  TEST(angle, angleMinusangleNeg) {
+  TEST(angle, AngleMinusAngleNeg) {
     Coords::angle a(45);
     Coords::angle b(-45);
     Coords::angle c;
@@ -291,7 +291,7 @@ namespace {
     EXPECT_DOUBLE_EQ(90, a.value());
   }
 
-  TEST(angle, MultiplyangleByangle) {
+  TEST(angle, MultiplyAngleByAngle) {
     Coords::angle a(45);
     Coords::angle b(2);
     Coords::angle c;
@@ -324,7 +324,7 @@ namespace {
     }
   }
 
-  TEST(angle, DivideangleByangle) {
+  TEST(angle, DivideAngleByAngle) {
     Coords::angle a(90);
     Coords::angle b(2);
     Coords::angle c;
