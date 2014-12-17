@@ -61,7 +61,16 @@ BOOST_PYTHON_MODULE(coords) {
     .def("setRadians", setAngleRadians)
     .add_property("radians", &Coords::angle::getRadians, setAngleRadians)
 
-    // TODO rich compare
+    // rich compare
+    .def("__eq__", &Coords::angle::operator==)
+    .def("__ne__", &Coords::angle::operator!=)
+    .def("__lt__", &Coords::angle::operator<)
+    .def("__le__", &Coords::angle::operator<=)
+    .def("__gt__", &Coords::angle::operator>)
+    .def("__ge__", &Coords::angle::operator>=)
+
+    // unary minus
+    // TODO .def("__neg__", &Coords::angle::operator-)
 
     // operators
     .def(self + Coords::angle())
@@ -85,7 +94,7 @@ BOOST_PYTHON_MODULE(coords) {
 
   class_<Coords::Latitude, bases<Coords::angle> >("latitude")
 
-        // constructors
+    // constructors
     .def(init<>()) // default
     .def(init<double>()) // degrees
     .def(init<double, double>()) // degrees, minutes
@@ -128,6 +137,13 @@ BOOST_PYTHON_MODULE(coords) {
     // operator<<(), str not repr
     .def(self_ns::str(self_ns::self))
 
+    // rich compare
+    .def("__eq__", &Coords::Cartesian::operator==)
+    .def("__ne__", &Coords::Cartesian::operator!=)
+
+    // unary minus
+    // TODO .def("__neg__", &Coords::Cartesian::operator-)
+
     // operators
     .def(self + Coords::Cartesian())
     .def(Coords::Cartesian() + self)
@@ -164,6 +180,13 @@ BOOST_PYTHON_MODULE(coords) {
     .def(init<double, Coords::angle>()) // r, theta
     .def(init<double, Coords::angle, Coords::angle>()) // r, theta, phi
     .def(init<double, Coords::Latitude, Coords::angle>()) // r, latitude, phi
+
+    // rich compare
+    .def("__eq__", &Coords::spherical::operator==)
+    .def("__ne__", &Coords::spherical::operator!=)
+
+    // unary minus
+    // TODO .def("__neg__", &Coords::spherical::operator-)
 
     // accessors
     .def("getR", &Coords::spherical::getR)

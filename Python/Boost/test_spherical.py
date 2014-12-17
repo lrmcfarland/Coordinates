@@ -191,7 +191,6 @@ class TestSpherical(unittest.TestCase):
     # ----- test richcompare -----
     # ----------------------------
 
-    @unittest.skip('TODO Boost')
     def test_space_eq_space(self):
         """Test space == space"""
         result = coords.spherical(self.p1.r, self.p1.theta, self.p1.phi)
@@ -199,44 +198,36 @@ class TestSpherical(unittest.TestCase):
         self.assertTrue(result == a)
 
 
-    @unittest.skip('TODO Boost')
     def test_space_ne_space(self):
         """Test space != space"""
         a = coords.spherical(1, coords.angle(2), coords.angle(3))
         b = coords.spherical(-1, coords.angle(2), coords.angle(3))
         self.assertTrue(a != b) # True because comparing memory addresses not value.
 
-
-    @unittest.skip('TODO Boost')
     def test_space_eq_space1(self):
         """Test space == space"""
         a = coords.spherical(1, coords.angle(2), coords.angle(3))
         b = coords.spherical(1, coords.angle(2), coords.angle(3))
         self.assertTrue(a == b)
 
-    @unittest.skip('TODO Boost')
     def test_space_eq_space2(self):
         """Test space == space"""
         a = coords.spherical(1, coords.angle(2), coords.angle(3))
         b = coords.spherical(-1, coords.angle(2), coords.angle(3))
         self.assertFalse(a == b)
 
-    @unittest.skip('TODO Boost')
     def test_space_ne_space1(self):
         """Test space != space"""
         a = coords.spherical(1, coords.angle(2), coords.angle(3))
         b = coords.spherical(-1, coords.angle(2), coords.angle(3))
         self.assertTrue(a != b)
 
-
-    @unittest.skip('TODO Boost')
     def test_space_ne_space2(self):
         """Test space != space"""
         a = coords.spherical(1, coords.angle(2), coords.angle(3))
         b = coords.spherical(1, coords.angle(2), coords.angle(3))
         self.assertFalse(a != b)
 
-    @unittest.skip('TODO Boost')
     def test_space_noop_richcompare_space(self):
         """Test space >, >=, <, <= space"""
         a = coords.spherical(1, coords.angle(2), coords.angle(3))

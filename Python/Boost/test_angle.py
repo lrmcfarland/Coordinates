@@ -61,84 +61,72 @@ class TestAngle(unittest.TestCase):
 
     # booleans
 
-    @unittest.skip('TODO boost wrap operator==()')
     def test_angle1_lt_angle1(self):
         """Test richcompare operator<()"""
         a = coords.angle(10)
         b = coords.angle(20)
         self.assertTrue(a < b)
 
-    @unittest.skip('TODO boost wrap operator==()')
     def test_angle1_lt_angle2(self):
         """Test richcompare operator<()"""
         a = coords.angle(10)
         b = coords.angle(20)
         self.assertFalse(b < a)
 
-    @unittest.skip('TODO boost wrap operator==()')
     def test_angle1_le_angle1(self):
         """Test richcompare operator<=()"""
         a = coords.angle(10)
         b = coords.angle(10)
         self.assertTrue(a <= b)
 
-    @unittest.skip('TODO boost wrap operator==()')
     def test_angle1_le_angle2(self):
         """Test richcompare operator<=()"""
         a = coords.angle(20)
         b = coords.angle(20.6)
         self.assertFalse(b <= a)
 
-    @unittest.skip('TODO boost wrap operator==()')
     def test_angle1_eq_angle1(self):
         """Test richcompare operator==()"""
         an_angle = coords.angle(1)
         another_angle = coords.angle(1)
         self.assertTrue(an_angle == another_angle)
 
-    @unittest.skip('TODO boost wrap operator==()')
     def test_angle1_eq_angle2(self):
         """Test richcompare operator==()"""
         an_angle = coords.angle(1)
         another_angle = coords.angle(-1)
         self.assertFalse(an_angle == another_angle)
 
-    @unittest.skip('TODO boost wrap operator!=()')
     def test_angle1_ne_angle1(self):
         """Test richcompare operator!=()"""
         an_angle = coords.angle(1)
         another_angle = coords.angle(1)
         self.assertFalse(an_angle != another_angle)
 
-    @unittest.skip('TODO boost wrap operator!=()')
     def test_angle1_ne_angle2(self):
         """Test richcompare operator==()"""
         an_angle = coords.angle(1)
         another_angle = coords.angle(-1)
         self.assertTrue(an_angle != another_angle)
 
-    @unittest.skip('TODO boost wrap operator!=()')
     def test_angle1_gt_angle1(self):
         """Test richcompare operato>()"""
         a = coords.angle(30)
         b = coords.angle(20)
         self.assertTrue(a > b)
 
-    @unittest.skip('TODO boost wrap operator!=()')
     def test_angle1_gt_angle2(self):
         """Test richcompare operator>()"""
         a = coords.angle(30)
         b = coords.angle(20)
         self.assertFalse(b > a)
 
-    @unittest.skip('TODO boost wrap operator!=()')
     def test_angle1_ge_angle1(self):
         """Test richcompare operator>=()"""
         a = coords.angle(10)
         b = coords.angle(10)
         self.assertTrue(a >= b)
 
-    @unittest.skip('TODO boost wrap operator!=()')
     def test_angle1_ge_angle2(self):
         """Test richcompare operator>=()"""
         a = coords.angle(20.9)

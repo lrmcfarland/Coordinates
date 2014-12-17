@@ -179,55 +179,42 @@ class TestCartesian(unittest.TestCase):
     # ----- test richcompare -----
     # ----------------------------
 
-    @unittest.skip('TODO Boost')
     def test_space_eq_space(self):
         """Test space == space"""
         result = coords.Cartesian(self.p1.x, self.p1.y, self.p1.z)
         a = coords.Cartesian(self.p1.x, self.p1.y, self.p1.z)
         self.assertTrue(result == a)
 
-
-    @unittest.skip('TODO Boost')
     def test_space_ne_space(self):
         """Test space != space"""
         a = coords.Cartesian(1, 2, 3)
         b = coords.Cartesian(-1, 2, 3)
         self.assertTrue(a != b) # True because comparing memory addresses not value.
 
-
-    @unittest.skip('TODO Boost')
     def test_space_eq_space1(self):
         """Test space == space"""
         a = coords.Cartesian(1, 2, 3)
         b = coords.Cartesian(1, 2, 3)
         self.assertTrue(a == b)
 
-
-    @unittest.skip('TODO Boost')
     def test_space_eq_space2(self):
         """Test space == space"""
         a = coords.Cartesian(1, 2, 3)
         b = coords.Cartesian(-1, 2, 3)
         self.assertFalse(a == b)
 
-
-    @unittest.skip('TODO Boost')
     def test_space_ne_space1(self):
         """Test space != space"""
         a = coords.Cartesian(1, 2, 3)
         b = coords.Cartesian(-1, 2, 3)
         self.assertTrue(a != b)
 
-
-    @unittest.skip('TODO Boost')
     def test_space_ne_space2(self):
         """Test space != space"""
         a = coords.Cartesian(1, 2, 3)
         b = coords.Cartesian(1, 2, 3)
         self.assertFalse(a != b)
 
-
-    @unittest.skip('TODO Boost')
     def test_space_noop_richcompare_space(self):
         """Test space >, >=, <, <= space"""
         a = coords.Cartesian(1, 2, 3)
