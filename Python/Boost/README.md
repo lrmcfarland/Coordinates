@@ -85,15 +85,48 @@ test_coords.sh will run the angle, Cartesian and spherical unit tests.
 
 ### To test a component
 
+Use pylaunch.sh to call setenv.sh. Select one of the associated python
+unittest scripts, e.g. test_Cartesian.py, along with the usual command
+line options like -v
+
 ```
 
 $ ./pylaunch.sh test_angle.py -v
+
+# COORDS_ROOT not set. Using ../..
+# coords.so: ../../Python/Boost/build/lib.macosx-10.9-intel-2.7/coords.so
+# DYLD_LIBRARY_PATH :../../libCoords
+# PYTHONPATH :../../Python/Boost/build/lib.macosx-10.9-intel-2.7
+
+test_accessors_1 (__main__.TestAngle)
+Test value accessors 1 ... ok
+test_accessors_1b (__main__.TestAngle)
+Test value accessor exception ... skipped 'TODO Boost.Python.ArgumentError'
+test_accessors_2 (__main__.TestAngle)
+Test radians accessor negative ... ok
+test_accessors_2a (__main__.TestAngle)
+Test radians accessor exception ... skipped 'TODO Boost.Python.ArgumentError'
+test_angle1_eq_angle1 (__main__.TestAngle)
+Test richcompare operator==() ... ok
 ...
+Test latitude += latitude ... ok
+test_inplace_add_2 (__main__.TestLatitude)
+Test latitude += angle ... ok
+test_inplace_add_over_limit (__main__.TestLatitude)
+Test latitude += latitude ... ok
+
+----------------------------------------------------------------------
+Ran 49 tests in 0.003s
+
+OK (skipped=5)
+
 
 ```
 
-To run a single unit test from the command line, use the UnitTest test
-harness and test name, e.g. TestCartesian, test_default_constructor
+### To run a single unit test
+
+From the command line, pass in the UnitTest test harness and test name,
+e.g. TestCartesian, test_default_constructor to the test script
 
 ```
 
