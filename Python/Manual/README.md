@@ -1,11 +1,13 @@
-# Python Boost wrappers
+# Python manually extended Python wrappers
 
-This directory contains the Boost generated Python wrappers for the C++
-classes in ../../libCoords. coords.cpp contains the Boost macros that
-are used to generate the wrappers. setup.py builds them.
+This directory contains my "manually" [extended Python
+wrappers](http://docs.python.org/extending/newtypes.html) for the C++
+classes in ../../libCoords. coords.cpp contains the [Python/C
+API](http://docs.python.org/c-api) calls that make up the
+Python wrappers.
 
-There are some differences from the [Manual](../Manual) version that
-I am looking into as I learn more about Boost.
+There are some differences from the [Boost](../Boost) version that
+I am looking into as I learn more about extending Python.
 
 
 ## To Build
@@ -15,55 +17,7 @@ for clean and test. See the Makefile for details.
 
 This Makefile will not build ../../libCoords. That must be done before this.
 
-setup.py expects to find libCoords.dylib in ../../libCoords and Boost
-to be in /usr/local. See setup.py for details.
-
-
-### [Boost](http://www.boost.org)
-
-The Boost Python library must be installed before this build will
-work.
-
-#### from homebrew
-
-The easiest way I found to install and maintain boost on OS X is to
-use [homebrew](http://brew.sh). Open the boost-python bottle. The
-python wrappers are not in the boost bottle.
-
-```
-
-$ brew install boost-python
-==> Installing boost-python dependency: boost
-==> Downloading https://downloads.sf.net/project/machomebrew/Bottles/boost-1.56.0.mavericks.bottle.1.tar.gz
-######################################################################## 100.0%
-==> Pouring boost-1.56.0.mavericks.bottle.1.tar.gz
-🍺  /usr/local/Cellar/boost/1.56.0: 10471 files, 438M
-==> Installing boost-python
-==> Downloading https://downloads.sourceforge.net/project/boost/boost/1.56.0/boost_1_56_0.tar.bz2
-######################################################################## 100.0%
-==> ./bootstrap.sh --prefix=/usr/local/Cellar/boost-python/1.56.0 --libdir=/usr/local/Cellar/boost-python/1.56.0/lib --with-librar
-==> ./b2 --build-dir=build-python --stagedir=stage-python python=2.7 --prefix=/usr/local/Cellar/boost-python/1.56.0 --libdir=/usr/
-🍺  /usr/local/Cellar/boost-python/1.56.0: 5 files, 11M, built in 3.1 minutes
-
-
-```
-
-#### from source
-
-To built and install from the source download [boost](http://www.boost.org/users/history/version_1_56_0.html).
-
-```
-
-cd /usr/local/boost_1_56_0
-
-./bootstrap.sh
-./b2
-sudo ./b2 install
-```
-
-The boost files are now in /usr/local/include/boost and
-/usr/local/lib/libboost_*.  python/Boost/setup.py sets BOOST_ROOT to
-point there.  brew doctor will notice and complain about this.
+setup.py expects to find libCoords.dylib in ../../libCoords
 
 
 ## The Test Environment
