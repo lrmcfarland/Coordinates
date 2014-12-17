@@ -294,8 +294,8 @@ class TestAngle(unittest.TestCase):
         self.assertAlmostEqual(self.rd1 - self.rd2, a3.value, self.places)
 
 
-    @unittest.skip('TODO boost unitary minus?')
-    def test_unitary_minus(self):
+    @unittest.skip('TODO')
+    def test_unary_minus(self):
         """Test angle = -angle"""
         a1 = coords.angle(self.rd1)
         a2 = -a1

@@ -116,7 +116,7 @@ namespace Coords {
 
   Cartesian operator+(const Cartesian& lhs, const Cartesian& rhs);
   Cartesian operator-(const Cartesian& lhs, const Cartesian& rhs);
-  Cartesian operator-(const Cartesian& rhs); // unitary minus
+  Cartesian operator-(const Cartesian& rhs); // unary minus
 
 
   // explicit double cast to force scale and not dot product of default Cartesian ctor.

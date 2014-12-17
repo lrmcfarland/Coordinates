@@ -368,9 +368,9 @@ class TestAngle(unittest.TestCase):
         except TypeError, err:
             self.assertTrue(TypeError == type(err))
 
-    # unitary minus
+    # unary minus
 
-    def test_unitary_minus(self):
+    def test_unary_minus(self):
         """Test angle = -angle"""
         a1 = coords.angle(self.rd1)
         a2 = -a1

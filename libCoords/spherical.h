@@ -116,7 +116,7 @@ namespace Coords {
 
   spherical operator+(const spherical& lhs, const spherical& rhs);
   spherical operator-(const spherical& lhs, const spherical& rhs);
-  spherical operator-(const spherical& rhs); // unitary minus
+  spherical operator-(const spherical& rhs); // unary minus
 
 
   // explicit double cast to force scale and not dot product of default spherical ctor.

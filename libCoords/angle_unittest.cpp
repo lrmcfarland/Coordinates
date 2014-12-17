@@ -274,8 +274,8 @@ namespace {
     EXPECT_DOUBLE_EQ(90, c.value());
   }
 
-  // unitary minus
-  TEST(angle, UnitaryMinus) {
+  // unary minus
+  TEST(angle, UnaryMinus) {
     Coords::angle a;
     Coords::angle b(-45);
     a = -b;

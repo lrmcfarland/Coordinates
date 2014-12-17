@@ -164,9 +164,6 @@ class TestSpherical(unittest.TestCase):
         self.assertAlmostEqual(math.atan(math.sqrt(2)/1), b.theta.radians)
         self.assertAlmostEqual(45, b.phi.value)
 
-    # --------------------------------
-    # ----- test unitary methods -----
-    # --------------------------------
 
     def test_str(self):
         """Test str"""
@@ -323,9 +320,9 @@ class TestSpherical(unittest.TestCase):
         # c++ explicit conversion constructor not definded for double
         self.assertRaises(TypeError, lambda: self.p1 - self.p2.r)
 
-    # unitary minus
+    # unary minus
 
-    def test_unitary_minus(self):
+    def test_unary_minus(self):
         """Test space = -space"""
         result = coords.spherical(-self.p1.r,
                                   -self.p1.theta,
@@ -338,7 +335,7 @@ class TestSpherical(unittest.TestCase):
     def test_inplace_multiply_by_double(self):
         """Test space * double (scale)"""
         result = coords.spherical(0.5, coords.angle(1), coords.angle(1))
-        a = coords.spherical(1, coords.angle(1), coords.angle(1)) # positive to avoid unitary minus problem
+        a = coords.spherical(1, coords.angle(1), coords.angle(1)) # positive to avoid unary minus problem
         a *= 0.5
         self.assertSpacesAreEqual(result, a)
 
@@ -365,14 +362,14 @@ class TestSpherical(unittest.TestCase):
     def test_space_multiply_by_double(self):
         """Test space * double (scale)"""
         result = coords.spherical(0.5, coords.angle(1), coords.angle(1))
-        a = coords.spherical(1, coords.angle(1), coords.angle(1)) # positive to avoid unitary minus problem
+        a = coords.spherical(1, coords.angle(1), coords.angle(1)) # positive to avoid unary minus problem
         b = a * 0.5
         self.assertSpacesAreEqual(result, b)
 
     def test_double_multiply_by_space(self):
         """Test space * double (scale)"""
         result = coords.spherical(0.5, coords.angle(1), coords.angle(1))
-        a = coords.spherical(1, coords.angle(1), coords.angle(1)) # positive to avoid unitary minus problem
+        a = coords.spherical(1, coords.angle(1), coords.angle(1)) # positive to avoid unary minus problem
         b = 0.5 * a
         self.assertSpacesAreEqual(result, b)
 

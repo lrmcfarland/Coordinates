@@ -139,9 +139,6 @@ class TestCartesian(unittest.TestCase):
         self.assertAlmostEqual(0.5, b.y)
         self.assertAlmostEqual(math.sin(coords.angle().deg2rad(45)), b.z)
 
-    # --------------------------------
-    # ----- test unitary methods -----
-    # --------------------------------
 
     def test_str(self):
         """Test str"""
@@ -306,9 +303,9 @@ class TestCartesian(unittest.TestCase):
         self.assertRaises(TypeError, lambda: self.p1 - self.p2.x)
 
 
-    # unitary minus
+    # unary minus
 
-    def test_unitary_minus(self):
+    def test_unary_minus(self):
         """Test space = -space"""
         result = coords.Cartesian(-self.p1.x,
                                   -self.p1.y,
@@ -321,7 +318,7 @@ class TestCartesian(unittest.TestCase):
     def test_inplace_multiply_by_double(self):
         """Test space * double (scale)"""
         result = coords.Cartesian(0.5, 0.5, 0.5)
-        a = coords.Cartesian(1,1,1) # positive to avoid unitary minus problem
+        a = coords.Cartesian(1,1,1) # positive to avoid unary minus problem
         a *= 0.5
         self.assertTrue(result, a)
 
@@ -348,7 +345,7 @@ class TestCartesian(unittest.TestCase):
     def test_double_multiply_space(self):
         """Test double * space (scale)"""
         result = coords.Cartesian(0.5, 0.5, 0.5)
-        a = coords.Cartesian(1,1,1) # positive to avoid unitary minus problem
+        a = coords.Cartesian(1,1,1) # positive to avoid unary minus problem
         scale = 0.5
         a = scale * a
         self.assertSpacesAreEqual(result, a)
@@ -356,7 +353,7 @@ class TestCartesian(unittest.TestCase):
     def test_space_multiply_double(self):
         """Test space * double (scale)"""
         result = coords.Cartesian(0.5, 0.5, 0.5)
-        a = coords.Cartesian(1,1,1) # positive to avoid unitary minus problem
+        a = coords.Cartesian(1,1,1) # positive to avoid unary minus problem
         scale = 0.5
         a = scale * a
         self.assertSpacesAreEqual(result, a)
