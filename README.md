@@ -17,13 +17,13 @@ to transform Cartesian into Spherical coordinates and vice versa.
 
 Coordinates uses [gtest](https://code.google.com/p/googletest/) to
 validate the C++ library libCoords. Details on this can be found
-in [libCoords](libCoords/README.md##googletest).
+in [libCoords](libCoords/README.md).
 
 The Python modules use the native Python unit test module.
 
 To build the Boost wrappers you will, of course, need to install
 [Boost](http://www.boost.org) with python. Details on this can be found
-in [Python/Boost](Python/Boost/README.md##Boost).
+in [Python/Boost](Python/Boost/README.md).
 
 
 ### OSX
