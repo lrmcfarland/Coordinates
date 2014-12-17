@@ -96,8 +96,8 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime(1962, 7, 10, 14, 30, 25)
         self.assertEqual('1962-07-10T14:30:25', str(a))
 
-    # TODO this should raise an exception
-    def DISABLED_test_year_month_day_hour_minute_second_constructor_exception(self):
+    @unittest.skip('this should raise an exception')
+    def test_year_month_day_hour_minute_second_constructor_exception(self):
         """Test year month day hour constructor"""
         a = coords.datetime(1962, 25, 66, 14, 30, 25)
         self.assertEqual('1962-07-10T14:30:25', str(a))
