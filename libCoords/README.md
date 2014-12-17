@@ -118,14 +118,14 @@ Note: Google Test filter = RotationTest.FirstDiagonal_1
 [ RUN      ] RotationTest.FirstDiagonal_1
 Process 31270 stopped
 * thread #1: tid = 0x212ea0, 0x000000010013df7a libCoords.1.dylib`Coords::rotator::rotate(this=0x00007fff5fbff348, a_heading=0x00007fff5fbff330, an_angle=0x00007fff5fbff3e8) + 42 at Cartesian.cpp:235, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
-    frame #0: 0x000000010013df7a libCoords.1.dylib`Coords::rotator::rotate(this=0x00007fff5fbff348, a_heading=0x00007fff5fbff330, an_angle=0x00007fff5fbff3e8) + 42 at Cartesian.cpp:235
+	frame #0: 0x000000010013df7a libCoords.1.dylib`Coords::rotator::rotate(this=0x00007fff5fbff348, a_heading=0x00007fff5fbff330, an_angle=0x00007fff5fbff3e8) + 42 at Cartesian.cpp:235
    232						  const Coords::angle& an_angle) {
    233
    234	  // Quaternion-derived rotation matrix
 -> 235	  if (m_is_new_axis || m_current_angle != an_angle) {
    236
-   237	    double c(cos(an_angle.radians()));
-   238	    double s(sin(an_angle.radians()));
+   237		double c(cos(an_angle.radians()));
+   238		double s(sin(an_angle.radians()));
 
 (lldb) p a_heading
 (const Coords::Cartesian) $0 = (m_x = -1, m_y = -1, m_z = 1)

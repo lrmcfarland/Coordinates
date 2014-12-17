@@ -2,19 +2,35 @@
 
 ## Features
 
-This repo contains C++ classes with Python wrappers of
+This is my repo of Coordinate classes for use in physics and astronomy
+applications. The classes are implemented in C++ and wrapped in
+Python. I make full use of operator overloading to focus on the physics.
+This makes it possible to write a vector equation like:
+
+```
+
+F = m*a;
+
+```
+
+I started with a [C++ implementation](libCoords/Cartesian.h) of the
 [Cartesian](http://en.wikipedia.org/wiki/Cartesian_coordinate_system)
-and
+coordinate system.  The class
+[overloads](http://en.wikipedia.org/wiki/Operator_overloading) the
+basic arithmetic operators, +, -, * and / to make the basic physics
+operations of adding distances, velocities and forces transparent.
+
+I also created an [implementation](libCoords/spherical.h) of a
 [spherical](http://en.wikipedia.org/wiki/Spherical_coordinate_system)
-coordinate systems for use in physics applications. The objects are
-[overloaded](http://en.wikipedia.org/wiki/Operator_overloading) to
-support the basic arithmetic operators of + and -. Multiplying or
-dividing by a double will scale the vector. Constructors for copy
-and copy assign are provided along with conversion constructors
-to transform Cartesian into Spherical coordinates and vice versa.
+with conversion constructors to convert between it and the Cartesian
+coordinate system. This simplifies the basic astronomy operations
+using Latitude/Longitude,
+[Right ascension](http://en.wikipedia.org/wiki/Right_ascension) and
+[declination](http://en.wikipedia.org/wiki/Declination).
 
 All objects are in the name space "Coords", e.g. Coords::Cartesian.
-This may seem little weird at first, but then again he was French.
+This may seem little weird in English at first, but then again he was
+French.
 
 ## To Install
 
