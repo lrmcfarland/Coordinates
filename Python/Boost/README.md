@@ -50,7 +50,9 @@ $ brew install boost-python
 
 #### from source
 
-To built and install from the source download [boost](http://www.boost.org/users/history/version_1_56_0.html).
+To built and install from the
+[boost](http://www.boost.org/users/history/version_1_56_0.html)
+source, unpack the tar-ball in /usr/local
 
 ```
 
