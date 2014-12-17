@@ -13,6 +13,9 @@ dividing by a double will scale the vector. Constructors for copy
 and copy assign are provided along with conversion constructors
 to transform Cartesian into Spherical coordinates and vice versa.
 
+All objects are in the name space "Coords", e.g. Coords::Cartesian.
+This may seem little weird at first, but then again he was French.
+
 ## To Install
 
 Coordinates uses [gtest](https://code.google.com/p/googletest/) to
