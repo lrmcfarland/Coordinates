@@ -14,14 +14,14 @@ F = m*a;
 ```
 
 I started with a [C++ implementation](libCoords/Cartesian.h) of the
-[Cartesian](http://en.wikipedia.org/wiki/Cartesian_coordinate_system)
-coordinate system.  The class
+[Cartesian coordinate system](http://en.wikipedia.org/wiki/Cartesian_coordinate_system).
+The class
 [overloads](http://en.wikipedia.org/wiki/Operator_overloading) the
 basic arithmetic operators, +, -, * and / to make the basic physics
 operations of adding distances, velocities and forces transparent.
 
 I also created an [implementation](libCoords/spherical.h) of a
-[spherical](http://en.wikipedia.org/wiki/Spherical_coordinate_system)
+[spherical coordinate system](http://en.wikipedia.org/wiki/Spherical_coordinate_system)
 with conversion constructors to convert between it and the Cartesian
 coordinate system. This simplifies the basic astronomy operations
 using Latitude/Longitude,
@@ -29,8 +29,9 @@ using Latitude/Longitude,
 [declination](http://en.wikipedia.org/wiki/Declination).
 
 All objects are in the name space "Coords", e.g. Coords::Cartesian.
-This may seem little weird in English at first, but then again he was
-French.
+At first this seems little weird in English, but then
+[Descartes](http://en.wikipedia.org/wiki/René_Descartes) was French.
+
 
 ## To Install
 
@@ -45,7 +46,7 @@ To build the Boost wrappers you will, of course, need to install
 in [Python/Boost](Python/Boost/README.md).
 
 
-### OSX
+### OS X
 
 I built this on my iMac using the g++ compiler that comes with
 [Xcode](https://developer.apple.com/xcode/), but there is nothing special
