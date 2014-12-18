@@ -55,6 +55,127 @@ namespace {
   }
 
 
+  TEST(DateTime, ParameterConstructorWithBadMonth_1) {
+    try {
+      Coords::DateTime a_datetime(2014, -2, 8, 13, 30, 00, -5.1);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << "2014--2-08T13:30:00-5.1: month out of range.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
+  }
+
+  TEST(DateTime, ParameterConstructorWithBadMonth_2) {
+    try {
+      Coords::DateTime a_datetime(2014, 13, 8, 13, 30, 00, -5.1);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << "2014-13-08T13:30:00-5.1: month out of range.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
+  }
+
+  TEST(DateTime, ParameterConstructorWithBadDay_1) {
+    try {
+      Coords::DateTime a_datetime(2014, 2, -4, 13, 30, 00, -5.1);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << "2014-02--4T13:30:00-5.1: day out of range.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
+  }
+
+  TEST(DateTime, ParameterConstructorWithBadDay_2) {
+    try {
+      Coords::DateTime a_datetime(2014, 12, 33, 13, 30, 00, -5.1);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << "2014-12-33T13:30:00-5.1: day out of range.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
+  }
+
+  TEST(DateTime, ParameterConstructorWithBadHour_1) {
+    try {
+      Coords::DateTime a_datetime(2014, 2, 4, -1, 30, 00, -5.1);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << "2014-02-04T-1:30:00-5.1: hour out of range.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
+  }
+
+  TEST(DateTime, ParameterConstructorWithBadHour_2) {
+    try {
+      Coords::DateTime a_datetime(2014, 12, 03, 60, 30, 00, -5.1);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << "2014-12-03T60:30:00-5.1: hour out of range.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
+  }
+
+
+  TEST(DateTime, ParameterConstructorWithBadMinute_1) {
+    try {
+      Coords::DateTime a_datetime(2014, 2, 4, 13, -3, 00, -5.1);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << "2014-02-04T13:-3:00-5.1: minute out of range.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
+  }
+
+  TEST(DateTime, ParameterConstructorWithBadMinute_2) {
+    try {
+      Coords::DateTime a_datetime(2014, 12, 03, 13, 61, 00, -5.1);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << "2014-12-03T13:61:00-5.1: minute out of range.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
+  }
+
+  TEST(DateTime, ParameterConstructorWithBadSecond_1) {
+    try {
+      Coords::DateTime a_datetime(2014, 2, 4, 13, 30, -1, -5.1);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << "2014-02-04T13:30:-1-5.1: second out of range.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
+  }
+
+  TEST(DateTime, ParameterConstructorWithBadSecond_2) {
+    try {
+      Coords::DateTime a_datetime(2014, 12, 03, 13, 30, 60, -5.1);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << "2014-12-03T13:30:60-5.1: second out of range.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
+  }
+
+  TEST(DateTime, ParameterConstructorWithBadTimeZone_1) {
+    try {
+      Coords::DateTime a_datetime(2014, 2, 4, 13, 30, 1.5, -15.1);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << "2014-02-04T13:30:1.5-15.1: time zone out of range.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
+  }
+
+  TEST(DateTime, ParameterConstructorWithBadTimeZone_2) {
+    try {
+      Coords::DateTime a_datetime(2014, 12, 03, 13, 30, 59, 15.1);
+    } catch (Coords::Error& err) {
+      std::stringstream emsg;
+      emsg << "2014-12-03T13:30:59+15.1: time zone out of range.";
+      EXPECT_STREQ(err.what(), emsg.str().c_str());
+    }
+  }
+
   TEST(DateTime, CopyConstructor_1) {
     Coords::DateTime a_datetime(2014, 12, 8, 13, 30, 00, 4.3);
     Coords::DateTime another_datetime(a_datetime);

@@ -70,6 +70,7 @@ namespace Coords {
     // ----- accessors -----
 
     void isValid(const std::string& an_iso8601_time = "") throw (Error);
+    void throwError(const std::string& a_datetime, const std::string msg) throw (Error);
 
     const int& year() const {return m_year;}
     const int& month() const {return m_month;}

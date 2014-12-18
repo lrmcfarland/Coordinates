@@ -116,31 +116,53 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
   isValid(an_iso8601_time);
 }
 
+void Coords::DateTime::throwError(const std::string& a_datetime, const std::string msg) throw (Error) {
+  std::stringstream emsg;
+  std::stringstream current_time;
+
+  if (a_datetime == "")
+    current_time << *this;
+  else
+    current_time << a_datetime;
+
+  emsg << current_time.str() << ": " << msg;
+  throw Coords::Error(emsg.str());
+}
+
 void Coords::DateTime::isValid(const std::string& an_iso8601_time) throw (Error) {
 
-  if ((m_month == 9 || m_month == 4 || m_month == 6 || m_month == 11) && m_day > 30) {
-    std::stringstream emsg;
-    emsg << an_iso8601_time << ": Thirty days hath September, April, June and November";
-    throw Coords::Error(emsg.str());
-  }
+  if (m_month < 1 || m_month > 12)
+    throwError(an_iso8601_time, "month out of range.");
+
+  if (m_day < 1 || m_day > 31)
+    throwError(an_iso8601_time, "day out of range.");
+
+  if ((m_month == 9 || m_month == 4 || m_month == 6 || m_month == 11) && m_day > 30)
+    throwError(an_iso8601_time, "Thirty days hath September, April, June and November");
 
   if (m_is_leap_year) {
 
-    if (m_month == 2 && m_day > 29) {
-      std::stringstream emsg;
-      emsg << an_iso8601_time << ": Except for February all alone. It has 28, but 29 each _leap_ year.";
-      throw Coords::Error(emsg.str());
-    }
+    if (m_month == 2 && m_day > 29)
+      throwError(an_iso8601_time, "Except for February all alone. It has 28, but 29 each _leap_ year.");
 
   } else {
 
-    if (m_month == 2 && m_day > 28) {
-      std::stringstream emsg;
-      emsg << an_iso8601_time << ": Except for February all alone. It has _28_, but 29 each leap year.";
-      throw Coords::Error(emsg.str());
-    }
+    if (m_month == 2 && m_day > 28)
+      throwError(an_iso8601_time, "Except for February all alone. It has _28_, but 29 each leap year.");
 
   }
+
+  if (m_hour < 0 || m_hour >= 60)
+    throwError(an_iso8601_time, "hour out of range.");
+
+  if (m_minute < 0 || m_minute >= 60)
+    throwError(an_iso8601_time, "minute out of range.");
+
+  if (m_second < 0 || m_second >= 60)
+    throwError(an_iso8601_time, "second out of range.");
+
+  if (m_time_zone < -12 || m_time_zone > 12)
+    throwError(an_iso8601_time, "time zone out of range.");
 
 }
 
@@ -453,7 +475,7 @@ void Coords::DateTime2String(const Coords::DateTime& a_datetime, std::stringstre
 	   << "T"
 	   << std::setw(2) << std::setfill('0') << a_datetime.hour() << ":"
 	   << std::setw(2) << std::setfill('0') << a_datetime.minute() << ":"
-	   << std::setw(2) << std::setfill('0') << a_datetime.second();
+	   << std::setw(2) << std::setfill('0') << a_datetime.second(); // TODO needs to pad 1.5
 
   if (a_datetime.isZulu())
     a_string << "Z";
