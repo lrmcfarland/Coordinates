@@ -1,9 +1,31 @@
 # Coordinates library
 
+## To Install
+
+### [googletest](https://code.google.com/p/googletest/)
+
+The C++ library uses [googletest](https://code.google.com/p/googletest/) to
+run the unit tests. I have downloaded and built it in /usr/local using
+following the instructions in the gtest README
+
+```
+[root gtest-1.7.0]# export GTEST_DIR=/usr/local/gtest-1.7.0
+[root gtest-1.7.0]# g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
+
+[root gtest-1.7.0]# ar -rv libgtest.a gtest-all.o
+ar: creating archive libgtest.a
+a - gtest-all.o
+```
+
+libCoords/Makefile sets its GTEST_DIR to /usr/local/gtest-1.7.0 and picks
+up libgtest.a from there.
+
+
+
 ## To Build
 
 The build is done using make on the command line. There are targets for
-build and test. See the Makefile for details.
+build and test. See the [Makefile](Makefile) for details.
 
 ## To run
 
@@ -29,6 +51,7 @@ On the command line, use the shell wrapper to set up the environment
 
 ```
 $ ./spherical_unittest.sh
+
 # COORD_ORIGIN not set. Using ..
 # GTEST_DIR not set. Using /usr/local/gtest-1.7.0
 # DYLD_LIBRARY_PATH :../libCoords:/usr/local/gtest-1.7.0
@@ -55,6 +78,7 @@ name through the shell wrapper
 ```
 
 $ ./Cartesian_unittest.sh --gtest_filter=FixedCartesian.ConstructFromString
+
 # COORD_ORIGIN not set. Using ..
 # GTEST_DIR not set. Using /usr/local/gtest-1.7.0
 # DYLD_LIBRARY_PATH :../libCoords:/usr/local/gtest-1.7.0
@@ -73,25 +97,6 @@ Note: Google Test filter = FixedCartesian.ConstructFromString
 
 
 ```
-
-### [googletest](https://code.google.com/p/googletest/)
-
-The C++ library uses [googletest](https://code.google.com/p/googletest/) to
-run the unit tests. I have downloaded and built it in /usr/local using
-following the instructions in the gtest README
-
-```
-[root gtest-1.7.0]# export GTEST_DIR=/usr/local/gtest-1.7.0
-[root gtest-1.7.0]# g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
-
-[root gtest-1.7.0]# ar -rv libgtest.a gtest-all.o
-ar: creating archive libgtest.a
-a - gtest-all.o
-```
-
-libCoords/Makefile sets its GTEST_DIR to /usr/local/gtest-1.7.0 and picks
-up libgtest.a from there.
-
 
 ### To debug
 
