@@ -222,17 +222,18 @@ Coords::rotator::rotator(const Coords::Cartesian& an_axis) :
 // copy constructor
 Coords::rotator::rotator(const Coords::rotator& a) :
   m_axis(Coords::Cartesian::Uo),
-  m_rotation_matrix(3, std::vector<double>(3, 0)),
   m_is_new_axis(true),
   m_current_angle(0.0) {
+  m_rotation_matrix.clear();
+  m_rotation_matrix = a.m_rotation_matrix;
   axis(a.axis());
 }
 
 // copy assign
 Coords::rotator& Coords::rotator::operator=(const Coords::rotator& rhs) {
   if (this == &rhs) return *this;
-  for(int i = 0; i < 3; ++i)
-    m_rotation_matrix[i] = std::vector<double>(3, 0);
+  m_rotation_matrix.clear();
+  m_rotation_matrix = rhs.m_rotation_matrix;
   axis(rhs.axis());
   return *this;
 }
@@ -254,6 +255,15 @@ Coords::Cartesian Coords::rotator::rotate(const Coords::Cartesian& a_vector,
 
   // TODO this is ok for rotations about Ux, Uy, Uz, but not right in
   // the diagonal (1,1,1) and others? See DISABLED_RotationTest, Diagonal_xyz_180.
+
+  // Python Manual is not picking up this initialization like Boost
+  if (m_rotation_matrix.size() != 3) {
+    m_rotation_matrix.clear();
+    for(int i = 0; i < 3; ++i) {
+      std::vector<double> row(3, 0);
+      m_rotation_matrix.push_back(row);
+    }
+  }
 
   if (m_is_new_axis || m_current_angle != an_angle) {
 
