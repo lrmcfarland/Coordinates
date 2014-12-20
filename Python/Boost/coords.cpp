@@ -169,6 +169,18 @@ BOOST_PYTHON_MODULE(coords) {
     ; // end of class_
 
 
+  class_<Coords::rotator>("rotator")
+
+    .def(init<Coords::Cartesian>())
+
+    // other methods
+
+    .def("rotate", &Coords::rotator::rotate)
+
+    ; // end of rotator class_
+
+
+
   class_<Coords::spherical>("spherical")
 
     // constructors

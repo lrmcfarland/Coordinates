@@ -389,6 +389,28 @@ class TestCartesian(unittest.TestCase):
         # Note: different from Boost catching RuntimeError
 
 
+    # -------------------
+    # ----- rotator -----
+    # -------------------
+
+    def test_rotate_about_default(self):
+        """Test rotate about default (z axis)"""
+        rotator = coords.rotator()
+        a = coords.Cartesian.Ux
+        b = rotator.rotate(a, coords.angle(90))
+        self.assertSpacesAreEqual(coords.Cartesian.Uy, b)
+
+    def test_rotate_about_z_45(self):
+        """Test rotate 45 about z axis"""
+        rotator = coords.rotator(coords.Cartesian.Uz)
+        a = coords.Cartesian.Ux
+        b = rotator.rotate(a, coords.angle(45))
+
+        self.assertAlmostEqual(0.7071067811865476, b.x, places=self.places)
+        self.assertAlmostEqual(0.7071067811865476, b.y, places=self.places)
+        self.assertAlmostEqual(0.0, b.z, places=self.places)
+
+
 if __name__ == '__main__':
     random.seed(time.time())
     unittest.main()

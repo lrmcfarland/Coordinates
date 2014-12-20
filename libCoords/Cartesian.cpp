@@ -219,7 +219,25 @@ Coords::rotator::rotator(const Coords::Cartesian& an_axis) :
   axis(an_axis);
 }
 
+// copy constructor
+Coords::rotator::rotator(const Coords::rotator& a) :
+  m_axis(Coords::Cartesian::Uo),
+  m_rotation_matrix(3, std::vector<double>(3, 0)),
+  m_is_new_axis(true),
+  m_current_angle(0.0) {
+  axis(a.axis());
+}
 
+// copy assign
+Coords::rotator& Coords::rotator::operator=(const Coords::rotator& rhs) {
+  if (this == &rhs) return *this;
+  for(int i = 0; i < 3; ++i)
+    m_rotation_matrix[i] = std::vector<double>(3, 0);
+  axis(rhs.axis());
+  return *this;
+}
+
+// axis access
 void Coords::rotator::axis(const Coords::Cartesian& an_axis) {
   if (an_axis != m_axis) {
     m_axis = an_axis.normalized();
@@ -227,10 +245,16 @@ void Coords::rotator::axis(const Coords::Cartesian& an_axis) {
   }
 }
 
-Coords::Cartesian Coords::rotator::rotate(const Coords::Cartesian& a_heading,
+Coords::Cartesian Coords::rotator::rotate(const Coords::Cartesian& a_vector,
 					  const Coords::angle& an_angle) {
 
   // Quaternion-derived rotation matrix
+  // http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Quaternion-derived_rotation_matrix
+  // http://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
+
+  // TODO this is ok for rotations about Ux, Uy, Uz, but not right in
+  // the diagonal (1,1,1) and others? See DISABLED_RotationTest, Diagonal_xyz_180.
+
   if (m_is_new_axis || m_current_angle != an_angle) {
 
     double c(cos(an_angle.radians()));
@@ -265,15 +289,15 @@ Coords::Cartesian Coords::rotator::rotate(const Coords::Cartesian& a_heading,
 
   }
 
-  Coords::Cartesian tmp(m_rotation_matrix[0][0]*a_heading.x() +
-			m_rotation_matrix[0][1]*a_heading.y() +
-			m_rotation_matrix[0][2]*a_heading.z(),
-			m_rotation_matrix[1][0]*a_heading.x() +
-			m_rotation_matrix[1][1]*a_heading.y() +
-			m_rotation_matrix[1][2]*a_heading.z(),
-			m_rotation_matrix[2][0]*a_heading.x() +
-			m_rotation_matrix[2][1]*a_heading.y() +
-			m_rotation_matrix[2][2]*a_heading.z());
+  Coords::Cartesian tmp(m_rotation_matrix[0][0]*a_vector.x() +
+			m_rotation_matrix[0][1]*a_vector.y() +
+			m_rotation_matrix[0][2]*a_vector.z(),
+			m_rotation_matrix[1][0]*a_vector.x() +
+			m_rotation_matrix[1][1]*a_vector.y() +
+			m_rotation_matrix[1][2]*a_vector.z(),
+			m_rotation_matrix[2][0]*a_vector.x() +
+			m_rotation_matrix[2][1]*a_vector.y() +
+			m_rotation_matrix[2][2]*a_vector.z());
 
   return tmp;
 

@@ -155,18 +155,19 @@ namespace Coords {
   class rotator {
   public:
 
-    rotator(const Cartesian& an_axis); // ctor, no default
+    rotator(const Cartesian& an_axis=Coords::Cartesian::Uz); // ctor
     ~rotator() {}; // dtor
 
-    const Cartesian& axis() const              {return m_axis;}
-    void         axis(const Cartesian& an_axis);
+    const Cartesian& axis() const {return m_axis;}
+    void             axis(const Cartesian& an_axis);
 
-    Cartesian rotate(const Cartesian& a_heading, const angle& an_angle);
+    Cartesian rotate(const Cartesian& a_vector, const angle& an_angle);
+
+    // Boost needs this
+    rotator(const rotator& a);
+    rotator& operator=(const rotator& rhs);
 
   private:
-
-    rotator(const rotator& a); // do not implement
-    rotator& operator=(const rotator& rhs); // do not implement
 
     Cartesian                          m_axis;
     std::vector< std::vector<double> > m_rotation_matrix;
@@ -182,9 +183,9 @@ namespace Coords {
   // ----- class CartesianRecorder -----
   // -----------------------------------
 
-  // implements a simple deque to store three Cartesian data.
-  // It is intended for use to store and later plotting positions and
-  // other three Cartesian data.
+  // implements a simple deque to store three Cartesian data.  It is
+  // intended to store and later plot positions and other three
+  // Cartesian data.
 
   class CartesianRecorderIOError : public Error {
   public:

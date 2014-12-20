@@ -678,6 +678,40 @@ namespace {
 
   }
 
+  TEST(YRotationTest, CopyUyAboutUxtoUz) {
+    // Copy Uy counter clockwise about Ux to Uz
+    // Not default Uz axis
+
+    Coords::angle an_angle(90);
+    Coords::rotator about_x(Coords::Cartesian::Ux);
+    Coords::rotator copy_about_x(about_x);
+
+    Coords::Cartesian s(copy_about_x.rotate(Coords::Cartesian::Uy, an_angle));
+
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Uz.x(), s.x());
+    EXPECT_NEAR(Coords::Cartesian::Uz.y(), s.y(), Coords::epsilon);
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Uz.z(), s.z());
+
+  }
+
+  TEST(YRotationTest, CopyAssignUyAboutUxtoUz) {
+    // Copy Assign Uy counter clockwise about Ux to Uz
+    // Not default Uz axis
+
+    Coords::angle an_angle(90);
+    Coords::rotator about_x(Coords::Cartesian::Ux);
+    Coords::rotator copy_about_x;
+
+    copy_about_x = about_x;
+
+    Coords::Cartesian s(copy_about_x.rotate(Coords::Cartesian::Uy, an_angle));
+
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Uz.x(), s.x());
+    EXPECT_NEAR(Coords::Cartesian::Uz.y(), s.y(), Coords::epsilon);
+    EXPECT_DOUBLE_EQ(Coords::Cartesian::Uz.z(), s.z());
+
+  }
+
   TEST(YRotationTest, UyAboutUztoUx) {
     // Uy clockwise about Uz to Ux
 
