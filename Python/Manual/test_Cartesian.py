@@ -161,8 +161,8 @@ class TestCartesian(unittest.TestCase):
     def test_magnitude(self):
         """Test space magnitude"""
         root_sum_square = math.sqrt(self.p1.x*self.p1.x + self.p1.y*self.p1.y + self.p1.z*self.p1.z)
-        # TODO implement as instance method
-        a = coords.Cartesian().magnitude(self.p1)
+        a1 = coords.Cartesian(self.p1)
+        a = a1.magnitude()
         self.assertAlmostEqual(root_sum_square, a, self.places)
 
 
@@ -173,8 +173,8 @@ class TestCartesian(unittest.TestCase):
                                       self.p1.y/root_sum_square,
                                       self.p1.z/root_sum_square)
 
-        # TODO implement as instance method
-        a = coords.Cartesian().normalized(self.p1)
+        a1 = coords.Cartesian(self.p1)
+        a = a1.normalized(self.p1)
         self.assertSpacesAreEqual(normalized, a)
 
     # ----------------------------

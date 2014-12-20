@@ -83,7 +83,6 @@ typedef struct {
 static void new_CartesianType(Cartesian** a_Cartesian);
 static int is_CartesianType(PyObject* a_Cartesian);
 
-static PyObject* Cartesian_magnitude(PyObject* self, PyObject *args);
 static PyObject* Cartesian_normalized(PyObject* self, PyObject *args);
 
 // ---------------------
@@ -561,6 +560,13 @@ static PyObject* Angle_nb_inplace_divide(PyObject* o1, PyObject* o2) {
   PyErr_SetString(sCoordsException, "angle::operator-=() called with unsupported type");
   return NULL;
 }
+
+
+// ----------------------------
+// ----- instance methods -----
+// ----------------------------
+
+// TODO module methods?
 
 // ----- deg2rad -----
 
@@ -1618,6 +1624,16 @@ static PyObject* Cartesian_nb_inplace_divide(PyObject* o1, PyObject* o2) {
 
 }
 
+// ----------------------------
+// ----- instance methods -----
+// ----------------------------
+
+// ----- Cartesian_magnitude -----
+static PyObject* Cartesian_magnitude(PyObject* self, PyObject *args) {
+  double a_magnitude(((Cartesian*)self)->m_Cartesian.magnitude());
+  return (PyObject*)  Py_BuildValue("d", a_magnitude);
+}
+
 // --------------------------
 // ----- Python structs -----
 // --------------------------
@@ -1747,45 +1763,24 @@ static int is_CartesianType(PyObject* a_Cartesian) {
   return PyObject_TypeCheck(a_Cartesian, &CartesianType);
 }
 
-// ----- Cartesian_magnitude -----
-static PyObject* Cartesian_magnitude(PyObject* self, PyObject *args) {
-
-  Cartesian* a_Cartesian(NULL);
-
-  // O is borrowed reference
-  if (!PyArg_ParseTuple(args, "O", &a_Cartesian))
-    return NULL;
-
-  double a_magnitude(a_Cartesian->m_Cartesian.magnitude());
-
-  return (PyObject*)  Py_BuildValue("d", a_magnitude);
-
-}
-
 // ----- Cartesian_normalized -----
 static PyObject* Cartesian_normalized(PyObject* self, PyObject *args) {
 
-  Cartesian* a_Cartesian(NULL);
   Cartesian* result_Cartesian(NULL);
-
-  // O is borrowed reference
-  if (!PyArg_ParseTuple(args, "O", &a_Cartesian))
-    return NULL;
-
   result_Cartesian = PyObject_New(Cartesian, &CartesianType); // alloc and inits
-
   if (result_Cartesian == NULL) {
-    PyErr_SetString(sCoordsException, "normalized failed to create coord.Cartesian.");
+    PyErr_SetString(sCoordsException, "normalized failed to create Cartesian type");
     return NULL;
   }
 
-  Coords::Cartesian a_normalized(a_Cartesian->m_Cartesian.normalized());
+  Coords::Cartesian a_normalized(((Cartesian*)self)->m_Cartesian.normalized());
 
   result_Cartesian->m_Cartesian = a_normalized;
 
   return (PyObject*) result_Cartesian;
 
 }
+
 
 // =====================
 // ===== spherical =====
