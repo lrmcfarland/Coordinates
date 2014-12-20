@@ -121,6 +121,7 @@ static char sJulianDateStr[]  = "JulianDate";
 static char sLilianDateStr[]  = "LilianDate";
 static char sModifiedJulianDateStr[]  = "ModifiedJulianDate";
 static char sTruncatedJulianDateStr[]  = "TruncatedJulianDate";
+static char sJ2000Str[]  = "J2000";
 
 // reuse minutes, seconds above
 
@@ -2571,25 +2572,27 @@ static int datetime_setJulianDate(datetime* self, PyObject* value, void* closure
 }
 
 
+// TODO boost different from manual accssors
 
 // ----- Lilian Date -----
-
 static PyObject* datetime_getLilianDate(datetime* self, void* closure) {
   return PyFloat_FromDouble(self->m_datetime.LilianDate());
 }
 
 // ----- Modified Julian Date -----
-
 static PyObject* datetime_getModifiedJulianDate(datetime* self, void* closure) {
   return PyFloat_FromDouble(self->m_datetime.ModifiedJulianDate());
 }
 
 // ----- Truncated Julian Date -----
-
 static PyObject* datetime_getTruncatedJulianDate(datetime* self, void* closure) {
   return PyFloat_FromDouble(self->m_datetime.TruncatedJulianDate());
 }
 
+// ----- Truncated Julian Date -----
+static PyObject* datetime_getJ2000(datetime* self, void* closure) {
+  return PyFloat_FromDouble(self->m_datetime.J2000());
+}
 
 
 // --------------------------
@@ -2711,6 +2714,7 @@ static PyGetSetDef datetime_getseters[] = {
   {sLilianDateStr, (getter)datetime_getLilianDate, NULL, sLilianDateStr, NULL},
   {sModifiedJulianDateStr, (getter)datetime_getModifiedJulianDate, NULL, sModifiedJulianDateStr, NULL},
   {sTruncatedJulianDateStr, (getter)datetime_getTruncatedJulianDate, NULL, sTruncatedJulianDateStr, NULL},
+  {sJ2000Str, (getter)datetime_getJ2000, NULL, sJ2000Str, NULL},
   {NULL}  /* Sentinel */
 };
 

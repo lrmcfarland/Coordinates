@@ -53,6 +53,7 @@ const long int Coords::DateTime::s_gDateNRC(15+31L*(10+12L*1582));
 const double Coords::DateTime::s_LilianDate(2299160.5);
 const double Coords::DateTime::s_ModifiedJulianDate(2400000.5);
 const double Coords::DateTime::s_TruncatedJulianDate(2440000.5);
+const double Coords::DateTime::s_J2000(2451545.0);
 
 Coords::DateTime::DateTime(const std::string& an_iso8601_time)
   : m_year(1970), m_month(1), m_day(1),

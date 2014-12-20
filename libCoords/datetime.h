@@ -46,7 +46,8 @@ namespace Coords {
 
     static const double   s_LilianDate; // Gregorian calendar adopted Oct. 15, 1582
     static const double   s_ModifiedJulianDate; // 1858-11-17T00:00:00
-    static const double   s_TruncatedJulianDate; // 1968-05-23T12:00:00
+    static const double   s_TruncatedJulianDate; // 1968-05-24T00:00:00
+    static const double   s_J2000; // 2000-01-01T12:00:00Z
 
     explicit DateTime(const std::string& an_iso8601_time);
 
@@ -89,6 +90,7 @@ namespace Coords {
     const double& LilianDate() const {return s_LilianDate;}
     const double& ModifiedJulianDate() const {return s_ModifiedJulianDate;}
     const double& TruncatedJulianDate() const {return s_TruncatedJulianDate;}
+    const double& J2000() const {return s_J2000;}
 
 
     // ----- in-place operators -----

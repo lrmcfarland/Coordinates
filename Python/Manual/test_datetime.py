@@ -39,11 +39,15 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime()
         self.assertEqual(2400000.5, a.ModifiedJulianDate)
 
-
     def test_truncated_date_accessor(self):
         """Test truncated date accessor"""
         a = coords.datetime()
         self.assertEqual(2440000.5, a.TruncatedJulianDate)
+
+    def test_j2000_accessor(self):
+        """Test j2000 accessor"""
+        a = coords.datetime()
+        self.assertEqual(2451545.0, a.J2000)
 
 
     def test_default_constructor(self):

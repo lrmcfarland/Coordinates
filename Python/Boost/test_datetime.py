@@ -32,6 +32,7 @@ class TestDateTime(unittest.TestCase):
     def test_lilian_date_accessor(self):
         """Test lilian date accessor"""
         self.assertEqual(2299160.5, coords.datetime.LilianDate)
+        # TODO boost different from manual accessors
 
     def test_modified_date_accessor(self):
         """Test modified date accessor"""
@@ -40,6 +41,10 @@ class TestDateTime(unittest.TestCase):
     def test_truncated_date_accessor(self):
         """Test truncated date accessor"""
         self.assertEqual(2440000.5, coords.datetime.TruncatedJulianDate)
+
+    def test_j2000_date_accessor(self):
+        """Test truncated date accessor"""
+        self.assertEqual(2451545.0, coords.datetime.J2000)
 
 
     def test_default_constructor(self):

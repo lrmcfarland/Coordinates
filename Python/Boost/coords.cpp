@@ -229,6 +229,7 @@ BOOST_PYTHON_MODULE(coords) {
     .def_readonly("LilianDate", &Coords::DateTime::s_LilianDate)
     .def_readonly("ModifiedJulianDate", &Coords::DateTime::s_ModifiedJulianDate)
     .def_readonly("TruncatedJulianDate", &Coords::DateTime::s_TruncatedJulianDate)
+    .def_readonly("J2000", &Coords::DateTime::s_J2000)
 
     // constructors
     .def(init<std::string>()) // default

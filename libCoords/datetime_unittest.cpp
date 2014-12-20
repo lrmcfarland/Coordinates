@@ -29,6 +29,38 @@
 
 namespace {
 
+  // ---------------------
+  // ----- constants -----
+  // ---------------------
+
+  TEST(DateTime, AccessorLilianDate) {
+    Coords::DateTime a_datetime("1582-10-15T00:00:00");
+    EXPECT_DOUBLE_EQ(2299160.5, Coords::DateTime::s_LilianDate);
+    EXPECT_DOUBLE_EQ(2299160.5, a_datetime.toJulianDate());
+    EXPECT_DOUBLE_EQ(2299160.5, a_datetime.LilianDate());
+  }
+
+  TEST(DateTime, AccessorModifiedJulianDate) {
+    Coords::DateTime a_datetime("1858-11-17T00:00:00");
+    EXPECT_DOUBLE_EQ(2400000.5, Coords::DateTime::s_ModifiedJulianDate);
+    EXPECT_DOUBLE_EQ(2400000.5, a_datetime.toJulianDate());
+    EXPECT_DOUBLE_EQ(2400000.5, a_datetime.ModifiedJulianDate());
+  }
+
+  TEST(DateTime, AccessorTruncatedJulianDate) {
+    Coords::DateTime a_datetime("1968-05-24T00:00:00");
+    EXPECT_DOUBLE_EQ(2440000.5, Coords::DateTime::s_TruncatedJulianDate);
+    EXPECT_DOUBLE_EQ(2440000.5, a_datetime.toJulianDate());
+    EXPECT_DOUBLE_EQ(2440000.5, a_datetime.TruncatedJulianDate());
+  }
+
+  TEST(DateTime, AccessorJ2000) {
+    Coords::DateTime a_datetime("2000-01-01T12:00:00Z");
+    EXPECT_DOUBLE_EQ(2451545.0, Coords::DateTime::s_J2000);
+    EXPECT_DOUBLE_EQ(2451545.0, a_datetime.toJulianDate());
+    EXPECT_DOUBLE_EQ(2451545.0, a_datetime.J2000());
+  }
+
   // ------------------------
   // ----- constructors -----
   // ------------------------
