@@ -83,8 +83,6 @@ typedef struct {
 static void new_CartesianType(Cartesian** a_Cartesian);
 static int is_CartesianType(PyObject* a_Cartesian);
 
-static PyObject* Cartesian_cross(PyObject* self, PyObject *args);
-static PyObject* Cartesian_dot(PyObject* self, PyObject *args);
 static PyObject* Cartesian_magnitude(PyObject* self, PyObject *args);
 static PyObject* Cartesian_normalized(PyObject* self, PyObject *args);
 
@@ -1624,14 +1622,10 @@ static PyObject* Cartesian_nb_inplace_divide(PyObject* o1, PyObject* o2) {
 // ----- Python structs -----
 // --------------------------
 
-PyDoc_STRVAR(Cartesian_cross__doc__, "Returns the cross product of two Cartesian objects");
-PyDoc_STRVAR(Cartesian_dot__doc__, "Returns the dot product of two Cartesian objects");
 PyDoc_STRVAR(Cartesian_magnitude__doc__, "Returns the magnitude of the Cartesian object");
 PyDoc_STRVAR(Cartesian_normalized__doc__, "Returns the normalized version of the Cartesian object");
 
 static PyMethodDef Cartesian_methods[] = {
-  {"cross", (PyCFunction) Cartesian_cross, METH_VARARGS, Cartesian_cross__doc__},
-  {"dot", (PyCFunction) Cartesian_dot, METH_VARARGS, Cartesian_dot__doc__},
   {"magnitude", (PyCFunction) Cartesian_magnitude, METH_VARARGS, Cartesian_magnitude__doc__},
   {"normalized", (PyCFunction) Cartesian_normalized, METH_VARARGS, Cartesian_normalized__doc__},
   {NULL}  /* Sentinel */
@@ -1751,48 +1745,6 @@ static void new_CartesianType(Cartesian** a_Cartesian) {
 
 static int is_CartesianType(PyObject* a_Cartesian) {
   return PyObject_TypeCheck(a_Cartesian, &CartesianType);
-}
-
-// ----- Cartesian_cross product -----
-static PyObject* Cartesian_cross(PyObject* self, PyObject *args) {
-
-  Cartesian* first_Cartesian(NULL);
-  Cartesian* second_Cartesian(NULL);
-  Cartesian* result_Cartesian(NULL);
-
-  // O is borrowed reference
-  if (!PyArg_ParseTuple(args, "OO", &first_Cartesian, &second_Cartesian))
-    return NULL;
-
-  result_Cartesian = PyObject_New(Cartesian, &CartesianType); // alloc and inits
-
-  if (result_Cartesian == NULL) {
-    PyErr_SetString(sCoordsException, "cross failed to create coord.Cartesian.");
-    return NULL;
-  }
-
-  Coords::Cartesian a_cross(Coords::cross(first_Cartesian->m_Cartesian, second_Cartesian->m_Cartesian));
-
-  result_Cartesian->m_Cartesian = a_cross;
-
-  return (PyObject*) result_Cartesian;
-
-}
-
-// ----- Cartesian_dot product -----
-static PyObject* Cartesian_dot(PyObject* self, PyObject *args) {
-
-  Cartesian* first_Cartesian(NULL);
-  Cartesian* second_Cartesian(NULL);
-
-  // O is borrowed reference
-  if (!PyArg_ParseTuple(args, "OO", &first_Cartesian, &second_Cartesian))
-    return NULL;
-
-  double a_dot_product(Coords::dot(first_Cartesian->m_Cartesian, second_Cartesian->m_Cartesian));
-
-  return (PyObject*) Py_BuildValue("d", a_dot_product);
-
 }
 
 // ----- Cartesian_magnitude -----
@@ -2828,12 +2780,66 @@ static int is_datetimeType(PyObject* an_angle) {
 // ----- module methods -----
 // --------------------------
 
+// ----- Cartesian cross product -----
+static PyObject* Cartesian_cross(PyObject* self, PyObject *args) {
+
+  PyObject* arg0(NULL);
+  PyObject* arg1(NULL);
+
+  if (!PyArg_ParseTuple(args, "OO", &arg0, &arg1))
+    return NULL;
+
+  if (!is_CartesianType(arg0) || !is_CartesianType(arg1)) {
+    PyErr_SetString(sCoordsException, "dot product takes two Cartesian types");
+    return NULL;
+  }
+
+  Cartesian* result_Cartesian(NULL);
+  result_Cartesian = PyObject_New(Cartesian, &CartesianType); // alloc and inits
+  if (result_Cartesian == NULL) {
+    PyErr_SetString(sCoordsException, "cross product failed to create Cartesian.");
+    return NULL;
+  }
+
+
+  Coords::Cartesian a_cross_product(Coords::cross(((Cartesian*)arg0)->m_Cartesian,
+						  ((Cartesian*)arg1)->m_Cartesian));
+
+  result_Cartesian->m_Cartesian = a_cross_product;
+
+  return (PyObject*) result_Cartesian;
+
+}
+
+// ----- Cartesian dot product -----
+static PyObject* Cartesian_dot(PyObject* self, PyObject *args) {
+
+  PyObject* arg0(NULL);
+  PyObject* arg1(NULL);
+
+  if (!PyArg_ParseTuple(args, "OO", &arg0, &arg1))
+    return NULL;
+
+  if (!is_CartesianType(arg0) || !is_CartesianType(arg1)) {
+    PyErr_SetString(sCoordsException, "dot product takes two Cartesian types");
+    return NULL;
+  }
+
+  double a_dot_product(Coords::dot(((Cartesian*)arg0)->m_Cartesian, ((Cartesian*)arg1)->m_Cartesian));
+
+  return (PyObject*) Py_BuildValue("d", a_dot_product);
+
+}
 
 // -----------------------
 // ----- method list -----
 // -----------------------
+PyDoc_STRVAR(Cartesian_cross__doc__, "Returns the cross product of two Cartesian objects");
+PyDoc_STRVAR(Cartesian_dot__doc__, "Returns the dot product of two Cartesian objects");
 
 PyMethodDef coords_module_methods[] = {
+  {"cross", (PyCFunction) Cartesian_cross, METH_VARARGS, Cartesian_cross__doc__},
+  {"dot", (PyCFunction) Cartesian_dot, METH_VARARGS, Cartesian_dot__doc__},
   {NULL, NULL}  /* Sentinel */
 };
 

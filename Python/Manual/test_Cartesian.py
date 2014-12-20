@@ -413,27 +413,31 @@ class TestCartesian(unittest.TestCase):
     # vector methods
 
     def test_dot_product(self):
-        """Test space dot product function"""
+        """Test space dot product"""
         result = self.p1.x * self.p2.x + self.p1.y * self.p2.y + self.p1.z * self.p2.z
-        a = coords.Cartesian().dot(self.p1, self.p2)
+        a = coords.dot(self.p1, self.p2)
         self.assertEqual(result, a)
+
+    def test_dot_product_exception(self):
+        """Test space dot product exception"""
+        self.assertRaises(coords.Error, lambda a, b: coords.dot(a, b), self.p1, 1.23)
 
 
     def test_x_cross_y(self):
         """Test x cross y is z"""
-        a = coords.Cartesian().cross(coords.Ux, coords.Uy)
+        a = coords.cross(coords.Ux, coords.Uy)
         self.assertSpacesAreEqual(coords.Uz, a)
 
 
     def test_y_cross_z(self):
         """Test x cross y is z"""
-        a = coords.Cartesian().cross(coords.Uy, coords.Uz)
+        a = coords.cross(coords.Uy, coords.Uz)
         self.assertSpacesAreEqual(coords.Ux, a)
 
 
     def test_z_cross_x(self):
         """Test x cross y is z"""
-        a = coords.Cartesian().cross(coords.Uz, coords.Ux)
+        a = coords.cross(coords.Uz, coords.Ux)
         self.assertSpacesAreEqual(coords.Uy, a)
 
 
@@ -441,9 +445,13 @@ class TestCartesian(unittest.TestCase):
         """Test more arbitrary cross product"""
         a = coords.Cartesian(1, 1, 1)
         b = coords.Cartesian(0, 0, 0.5)
-        c = coords.Cartesian().cross(a, b)
+        c = coords.cross(a, b)
         self.assertSpacesAreEqual(coords.Cartesian(0.5, -0.5, 0), c)
 
+
+    def test_cross_product_exception(self):
+        """Test space cross product exception"""
+        self.assertRaises(coords.Error, lambda a, b: coords.cross(a, b), self.p1, 1.23)
 
 
 if __name__ == '__main__':
