@@ -85,6 +85,22 @@ static int is_CartesianType(PyObject* a_Cartesian);
 
 static PyObject* Cartesian_normalized(PyObject* self, PyObject *args);
 
+// -------------------
+// ----- rotator -----
+// -------------------
+
+static char sAxisStr[] = "axis";
+
+// object definition.
+typedef struct {
+  PyObject_HEAD
+  Coords::rotator m_rotator;
+} rotator;
+
+// Forward declarations for as_number methods. Wraps RotatorType definition.
+static void new_rotatorType(rotator** a_Rotator);
+static int is_rotatorType(PyObject* a_Rotator);
+
 // ---------------------
 // ----- spherical -----
 // ---------------------
@@ -1781,6 +1797,201 @@ static PyObject* Cartesian_normalized(PyObject* self, PyObject *args) {
 
 }
 
+// ====================
+// ===== rotator =====
+// ====================
+
+// ------------------------
+// ----- constructors -----
+// ------------------------
+
+static PyObject* rotator_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
+  rotator* self(NULL);
+  self = (rotator*)type->tp_alloc(type, 0);
+  return (PyObject*)self;
+}
+
+static int rotator_init(rotator* self, PyObject* args, PyObject* kwds) {
+
+  static char* kwlist[] = {sAxisStr, NULL};
+
+  PyObject* arg0(NULL);
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O", kwlist, &arg0))
+    return -1;
+
+  if (arg0) {
+
+    // copy constructor
+    if (is_rotatorType(arg0)) {
+      self->m_rotator.axis(((rotator*)arg0)->m_rotator.axis());
+      return 0;
+
+    } else if (is_CartesianType(arg0)) {
+      self->m_rotator.axis(((Cartesian*)arg0)->m_Cartesian);
+      return 0;
+
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      return -1;
+    }
+
+  }
+
+  return 0;
+
+}
+
+
+static void rotator_dealloc(rotator* self) {
+  self->ob_type->tp_free((PyObject*)self);
+}
+
+// -----------------
+// ----- print -----
+// -----------------
+
+PyObject* rotator_str(PyObject* self) {
+  std::stringstream result;
+  result.precision(sPrintPrecision);
+  result << ((rotator*)self)->m_rotator.axis();
+  return PyString_FromString(result.str().c_str());
+}
+
+// TODO a different repr? for constructor?
+PyObject* rotator_repr(PyObject* self) {
+  std::stringstream result;
+  result.precision(sPrintPrecision);
+  result << ((rotator*)self)->m_rotator.axis();
+  return PyString_FromString(result.str().c_str());
+}
+
+// -------------------
+// ----- methods -----
+// -------------------
+
+static PyObject* rotator_rotate(PyObject* o1, PyObject* o2) {
+
+  // TODO kwlist?
+
+  PyObject* arg0(NULL);
+  PyObject* arg1(NULL);
+
+  if (!PyArg_ParseTuple(o2, "OO", &arg0, &arg1))
+    return NULL;
+
+  if (!is_rotatorType(o1)) {
+    PyErr_SetString(sCoordsException, "not rotator method"); // TODO
+    return NULL;
+  }
+
+  if (!is_CartesianType(arg0)) {
+    PyErr_SetString(sCoordsException, "rotator::rotate() arg0 must be a Cartesian vector");
+    return NULL;
+  }
+
+  if (!is_AngleType(arg1)) {
+    PyErr_SetString(sCoordsException, "rotator::rotate() arg1 must be an angle");
+    return NULL;
+  }
+
+  Cartesian* result_Cartesian(NULL);
+  result_Cartesian = PyObject_New(Cartesian, &CartesianType); // alloc and inits
+  if (result_Cartesian == NULL) {
+    PyErr_SetString(sCoordsException, "rotate failed to create coord.Cartesian");
+    return NULL;
+  }
+
+
+  if (((rotator*)o1)->m_rotator.axis() == Coords::Cartesian::Uo) {
+    PyErr_SetString(sCoordsException, "rotator has Uo rotation axis");
+    return NULL;
+  }
+
+  result_Cartesian->m_Cartesian = ((rotator*)o1)->m_rotator.rotate(((Cartesian*)arg0)->m_Cartesian,
+								   ((Angle*)arg1)->m_angle);
+
+  return (PyObject*) result_Cartesian;
+
+}
+
+
+// --------------------------
+// ----- Python structs -----
+// --------------------------
+
+PyDoc_STRVAR(rotator_rotate__doc__, "Returns the vector rotate by the angle about the axis");
+
+static PyMethodDef rotator_methods[] = {
+  {"rotate", (PyCFunction) rotator_rotate, METH_VARARGS, rotator_rotate__doc__},
+  {NULL}  /* Sentinel */
+};
+
+
+static PyMemberDef rotator_members[] = {
+  {NULL}  /* Sentinel */
+};
+
+static PyGetSetDef rotator_getseters[] = {
+  {NULL}  /* Sentinel */
+};
+
+
+PyTypeObject rotatorType = {
+  PyObject_HEAD_INIT(NULL)
+  0,                                 /* ob_size */
+  "rotator",                         /* tp_name */
+  sizeof(rotator),                   /* tp_basicsize */
+  0,                                 /* tp_itemsize */
+  (destructor) rotator_dealloc,      /* tp_dealloc */
+  0,                                 /* tp_print */
+  0,                                 /* tp_getattr */
+  0,                                 /* tp_setattr */
+  0,                                 /* tp_compare */
+  rotator_repr,                      /* tp_repr */
+  0,                                 /* tp_as_number */
+  0,                                 /* tp_as_sequence */
+  0,                                 /* tp_as_mapping */
+  0,                                 /* tp_hash */
+  0,                                 /* tp_call */
+  rotator_str,                       /* tp_str */
+  0,                                 /* tp_getattro */
+  0,                                 /* tp_setattro */
+  0,                                 /* tp_as_buffer */
+  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  "rotator objects",                   /* tp_doc */
+  0,                                 /* tp_traverse */
+  0,                                 /* tp_clear */
+  0,                                 /* tp_richcompare */
+  0,                                 /* tp_weaklistoffset */
+  0,                                 /* tp_iter */
+  0,                                 /* tp_iternext */
+  rotator_methods,                  /* tp_methods */
+  rotator_members,                  /* tp_members */
+  rotator_getseters,                /* tp_getset */
+  0,                                 /* tp_base */
+  0,                                 /* tp_dict */
+  0,                                 /* tp_descr_get */
+  0,                                 /* tp_descr_set */
+  0,                                 /* tp_dictoffset */
+  (initproc)rotator_init,           /* tp_init */
+  0,                                 /* tp_alloc */
+  rotator_new,                      /* tp_new */
+};
+
+// ------------------------------------------
+// ----- implement forward declarations -----
+// ------------------------------------------
+
+static void new_rotatorType(rotator** a_rotator) {
+  *a_rotator = PyObject_New(rotator, &rotatorType);
+}
+
+static int is_rotatorType(PyObject* a_rotator) {
+  //wrapper for type check
+  return PyObject_TypeCheck(a_rotator, &rotatorType);
+}
+
 
 // =====================
 // ===== spherical =====
@@ -2625,6 +2836,9 @@ static PyObject* datetime_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
   return NULL;
 }
 
+// -------------------
+// ----- methods -----
+// -------------------
 
 static PyObject* datetime_fromJulianDate(PyObject* o1, PyObject* o2) {
 
@@ -2832,6 +3046,8 @@ static PyObject* Cartesian_dot(PyObject* self, PyObject *args) {
 PyDoc_STRVAR(Cartesian_cross__doc__, "Returns the cross product of two Cartesian objects");
 PyDoc_STRVAR(Cartesian_dot__doc__, "Returns the dot product of two Cartesian objects");
 
+// TODO cross, dot as module methods, not instance methods
+
 PyMethodDef coords_module_methods[] = {
   {"cross", (PyCFunction) Cartesian_cross, METH_VARARGS, Cartesian_cross__doc__},
   {"dot", (PyCFunction) Cartesian_dot, METH_VARARGS, Cartesian_dot__doc__},
@@ -2904,6 +3120,14 @@ PyMODINIT_FUNC initcoords(void) {
 
   Py_INCREF(&CartesianType);
   PyModule_AddObject(m, "Cartesian", (PyObject *)&CartesianType);
+
+  // rotator
+  rotatorType.tp_new = PyType_GenericNew;
+  if (PyType_Ready(&rotatorType) < 0)
+    return;
+
+  Py_INCREF(&rotatorType);
+  PyModule_AddObject(m, "rotator", (PyObject *)&rotatorType);
 
   // spherical
   sphericalType.tp_new = PyType_GenericNew;
