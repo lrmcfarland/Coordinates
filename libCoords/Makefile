@@ -3,28 +3,61 @@
 # Description: makes libCoords and runs test scripts
 # Author:      L.R. McFarland, lrm@starbug.com
 # Created:     2014 Jun 19
-#
-#              optional debugging (-g) and optimize for speed (-O)
-#              linux support (the following is OS X/Darwin specific):
-#                  -dynamiclib
-#                  -fpic (position independent code) vs. -fPIC
-#
 # ===============================================================
 
 # where to find google's gtest code
+# built as in README
+# TODO build gtest with "./configure; make" on OS X and Linux?
+
 GTEST_DIR = /usr/local/gtest-1.7.0
 
-# programs and flags
-CXX      = g++ # TODO clang++ for OS X
-CXXFLAGS = -g -W -Wall -fPIC -I. # TODO -std=c++11 -stdlib=libc++
+# Detect operating system flavor.
+UNAME   := $(shell uname)
 
-LINK     = g++ # TODO clang++ for OS X
+# ----------------
+# ----- OS X -----
+# ----------------
+
+# .dylib is only for Darwin
+ifeq ($(UNAME), Darwin)
+
+GTEST_LIBS = -L$(GTEST_DIR) -lgtest
+
 DYLFLAGS  = -headerpad_max_install_names -single_module -dynamiclib -compatibility_version 1.0 -current_version 1.0.0 -install_name libCoords.1.dylib
+
+TARGET_D = libCoords.1.0.0.dylib
+TARGET_D0 = libCoords.dylib
+TARGET_D1 = libCoords.1.dylib
+TARGET_D2 = libCoords.1.0.dylib
+
+CXX      = clang++
+CXXFLAGS = -g -W -Wall -fPIC -I. -std=c++11
+LINK     = clang++
+
+endif
+
+# -----------------
+# ----- Linux -----
+# -----------------
+
+ifeq ($(UNAME), Linux)
+
+GTEST_LIBS = -L$(GTEST_DIR) -lgtest -lpthread
+
+CXX      = g++
+CXXFLAGS = -g -W -Wall -fPIC -I. -std=c++11
+LINK     = g++
+
+endif
+
+# -----------------
+# ----- build -----
+# -----------------
 
 RM       = rm -f
 LN       = ln -s
 AR       = ar cq
-RANLIB   = ranlib -s
+RANLIB   = ranlib
 
 # targets
 
@@ -33,17 +66,6 @@ SOURCES = angle.cpp Cartesian.cpp datetime.cpp spherical.cpp utils.cpp
 OBJECTS = angle.o Cartesian.o datetime.o spherical.o utils.o
 
 TARGET_A = libCoords.a
-
-# Detect operating system flavor.
-UNAME   := $(shell uname)
-
-# .dylib is only for Darwin
-ifeq ($(UNAME), Darwin)
-TARGET_D = libCoords.1.0.0.dylib
-TARGET_D0 = libCoords.dylib
-TARGET_D1 = libCoords.1.dylib
-TARGET_D2 = libCoords.1.0.dylib
-endif
 
 # builds
 
@@ -71,33 +93,33 @@ test: angle_unittest Cartesian_unittest datetime_unittest spherical_unittest
 	./spherical_unittest.sh
 
 
-angle_unittest: angle_unittest.o $(TARGET_D)
-	g++ -L$(GTEST_DIR) -lgtest -L. -lCoords angle_unittest.o -o angle_unittest
+angle_unittest: angle_unittest.o $(TARGET_A) $(TARGET_D)
+	$(CXX) angle_unittest.o -L. -lCoords $(GTEST_LIBS) -o angle_unittest
 
 angle_unittest.o: angle_unittest.cpp
-	g++ -I$(GTEST_DIR)/include -I . -g -c angle_unittest.cpp
+	$(CXX) -I$(GTEST_DIR)/include -I. -g -c angle_unittest.cpp
 
-Cartesian_unittest: Cartesian_unittest.o $(TARGET_D)
-	g++ -L$(GTEST_DIR) -lgtest -L. -lCoords Cartesian_unittest.o -o Cartesian_unittest
+Cartesian_unittest: Cartesian_unittest.o $(TARGET_A) $(TARGET_D)
+	$(CXX) Cartesian_unittest.o -L. -lCoords $(GTEST_LIBS) -o Cartesian_unittest
 
 Cartesian_unittest.o: Cartesian_unittest.cpp
-	g++ -I$(GTEST_DIR)/include -I . -g -c Cartesian_unittest.cpp
+	$(CXX) -I$(GTEST_DIR)/include -I. -g -c Cartesian_unittest.cpp
 
-datetime_unittest: datetime_unittest.o $(TARGET_D)
-	g++ -L$(GTEST_DIR) -lgtest -L. -lCoords datetime_unittest.o -o datetime_unittest
+datetime_unittest: datetime_unittest.o $(TARGET_A) $(TARGET_D)
+	$(CXX) datetime_unittest.o -L. -lCoords $(GTEST_LIBS) -o datetime_unittest
 
 datetime_unittest.o: datetime_unittest.cpp
-	g++ -I$(GTEST_DIR)/include -I . -g -c datetime_unittest.cpp
+	$(CXX) -I$(GTEST_DIR)/include -I. -g -c datetime_unittest.cpp
 
-spherical_unittest: spherical_unittest.o $(TARGET_D)
-	g++ -L$(GTEST_DIR) -lgtest -L. -lCoords spherical_unittest.o -o spherical_unittest
+spherical_unittest: spherical_unittest.o $(TARGET_A) $(TARGET_D)
+	$(CXX) spherical_unittest.o -L. -lCoords $(GTEST_LIBS) -o spherical_unittest
 
 spherical_unittest.o: spherical_unittest.cpp
-	g++ -I$(GTEST_DIR)/include -I . -g -c spherical_unittest.cpp
+	$(CXX) -I$(GTEST_DIR)/include -I . -g -c spherical_unittest.cpp
 
 
-example1: example1.o $(TARGET_D)
-	g++ example1.o -o example1 -L. -lCoords
+example1: example1.o $(TARGET_A) $(TARGET_D)
+	$(CXX) example1.o -o example1 -L. -lCoords
 
 mepsilon: mepsilon.c
 	gcc mepsilon.c -o mepsilon
