@@ -1,12 +1,29 @@
 # Coordinates library
 
-## To Install
+## To Build
+
+The build is done using make on the command line. There are targets for
+build and test.
+
+```
+$ cd libCoords/
+[libCoords]$ make clean
+...
+[libCoords]$ make
+...
+[libCoords]$ make test
+...
+```
+
+See the [Makefile](Makefile) for details.
+
+To build the test suite you will need gtest.
 
 ### [googletest](https://code.google.com/p/googletest/)
 
 The C++ library uses [googletest](https://code.google.com/p/googletest/) to
 run the unit tests. I have downloaded and built it in /usr/local using
-following the instructions in the gtest README
+these instructions from the gtest README:
 
 ```
 [root gtest-1.7.0]# export GTEST_DIR=/usr/local/gtest-1.7.0
@@ -20,29 +37,62 @@ a - gtest-all.o
 libCoords/Makefile sets its GTEST_DIR to /usr/local/gtest-1.7.0 and picks
 up libgtest.a from there.
 
+You can also build gtest using
+
+```
+# cd /usr/local/gtest-1.7.0
+# ./configure
+# make
+```
+
+and it will create the libraries in lib/.libs. Install to taste.
 
 
-## To Build
+### On OS X
 
-The build is done using make on the command line. There are targets for
-build and test. See the [Makefile](Makefile) for details.
+After adding Xcode and gtest (as above) I was able to build libCoords
+on Mavericks and Yosemite with out any additional tools.
+
+### On Linux
+
+At this time (2014-12-21), to build on ubuntu I needed to upgrade to
+the g++-4.9 to get the regex library for datetime.
+
+```
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt-get update
+sudo apt-get install g++-4.9
+```
+
+The [Makefile](Makefile) has been set to use this as the compiler.  I
+expect this will become part of the "normal" g++ distribution in the
+future.
+
+gtest, built as above, also needs pthreads:
+
+```
+sudo apt-get install libpthread-stubs0-dev
+```
+
+However, there are options to build gtest with out this.
 
 ## To run
 
 ### On OS X
 
 On OS X, libCoords.dylib needs to be on the DYLD_LIBRARY_PATH along
-with libgtest.a described above.
-
-setenv.sh will use COORDS_ROOT to find these or assume they are
-relative to this directory.
+with libgtest.a described above. setenv.sh will use COORDS_ROOT to
+find these or assume they are relative to this directory.
 
 example1.sh uses this to set up its runtime environment for the
 example1 executable.
 
 ### On Linux
 
-TODO
+On Linux, libCoords.a needs to be on the LD_LIBRARY_PATH along
+with libgtest.a described above. setenv.sh will use COORDS_ROOT to
+find these or assume they are relative to this directory.
+
 
 ## To test
 
