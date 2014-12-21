@@ -35,11 +35,13 @@ At first this seems little weird in English, but then
 
 ## To Install
 
+While libCoords and the "manual" python extension can be built with
+out additional packages, a complete build of Coordinates uses gtest
+and Boost.
+
 Coordinates uses [gtest](https://code.google.com/p/googletest/) to
 validate the C++ library libCoords. Details on this can be found
 in [libCoords](libCoords/README.md).
-
-The Python modules use the native Python unit test module.
 
 To build the Boost wrappers you will, of course, need to install
 [Boost](http://www.boost.org) with python. Details on this can be found
@@ -49,35 +51,39 @@ in [Python/Boost](Python/Boost/README.md).
 ### OS X
 
 I built this on my iMac using the g++ compiler that comes with
-[Xcode](https://developer.apple.com/xcode/), but there is nothing special
-that should cause a problem for other compilers.
+[Xcode](https://developer.apple.com/xcode/).
 
 ### Linux
 
-TODO
+On ubuntu I needed to upgrade to the g++-4.9 to get the regex library
+for datetime. Details on this can be found
+[libCoords/README.md](libCoords/README.md)
+
+TODO: I am still working on how to make the Boost and Manual Python setup.py
+use this instead of the default g++ compiler.
 
 
 ## To Build
 
-Each directory has its own Makefile with 'build', 'test', and 'clean'
-targets, e.g.
+The top level [build.sh](build.sh) script will build all libraries.
+libCoords must be bulit first. Python/Boost and Python/Manual are
+built next.
 
 ```
 $ pwd
-/Users/.../Coordinates/libCoords
-$ make clean
-$ make test
-```
-
-libCoords must be built first. There is a build.sh script that runs
-the Makefiles in all the directories in the necessary order and takes
-the same make targets as above.
-
-```
-$ pwd
-/Users/.../Coords/
+.../Coordinates/
 $ ./build.sh clean
 $ ./build.sh test
+```
+
+Each directory has its own Makefile with 'build', 'test', and 'clean'
+targets. build.sh simply runs the Makefile in each of the sub directories.
+
+```
+$ pwd
+.../Coordinates/libCoords
+$ make clean
+$ make test
 ```
 
 
@@ -85,15 +91,19 @@ $ ./build.sh test
 
 ### C++
 
-Here I use conversion constructors to convert between spherical and
-Cartesian coordinates.
+[example1.cpp](libCoords/example1.cpp) demonstrates the C++ interface.
+Here I use the spherical coordinates with the radius of the earth (in
+kilometers), the latitude (which needs to be converted to the theta
+angle from the positive z axis), and longitude of two locations to
+calculate the distance between them.
 
 ```
-
 // ============================================================
 // Filename:    example1.cpp
 //
-// Description: Example of using libCoords
+// Description: Example of using libCoords to calculate the distance
+//              between two places on earth given the latitude and
+//              longitude.
 //
 // Authors:     L.R. McFarland
 // Created:     2014nov11
@@ -107,20 +117,16 @@ Cartesian coordinates.
 
 int main () {
 
-    Coords::spherical a(1, Coords::angle(45), Coords::angle(45));
-    Coords::spherical b(1, Coords::angle(45), Coords::angle(-45));
-    Coords::spherical c;
-    c = a + b;
+  const double Re(6371); // radius of earth in km
 
-    // a and b are both sin(45) high along z axis
-    // +0.5 along x axis (1.0 total)
-    // and +/- 0.5 along the y axis (0.0 total)
+  Coords::spherical keplers(Re, Coords::Latitude(37, 27, 13), Coords::angle(-122, 10, 55));
+  Coords::spherical booksinc(Re, Coords::Latitude(37, 23, 32.4852), Coords::angle(-122, 4, 46.2252));
 
-    Coords::Cartesian cart_c(c);
+  Coords::Cartesian delta(keplers - booksinc);
 
-    std::cout << "a (" << a << ") + " << std::endl
-	      << "b (" << b << ") = " << std::endl
-	      << "c (" << cart_c << ")" << std::endl;
+  std::cout << "keplers " << keplers << " - " << std::endl
+	    << "books inc " << booksinc << " = " << std::endl
+	    << "distance " << delta.magnitude() << " km" << std::endl;
 
   return 0;
 }
@@ -133,24 +139,16 @@ int main () {
 g++ -g -W -Wall -fPIC -I.   -c -o example1.o example1.cpp
 g++ example1.o -o example1 -L. -lCoords
 
-[libCoords (master)]$ ./example1.sh
-# COORD_ORIGIN not set. Using ..
-# GTEST_DIR not set. Using /usr/local/gtest-1.7.0
-# DYLD_LIBRARY_PATH :../libCoords:/usr/local/gtest-1.7.0
-
-a (<spherical><r>1</r><theta>45</theta><phi>45</phi></spherical>) +
-b (<spherical><r>1</r><theta>45</theta><phi>-45</phi></spherical>) =
-c (<Cartesian><x>1</x><y>0</y><z>1.41421</z></Cartesian>)
+[libCoords]$ ./example1
+keplers <spherical><r>6371</r><theta>52.5464</theta><phi>-122.182</phi></spherical> - 
+books inc <spherical><r>6371</r><theta>52.6076</theta><phi>-122.08</phi></spherical> = 
+distance 11.3235 km
 
 ```
 
 
 ### Python
 
-Here I use the spherical coordinates with the radius of the earth (in kilometers), the
-latitude (which needs to be converted to the theta angle from the
-positive z axis), and longitude of two locations to calculate the
-distance between them.
 
 ```
 >>> import coords

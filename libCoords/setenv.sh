@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 #
-# Shell wrapper to set up OS X python environment
-#
-# TODO: add linux support
+# Shell wrapper to set up the python environment
 #
 
 # -------------------------
@@ -17,7 +15,7 @@ else
 fi
 
 # ----------------------
-# ----- Gtest root -----
+# ----- gtest root -----
 # ----------------------
 
 if [ -n "$GTEST_DIR" ]; then
@@ -35,13 +33,26 @@ fi
 COORD_LIBRARY_PATH=${COORD_ORIGIN}/libCoords
 GTEST_LIBRARY_PATH=${GTEST_DIR}
 
-export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${COORD_LIBRARY_PATH}:${GTEST_LIBRARY_PATH}
+platform=`uname`
+
+if [[ "$platform" == 'Darwin' ]]; then
+    export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${COORD_LIBRARY_PATH}:${GTEST_LIBRARY_PATH}
+    echo '# DYLD_LIBRARY_PATH' ${DYLD_LIBRARY_PATH}
+    echo  # linefeed
+
+elif [[ "$platform" == 'Linux' ]]; then
+    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${COORD_LIBRARY_PATH}:${GTEST_LIBRARY_PATH}
+    echo '# LD_LIBRARY_PATH' ${LD_LIBRARY_PATH}
+    echo  # linefeed
+
+else
+    echo "unsupported platform"
+    exit 1
+fi
 
 # -----------------------
 # ----- echo result -----
 # -----------------------
 
-echo '# DYLD_LIBRARY_PATH' ${DYLD_LIBRARY_PATH}
-echo  # linefeed
 
 # EoF
