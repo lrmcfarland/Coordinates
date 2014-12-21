@@ -6,8 +6,7 @@
 # ===============================================================
 
 # where to find google's gtest code
-# built as in README
-# TODO build gtest with "./configure; make" on OS X and Linux?
+# built as in README or TOOD: build gtest with "./configure; make" on OS X and Linux?
 
 GTEST_DIR = /usr/local/gtest-1.7.0
 
@@ -21,6 +20,10 @@ UNAME   := $(shell uname)
 # .dylib is only for Darwin
 ifeq ($(UNAME), Darwin)
 
+CXX      = clang++
+CXXFLAGS = -g -W -Wall -fPIC -I. -std=c++11
+LINK     = clang++
+
 GTEST_LIBS = -L$(GTEST_DIR) -lgtest
 
 DYLFLAGS  = -headerpad_max_install_names -single_module -dynamiclib -compatibility_version 1.0 -current_version 1.0.0 -install_name libCoords.1.dylib
@@ -30,10 +33,6 @@ TARGET_D0 = libCoords.dylib
 TARGET_D1 = libCoords.1.dylib
 TARGET_D2 = libCoords.1.0.dylib
 
-CXX      = clang++
-CXXFLAGS = -g -W -Wall -fPIC -I. -std=c++11
-LINK     = clang++
-
 endif
 
 # -----------------
@@ -42,11 +41,11 @@ endif
 
 ifeq ($(UNAME), Linux)
 
-GTEST_LIBS = -L$(GTEST_DIR) -lgtest -lpthread
-
-CXX      = g++
+CXX      = g++-4.9 # TODO back g++ when regex is "normal"
 CXXFLAGS = -g -W -Wall -fPIC -I. -std=c++11
 LINK     = g++
+
+GTEST_LIBS = -L$(GTEST_DIR) -lgtest -lpthread
 
 endif
 
