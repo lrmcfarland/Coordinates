@@ -103,19 +103,19 @@ Cartesian_unittest: Cartesian_unittest.o $(TARGET_A) $(TARGET_D)
 	$(CXX) Cartesian_unittest.o -L. -lCoords $(GTEST_LIBS) -o Cartesian_unittest
 
 Cartesian_unittest.o: Cartesian_unittest.cpp
-	$(CXX) -I$(GTEST_DIR)/include -I. -g -c Cartesian_unittest.cpp
+	$(CXX) -std=c++11 -I$(GTEST_DIR)/include -I. -g -c Cartesian_unittest.cpp
 
 datetime_unittest: datetime_unittest.o $(TARGET_A) $(TARGET_D)
 	$(CXX) datetime_unittest.o -L. -lCoords $(GTEST_LIBS) -o datetime_unittest
 
 datetime_unittest.o: datetime_unittest.cpp
-	$(CXX) -I$(GTEST_DIR)/include -I. -g -c datetime_unittest.cpp
+	$(CXX) -std=c++11 -I$(GTEST_DIR)/include -I. -g -c datetime_unittest.cpp
 
 spherical_unittest: spherical_unittest.o $(TARGET_A) $(TARGET_D)
 	$(CXX) spherical_unittest.o -L. -lCoords $(GTEST_LIBS) -o spherical_unittest
 
 spherical_unittest.o: spherical_unittest.cpp
-	$(CXX) -I$(GTEST_DIR)/include -I . -g -c spherical_unittest.cpp
+	$(CXX) -std=c++11 -I$(GTEST_DIR)/include -I . -g -c spherical_unittest.cpp
 
 
 example1: example1.o $(TARGET_A) $(TARGET_D)
