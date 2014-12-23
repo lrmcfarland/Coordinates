@@ -339,7 +339,7 @@ namespace {
     Coords::angle a(44, 32, 15.4);
     std::stringstream out;
     out << a;
-    EXPECT_STREQ("44* 32' 15.4\"", out.str().c_str());
+    EXPECT_STREQ("44:32:15.4", out.str().c_str());
   }
 
 
@@ -349,14 +349,14 @@ namespace {
     Coords::angle a(360);
     std::stringstream out;
     out << a;
-    EXPECT_STREQ("360* 0' 0\"", out.str().c_str());
+    EXPECT_STREQ("360:00:00", out.str().c_str());
   }
 
   TEST(angle, Stdout361) {
     Coords::angle a(361);
     std::stringstream out;
     out << a;
-    EXPECT_STREQ("361* 0' 0\"", out.str().c_str());
+    EXPECT_STREQ("361:00:00", out.str().c_str());
   }
 
   TEST(angle, RoundingIssuesBeyond360) {
@@ -364,7 +364,7 @@ namespace {
     Coords::angle a(45+360);
     std::stringstream out;
     out << a;
-    EXPECT_STREQ("405* 0' 0\"", out.str().c_str());
+    EXPECT_STREQ("405:00:00", out.str().c_str());
   }
 
   // TODO fix this angle(45 * 10).normalize() != 180

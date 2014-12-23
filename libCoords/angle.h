@@ -123,7 +123,7 @@ namespace Coords {
   // inline for boost. Use hpp instead?
   inline std::ostream& operator<< (std::ostream& os, const Coords::angle& a) {
     std::stringstream out;
-    Coords::value2DMSString(a.value(), out);
+    Coords::value2HMSString(a.value(), out);
     return os << out.str();
   }
 

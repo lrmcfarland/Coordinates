@@ -519,14 +519,14 @@ class TestAngle(unittest.TestCase):
     def test_str(self):
         """Test str"""
         an_angle = coords.angle()
-        a_str = '''0* 0' 0"'''
+        a_str = '00:00:00'
         self.assertEqual(a_str, str(an_angle))
 
 
     def test_repr(self):
         """Test repr"""
         an_angle = coords.angle()
-        a_repr = '''0* 0' 0"'''
+        a_repr = '00:00:00'
         self.assertEqual(a_repr, repr(an_angle))
 
 
