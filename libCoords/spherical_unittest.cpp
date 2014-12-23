@@ -336,6 +336,26 @@ namespace {
     EXPECT_EQ(Coords::angle(0.0), b.phi());
   }
 
+  TEST(FixedSpherical, ConstructFromDeclination_north) {
+    // northern hemisphere
+    Coords::Declination a(30);
+    Coords::spherical b(1, a);
+
+    EXPECT_DOUBLE_EQ(1, b.r());
+    EXPECT_EQ(Coords::angle(60.0), b.theta());
+    EXPECT_EQ(Coords::angle(0.0), b.phi());
+  }
+
+  TEST(FixedSpherical, ConstructFromDeclination_south) {
+    // southern hemisphere
+    Coords::Declination a(-30);
+    Coords::spherical b(1, a);
+
+    EXPECT_DOUBLE_EQ(1, b.r());
+    EXPECT_EQ(Coords::angle(120.0), b.theta());
+    EXPECT_EQ(Coords::angle(0.0), b.phi());
+  }
+
   // add
 
   TEST(FixedSpherical, Add_inplace_trivial_1) {

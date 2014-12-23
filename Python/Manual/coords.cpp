@@ -42,7 +42,6 @@ static char sSecondStr[] = "seconds";
 static char sValueStr[] = "value";
 static char sRadiansStr[] = "radians";
 
-// object definition.
 typedef struct {
   PyObject_HEAD
   Coords::angle m_angle;
@@ -56,7 +55,6 @@ static int is_AngleType(PyObject* an_angle);
 // ----- Latitude -----
 // --------------------
 
-// object definition.
 typedef struct {
   PyObject_HEAD
   Coords::Latitude m_angle;
@@ -64,6 +62,20 @@ typedef struct {
 
 static void new_LatitudeType(Latitude** an_angle);
 static int is_LatitudeType(PyObject* an_angle);
+
+// -----------------------
+// ----- Declination -----
+// -----------------------
+
+// typedef of Latitude
+
+typedef struct {
+  PyObject_HEAD
+  Coords::Declination m_angle;
+} Declination;
+
+static void new_DeclinationType(Declination** an_angle);
+static int is_DeclinationType(PyObject* an_angle);
 
 // ---------------------
 // ----- Cartesian -----
@@ -73,7 +85,6 @@ static char sXstr[] = "x";
 static char sYstr[] = "y";
 static char sZstr[] = "z";
 
-// object definition.
 typedef struct {
   PyObject_HEAD
   Coords::Cartesian m_Cartesian;
@@ -91,7 +102,6 @@ static PyObject* Cartesian_normalized(PyObject* self, PyObject *args);
 
 static char sAxisStr[] = "axis";
 
-// object definition.
 typedef struct {
   PyObject_HEAD
   Coords::rotator m_rotator;
@@ -109,7 +119,6 @@ static char sRstr[] = "r";
 static char sThetaStr[] = "theta";
 static char sPhiStr[] = "phi";
 
-// object definition.
 typedef struct {
   PyObject_HEAD
   Coords::spherical m_spherical;
@@ -1230,6 +1239,505 @@ static int is_LatitudeType(PyObject* an_angle) {
   return PyObject_TypeCheck(an_angle, &LatitudeType);
 }
 
+
+// =======================
+// ===== Declination =====
+// =======================
+
+// typedef of Latitude
+
+// ------------------------
+// ----- constructors -----
+// ------------------------
+
+static PyObject* Declination_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
+  Declination* self(NULL);
+  self = (Declination*)type->tp_alloc(type, 0);
+  return (PyObject*)self;
+}
+
+static int Declination_init(Declination* self, PyObject* args, PyObject* kwds) {
+
+  static char* kwlist[] = {sDegreeStr, sMinuteStr, sSecondStr, NULL};
+
+  double degrees(0); // default value
+  double minutes(0); // default value
+  double seconds(0); // default value
+
+  PyObject* arg0(NULL);
+  PyObject* arg1(NULL);
+  PyObject* arg2(NULL);
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOO", kwlist, &arg0, &arg1, &arg2))
+    return -1;
+
+  if (arg0) {
+
+    // copy constructor
+    if (is_DeclinationType(arg0)) {
+      self->m_angle.value(((Declination*)arg0)->m_angle.value());
+      return 0;
+
+    } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
+      degrees = PyFloat_AsDouble(arg0);
+
+    } else if (PyString_Check(arg0)) {
+      PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
+      return -1;
+
+    } else {
+      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      return -1;
+    }
+
+  }
+
+  if (parse_double_arg(arg1, minutes))
+      return -1;
+
+  if (parse_double_arg(arg2, seconds))
+      return -1;
+
+  self->m_angle.value(Coords::degrees2seconds(degrees, minutes, seconds)/3600);
+
+  return 0;
+
+}
+
+
+static void Declination_dealloc(Declination* self) {
+  self->ob_type->tp_free((PyObject*)self);
+}
+
+// -----------------
+// ----- print -----
+// -----------------
+
+PyObject* Declination_str(PyObject* self) {
+  std::stringstream result;
+  result.precision(sPrintPrecision);
+  result << ((Declination*)self)->m_angle;
+  return PyString_FromString(result.str().c_str());
+}
+
+// TODO a different repr? for constructor?
+PyObject* Declination_repr(PyObject* self) {
+  std::stringstream result;
+  result.precision(sPrintPrecision);
+  result << ((Declination*)self)->m_angle;
+  return PyString_FromString(result.str().c_str());
+}
+
+// -------------------------------
+// ----- getters and setters -----
+// -------------------------------
+
+// ----- value -----
+
+static PyObject* Declination_getValue(Declination* self, void* closure) {
+  return PyFloat_FromDouble(self->m_angle.value());
+}
+
+static int Declination_setValue(Declination* self, PyObject* value, void* closure) {
+
+  if (value == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete value");
+    return -1;
+  }
+
+  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+    PyErr_SetString(sCoordsException, "value must be a float or int");
+    return -1;
+  }
+
+  self->m_angle.value(PyFloat_AsDouble(value));
+
+  return 0;
+}
+
+// ----- radians -----
+
+static PyObject* Declination_getRadians(Declination* self, void* closure) {
+  return PyFloat_FromDouble(self->m_angle.radians());
+}
+
+static int Declination_setRadians(Declination* self, PyObject* radians, void* closure) {
+
+  if (radians == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete radians");
+    return -1;
+  }
+
+  if (!PyFloat_Check(radians) && !PyInt_Check(radians)) {
+    PyErr_SetString(sCoordsException, "radians must be a float or int");
+    return -1;
+  }
+
+  self->m_angle.radians(PyFloat_AsDouble(radians));
+
+  return 0;
+}
+
+// --------------------------
+// ----- number methods -----
+// --------------------------
+
+
+static PyObject* Declination_nb_add(PyObject* o1, PyObject* o2) {
+  // TODO support o2 as angle? double?
+
+  if (!is_DeclinationType(o1) || !is_DeclinationType(o2)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  Angle* result_angle(NULL); // switches to Angle
+
+  new_AngleType(&result_angle);
+
+  if (result_angle == NULL) {
+    PyErr_SetString(sCoordsException, "add failed to create coord.angle");
+    return NULL;
+  }
+
+  Coords::angle the_sum(((Declination*)o1)->m_angle + ((Declination*)o2)->m_angle);
+
+  result_angle->m_angle = the_sum;
+
+  return (PyObject*) result_angle;
+}
+
+
+static PyObject* Declination_nb_subtract(PyObject* o1, PyObject* o2) {
+  // TODO support o2 as angle? double?
+
+  if (!is_DeclinationType(o1) || !is_DeclinationType(o2)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  Angle* result_angle(NULL); // switches to Angle
+
+  new_AngleType(&result_angle);
+
+  if (result_angle == NULL) {
+    PyErr_SetString(sCoordsException, "subtract failed to create coord.angle");
+    return NULL;
+  }
+
+  Coords::angle the_difference(((Declination*)o1)->m_angle - ((Declination*)o2)->m_angle);
+
+  result_angle->m_angle = the_difference;
+
+  return (PyObject*) result_angle;
+}
+
+
+static PyObject* Declination_nb_negative(PyObject* o1) {
+  // Unitary minus
+
+  if (!is_DeclinationType(o1)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  Angle* result_angle(NULL); // switches to Angle
+
+  new_AngleType(&result_angle);
+
+  if (result_angle == NULL) {
+    PyErr_SetString(sCoordsException, "negative failed to create coord.angle");
+    return NULL;
+  }
+
+  Coords::angle the_inverse = -((Declination*)o1)->m_angle;
+
+  result_angle->m_angle = the_inverse;
+
+  return (PyObject*) result_angle;
+}
+
+
+static PyObject* Declination_nb_multiply(PyObject* o1, PyObject* o2) {
+  // TODO support o2 as angle? double?
+
+  if (!is_DeclinationType(o1) || !is_DeclinationType(o2)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  Angle* result_angle(NULL); // switches to Angle
+  new_AngleType(&result_angle);
+
+  if (result_angle == NULL) {
+    PyErr_SetString(sCoordsException, "multiply failed to create coord.angle");
+    return NULL;
+  }
+
+  result_angle->m_angle = ((Declination*)o1)->m_angle * ((Declination*)o2)->m_angle;
+
+  return (PyObject*) result_angle;
+}
+
+
+static PyObject* Declination_nb_divide(PyObject* o1, PyObject* o2) {
+  // TODO support o2 as angle? double?
+
+  if (!is_DeclinationType(o1) || !is_DeclinationType(o2)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  Angle* result_angle(NULL); // switches to Angle
+  new_AngleType(&result_angle);
+
+  if (result_angle == NULL) {
+    PyErr_SetString(sCoordsException, "divide failed to create coord.angle");
+    return NULL;
+  }
+
+  try {
+    result_angle->m_angle = ((Declination*)o1)->m_angle / ((Declination*)o2)->m_angle;
+  } catch (Coords::Error err) {
+    PyErr_SetString(sCoordsException, err.what());
+    return NULL;
+  }
+
+  return (PyObject*) result_angle;
+}
+
+
+static PyObject* Declination_tp_richcompare(PyObject* o1, PyObject* o2, int op) {
+
+  if (!is_DeclinationType(o1) || !is_DeclinationType(o2)) {
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  if (op == Py_LT) {
+
+    if (((Declination*)o1)->m_angle < ((Declination*)o2)->m_angle)
+      return Py_True;
+    else
+      return Py_False;
+
+  } else if (op == Py_LE) {
+
+    if (((Declination*)o1)->m_angle <= ((Declination*)o2)->m_angle)
+      return Py_True;
+    else
+      return Py_False;
+
+  } else if (op == Py_EQ) {
+
+    if (((Declination*)o1)->m_angle == ((Declination*)o2)->m_angle)
+      return Py_True;
+    else
+      return Py_False;
+
+  } else if (op == Py_NE) {
+
+    if (((Declination*)o1)->m_angle != ((Declination*)o2)->m_angle)
+      return Py_True;
+    else
+      return Py_False;
+
+  } else if (op == Py_GT) {
+
+    if (((Declination*)o1)->m_angle > ((Declination*)o2)->m_angle)
+      return Py_True;
+    else
+      return Py_False;
+
+  } else if (op == Py_GE) {
+
+    if (((Declination*)o1)->m_angle >= ((Declination*)o2)->m_angle)
+      return Py_True;
+    else
+      return Py_False;
+
+  } else {
+
+    PyErr_SetString(PyExc_TypeError, "richcompare op not supported");
+    return NULL;
+
+  }
+
+}
+
+// ---------------------------
+// ----- inplace methods -----
+// ---------------------------
+
+static PyObject* Declination_nb_inplace_add(PyObject* o1, PyObject* o2) {
+  // TODO support o2 as angle? double?
+  if (is_DeclinationType(o1) && is_DeclinationType(o2)) {
+    ((Declination*)o1)->m_angle.operator+=(((Declination*)o2)->m_angle);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "Declination::operator+=() called with unsupported type");
+  return NULL;
+}
+
+static PyObject* Declination_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
+  // TODO support o2 as angle? double?
+  if (is_DeclinationType(o1) && is_DeclinationType(o2)) {
+    ((Declination*)o1)->m_angle.operator-=(((Declination*)o2)->m_angle);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "Declination::operator-=() called with unsupported type");
+  return NULL;
+}
+
+static PyObject* Declination_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
+  // TODO support o2 as angle? double?
+  if (is_DeclinationType(o1) && is_DeclinationType(o2)) {
+    ((Declination*)o1)->m_angle.operator*=(((Declination*)o2)->m_angle);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "Declination::operator*=() called with unsupported type");
+  return NULL;
+}
+
+static PyObject* Declination_nb_inplace_divide(PyObject* o1, PyObject* o2) {
+  // TODO support o2 as angle? double?
+  if (is_DeclinationType(o1) && is_DeclinationType(o2)) {
+    ((Declination*)o1)->m_angle.operator/=(((Declination*)o2)->m_angle);
+    Py_INCREF(o1);
+    return o1;
+  }
+  PyErr_SetString(sCoordsException, "Declination::operator/=() called with unsupported type");
+  return NULL;
+}
+
+// --------------------------
+// ----- Python structs -----
+// --------------------------
+
+static PyMethodDef Declination_methods[] = {
+  {NULL}  /* Sentinel */
+};
+
+
+static PyMemberDef Declination_members[] = {
+  {NULL}  /* Sentinel */
+};
+
+static PyGetSetDef Declination_getseters[] = {
+  {sValueStr, (getter)Declination_getValue, (setter)Declination_setValue, sValueStr, NULL},
+  {sRadiansStr, (getter)Declination_getRadians, (setter)Declination_setRadians, sRadiansStr, NULL},
+  {NULL}  /* Sentinel */
+};
+
+
+// see http://docs.python.org/c-api/typeobj.html
+static PyNumberMethods Declination_as_number = {
+  (binaryfunc) Declination_nb_add,
+  (binaryfunc) Declination_nb_subtract,
+  (binaryfunc) Declination_nb_multiply,
+  (binaryfunc) Declination_nb_divide,
+  (binaryfunc) 0,  // nb_remainder
+  (binaryfunc) 0,  // nb_divmod
+  (ternaryfunc) 0, // nb_power
+  (unaryfunc) Declination_nb_negative,
+  (unaryfunc) 0,   // nb_positive
+  (unaryfunc) 0,   // nb_absolute
+  (inquiry) 0,     // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,   // nb_invert
+  (binaryfunc) 0,  // nb_lshift
+  (binaryfunc) 0,  // nb_rshift
+  (binaryfunc) 0,  // nb_and
+  (binaryfunc) 0,  // nb_xor
+  (binaryfunc) 0,  // nb_or
+  (coercion) 0,    // Used by the coerce() function
+  (unaryfunc) 0,   // nb_int
+  (unaryfunc) 0,   // nb_long
+  (unaryfunc) 0,   // nb_float
+  (unaryfunc) 0,   // nb_oct
+  (unaryfunc) 0,   // nb_hex
+
+  // added in release 2.0
+
+  (binaryfunc) Declination_nb_inplace_add,
+  (binaryfunc) Declination_nb_inplace_subtract,
+  (binaryfunc) Declination_nb_inplace_multiply,
+  (binaryfunc) Declination_nb_inplace_divide,
+  (binaryfunc) 0,  // nb_inplace_remainder
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  // added in release 2.2
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) 0,  // nb_true_divide
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+};
+
+
+PyTypeObject DeclinationType = {
+  PyObject_HEAD_INIT(NULL)
+  0,                                 /* ob_size */
+  "Declination",                           /* tp_name */
+  sizeof(Declination),                     /* tp_basicsize */
+  0,                                 /* tp_itemsize */
+  (destructor) Declination_dealloc,        /* tp_dealloc */
+  0,                                 /* tp_print */
+  0,                                 /* tp_getattr */
+  0,                                 /* tp_setattr */
+  0,                                 /* tp_compare */
+  Declination_repr,                        /* tp_repr */
+  &Declination_as_number,                  /* tp_as_number */
+  0,                                 /* tp_as_sequence */
+  0,                                 /* tp_as_mapping */
+  0,                                 /* tp_hash */
+  0,                                 /* tp_call */
+  Declination_str,                         /* tp_str */
+  0,                                 /* tp_getattro */
+  0,                                 /* tp_setattro */
+  0,                                 /* tp_as_buffer */
+  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  "Declination objects",                   /* tp_doc */
+  0,                                 /* tp_traverse */
+  0,                                 /* tp_clear */
+  Declination_tp_richcompare,              /* tp_richcompare */
+  0,                                 /* tp_weaklistoffset */
+  0,                                 /* tp_iter */
+  0,                                 /* tp_iternext */
+  Declination_methods,                     /* tp_methods */
+  Declination_members,                     /* tp_members */
+  Declination_getseters,                   /* tp_getset */
+  0,                                 /* tp_base */
+  0,                                 /* tp_dict */
+  0,                                 /* tp_descr_get */
+  0,                                 /* tp_descr_set */
+  0,                                 /* tp_dictoffset */
+  (initproc)Declination_init,              /* tp_init */
+  0,                                 /* tp_alloc */
+  Declination_new,                         /* tp_new */
+};
+
+// ------------------------------------------
+// ----- implement forward declarations -----
+// ------------------------------------------
+
+static void new_DeclinationType(Declination** an_angle) {
+  *an_angle = PyObject_New(Declination, &DeclinationType);
+}
+
+static int is_DeclinationType(PyObject* an_angle) {
+  //wrapper for type check
+  return PyObject_TypeCheck(an_angle, &DeclinationType);
+}
+
+
 // =====================
 // ===== Cartesian =====
 // =====================
@@ -2061,6 +2569,9 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
 
     } else if (is_LatitudeType(arg1)) {
       theta = Coords::angle(90.0) - ((Latitude*)arg1)->m_angle;
+
+    } else if (is_DeclinationType(arg1)) {
+      theta = Coords::angle(90.0) - ((Declination*)arg1)->m_angle;
 
     } else if (PyString_Check(arg1)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
@@ -3111,6 +3622,13 @@ PyMODINIT_FUNC initcoords(void) {
     return;
   Py_INCREF(&LatitudeType);
   PyModule_AddObject(m, "latitude", (PyObject *)&LatitudeType);
+
+  // Declination
+  DeclinationType.tp_new = PyType_GenericNew;
+  if (PyType_Ready(&DeclinationType) < 0)
+    return;
+  Py_INCREF(&DeclinationType);
+  PyModule_AddObject(m, "declination", (PyObject *)&DeclinationType);
 
 
   // Cartesian

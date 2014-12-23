@@ -152,4 +152,6 @@ namespace Coords {
 
   };
 
+  typedef Latitude Declination;
+
 } // end namespace Coords

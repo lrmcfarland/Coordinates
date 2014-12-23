@@ -451,7 +451,7 @@ namespace {
     try {
       Coords::Latitude a(90.0001);
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "maximum Latitude exceeded");
+      EXPECT_STREQ(err.what(), "maximum exceeded");
     }
 
   }
@@ -460,7 +460,7 @@ namespace {
     try {
       Coords::Latitude a(-90.0001);
     } catch (Coords::Error& err) {
-      EXPECT_STREQ(err.what(), "minimum Latitude exceeded");
+      EXPECT_STREQ(err.what(), "minimum exceeded");
     }
 
   }
@@ -468,6 +468,52 @@ namespace {
   TEST(Latitude, Addition) {
     Coords::Latitude a(45);
     Coords::Latitude b(-40);
+    Coords::angle c;
+
+    c = a + b;
+
+    EXPECT_EQ(5.0, c.value());
+
+  }
+
+  // Declination
+
+  TEST(Declination, DefaultConstructor) {
+    Coords::Declination a;
+    EXPECT_EQ(0, a.radians());
+  }
+
+  TEST(Declination, ConstructorDeg) {
+    Coords::Declination a(90);
+    EXPECT_EQ(Coords::Declination::deg2rad(90), a.radians());
+  }
+
+  TEST(Declination, ConstructorDegFromStr) {
+    Coords::Declination a("-90");
+    EXPECT_EQ(Coords::Declination::deg2rad(-90), a.radians());
+  }
+
+  TEST(Declination, MaximumExceeded) {
+    try {
+      Coords::Declination a(90.0001);
+    } catch (Coords::Error& err) {
+      EXPECT_STREQ(err.what(), "maximum exceeded");
+    }
+
+  }
+
+  TEST(Declination, MinimumExceeded) {
+    try {
+      Coords::Declination a(-90.0001);
+    } catch (Coords::Error& err) {
+      EXPECT_STREQ(err.what(), "minimum exceeded");
+    }
+
+  }
+
+  TEST(Declination, Addition) {
+    Coords::Declination a(45);
+    Coords::Declination b(-40);
     Coords::angle c;
 
     c = a + b;

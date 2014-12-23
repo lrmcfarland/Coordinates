@@ -103,6 +103,18 @@ BOOST_PYTHON_MODULE(coords) {
     ; // end of Latitude class_
 
 
+  // typedef of Latitude. Causes ignore warning.
+  class_<Coords::Declination, bases<Coords::angle> >("declination")
+
+    // constructors
+    .def(init<>()) // default
+    .def(init<double>()) // degrees
+    .def(init<double, double>()) // degrees, minutes
+    .def(init<double, double, double>()) // degrees, minutes, seconds
+
+    ; // end of Declination class_
+
+
 
   class_<Coords::Cartesian>("Cartesian")
 
@@ -192,6 +204,7 @@ BOOST_PYTHON_MODULE(coords) {
     .def(init<double, Coords::angle>()) // r, theta
     .def(init<double, Coords::angle, Coords::angle>()) // r, theta, phi
     .def(init<double, Coords::Latitude, Coords::angle>()) // r, latitude, phi
+    .def(init<double, Coords::Declination, Coords::angle>()) // r, declination, phi
 
     // rich compare
     .def("__eq__", &Coords::spherical::operator==)

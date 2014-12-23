@@ -430,6 +430,26 @@ class TestSpherical(unittest.TestCase):
         self.assertAlmostEqual(120, lat1.phi.value)
 
 
+    # Declination constructors
+
+    def test_construct_from_declination_north(self):
+        """Test construct from declination north"""
+        lat1 = coords.spherical(1, coords.declination(30), coords.angle(120))
+
+        self.assertAlmostEqual(1, lat1.r)
+        self.assertAlmostEqual(60, lat1.theta.value)
+        self.assertAlmostEqual(120, lat1.phi.value)
+
+
+    def test_construct_from_declination_south(self):
+        """Test construct from declination south"""
+        lat1 = coords.spherical(1, coords.declination(-30), coords.angle(120))
+
+        self.assertAlmostEqual(1, lat1.r)
+        self.assertAlmostEqual(120, lat1.theta.value)
+        self.assertAlmostEqual(120, lat1.phi.value)
+
+
 if __name__ == '__main__':
     random.seed(time.time())
     unittest.main()

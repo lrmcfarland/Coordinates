@@ -413,6 +413,71 @@ class TestLatitude(unittest.TestCase):
 
 
 
+
+class TestDeclination(unittest.TestCase):
+
+    def setUp(self):
+
+        """Set up test parameters."""
+
+        self.places = 7 # precision
+
+
+    def test_default_constructor(self):
+        """Test default constructor"""
+        a_declination = coords.declination()
+        self.assertEqual(0, a_declination.value)
+
+
+    def test_constructor_1(self):
+        """Test constructor 1"""
+        a_declination = coords.declination(45)
+        self.assertEqual(45, a_declination.value)
+
+
+    def test_constructor_exception_north(self):
+        """Test constructor_exception north"""
+        try:
+            a_declination = coords.declination(100)
+            self.assertRaises(False) # correct behavior skips this
+        except RuntimeError, err:
+            self.assertTrue(RuntimeError == type(err))
+
+
+    def test_constructor_exception_south(self):
+        """Test constructor_exception south"""
+        try:
+            a_declination = coords.declination(-100)
+            self.assertRaises(False) # correct behavior skips this
+        except RuntimeError, err:
+            self.assertTrue(RuntimeError == type(err))
+
+
+    def test_inplace_add_1(self):
+        """Test declination += declination"""
+        a1 = coords.declination(10)
+        a2 = coords.declination(10)
+        a1 += a2
+        self.assertAlmostEqual(20, a1.value, self.places)
+
+    def test_inplace_add_2(self):
+        """Test declination += angle"""
+        a1 = coords.declination(10)
+        a2 = coords.angle(10)
+        a1 += a2
+        self.assertAlmostEqual(20, a1.value, self.places)
+
+
+    def test_inplace_add_over_limit(self):
+        """Test declination += declination"""
+        # TODO doesn't prevent this. See Angles with templates repo.
+        a1 = coords.declination(50)
+        a2 = coords.declination(50)
+        a1 += a2
+        self.assertAlmostEqual(100, a1.value, self.places)
+
+
+
 if __name__ == '__main__':
     random.seed(time.time())
     unittest.main()

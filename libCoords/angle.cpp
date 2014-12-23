@@ -181,10 +181,10 @@ Coords::Latitude::Latitude(const double& a_deg,
   : angle(a_deg, a_min, a_sec) {
 
   if (value() > g_north_pole)
-    throw Coords::Error("maximum Latitude exceeded");
+    throw Coords::Error("maximum exceeded");
 
   if (value() < g_south_pole)
-    throw Coords::Error("minimum Latitude exceeded");
+    throw Coords::Error("minimum exceeded");
 }
 
 Coords::Latitude::Latitude(const std::string& a_deg,
@@ -193,8 +193,8 @@ Coords::Latitude::Latitude(const std::string& a_deg,
   : angle(a_deg, a_min, a_sec) {
 
   if (value() > g_north_pole)
-    throw Coords::Error("maximum Latitude exceeded");
+    throw Coords::Error("maximum exceeded");
 
   if (value() < g_south_pole)
-    throw Coords::Error("minimum Latitude exceeded");
+    throw Coords::Error("minimum exceeded");
 }
