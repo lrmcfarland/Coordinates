@@ -17,16 +17,15 @@ I started with a [C++ implementation](libCoords/Cartesian.h) of the
 [Cartesian coordinate system](http://en.wikipedia.org/wiki/Cartesian_coordinate_system).
 The class
 [overloads](http://en.wikipedia.org/wiki/Operator_overloading) the
-basic arithmetic operators, +, -, * and / to make the basic physics
-operations of adding distances, velocities and forces transparent.
+basic arithmetic operators (+, -, * and /) to make working
+with distances, velocities and forces transparent.
 
 I also created an [implementation](libCoords/spherical.h) of a
 [spherical coordinate system](http://en.wikipedia.org/wiki/Spherical_coordinate_system)
 with conversion constructors to convert between it and the Cartesian
 coordinate system. This simplifies the basic astronomy operations
 using Latitude/Longitude,
-[Right ascension](http://en.wikipedia.org/wiki/Right_ascension) and
-[declination](http://en.wikipedia.org/wiki/Declination).
+[right ascension](http://en.wikipedia.org/wiki/Right_ascension)/[declination](http://en.wikipedia.org/wiki/Declination).
 
 All objects are in the name space "Coords", e.g. Coords::Cartesian.
 At first this seems little weird in English, but then
@@ -98,6 +97,7 @@ angle from the positive z axis), and longitude of two locations to
 calculate the distance between them.
 
 ```
+
 // ============================================================
 // Filename:    example1.cpp
 //
@@ -131,6 +131,7 @@ int main () {
   return 0;
 }
 
+
 ```
 
 ```
@@ -152,17 +153,15 @@ distance 11.3235 km
 
 ```
 
-
-
 #!/usr/bin/env python
 
 """Transforming ecliptic and equitorial coordinates
 
-Equitorial Coordinate System (http://en.wikipedia.org/wiki/Equatorial_coordinate_system):
-    right ascension (http://en.wikipedia.org/wiki/Right_ascension)
-    declination (http://en.wikipedia.org/wiki/Declination)
+Equitorial Coordinate System http://en.wikipedia.org/wiki/Equatorial_coordinate_system
+    right ascension http://en.wikipedia.org/wiki/Right_ascension
+    declination http://en.wikipedia.org/wiki/Declination
 
-Ecliptic Coordinate System (http://en.wikipedia.org/wiki/Ecliptic_coordinate_system):
+Ecliptic Coordinate System http://en.wikipedia.org/wiki/Ecliptic_coordinate_system
     ecliptic longitude
     ecliptic latitude
 
@@ -171,56 +170,50 @@ to run: ./pylaunch.sh ecliptic.py
 See also:
     http://en.wikipedia.org/wiki/Ecliptic
     http://en.wikipedia.org/wiki/Axial_tilt
-
     http://lambda.gsfc.nasa.gov/toolbox/tb_converters_ov.cfm
-
-    http://ned.ipac.caltech.edu/cgi-bin/calc?in_csys=Equatorial&in_equinox=J2000.0&obs_epoch=2014&lon=2&lat=90&pa=0.0&out_csys=Ecliptic&out_equinox=J2000.0
-
 """
 
 import math
-
 import coords
-
 
 class EclipticEquitorialTransforms(object):
 
-    """Transforms Cartesian space vectors from equitorial and ecliptic coordinates
+    """Transforms Cartesian space vectors to/from equitorial/ecliptic coordinates
 
-    ASSUMES: x-axis point to vernal equinox. Positive rotations are right hand rule,
+    ASSUMES: The x-axis points to vernal equinox. Positive rotations are right hand rule,
     Y x Z = X, i.e. counter clockwise looking down X.
     """
 
     # x axis points to vernal equinox (the first point of Aries in this epoch)
     equinox_axis = coords.rotator(coords.Ux)
 
-    # obliquiy of the ecliptic terms are from
-    # http://en.wikipedia.org/wiki/Axial_tilt
-    obterms = list()
-    obterms.append(coords.angle(23, 26, 21.45))
-    obterms.append(coords.angle(-1)*coords.angle(0, 0, 46.815)) # TODO no unary minus in boost wrappers
-    obterms.append(coords.angle(-1)*coords.angle(0, 0, 0.0006))
-    obterms.append(coords.angle(0, 0, 0.00181))
+    # obliquiy of the ecliptic terms are from http://en.wikipedia.org/wiki/Axial_tilt
+    obe = list()
+    obe.append(coords.angle(23, 26, 21.45))
+    obe.append(coords.angle(-1)*coords.angle(0, 0, 46.815)) # TODO no unary minus in boost wrappers
+    obe.append(coords.angle(-1)*coords.angle(0, 0, 0.0006))
+    obe.append(coords.angle(0, 0, 0.00181))
     # TODO more terms, updated
+
 
     def eps(self, a_datetime):
         """Calculates the obliquty of the ecliptic given the datetime"""
         T = (a_datetime.toJulianDate() - a_datetime.J2000)/36525.0
         the_eps = 0
-        for i in xrange(len(self.obterms)):
-            the_eps += self.obterms[i].value * math.pow(T, i)
+        for i in xrange(len(self.obe)):
+            the_eps += self.obe[i].value * math.pow(T, i)
         return the_eps
 
 
     def _xform(self, a_vector, a_datetime, a_direction):
-        """Transforms a_vector from ecliptic coordinates into equitorial coordinates
+        """Transforms a vector ecliptic to/from equitorial/ecliptic coordinates.
 
         Args:
         a_vector: the vector to transform
         a_datetime: the time of the transformation
-        a_direction: +1 to ecliptic, -1 to equitorial
+        a_direction: +1 to equitorial, -1 to ecliptic
 
-        Returns a Cartesian vector in the transformed coordinates
+        Returns a vector in the transformed coordinates
         """
         if isinstance(a_vector, coords.spherical):
             the_rotatee = coords.Cartesian(a_vector)
@@ -241,8 +234,7 @@ class EclipticEquitorialTransforms(object):
 
         Returns a Cartesian vector in eliptic coordinates
         """
-
-        return self._xform(a_vector, a_datetime, 1.0)
+        return self._xform(a_vector, a_datetime, -1.0)
 
 
     def toEquitorial(self, a_vector, a_datetime):
@@ -250,51 +242,101 @@ class EclipticEquitorialTransforms(object):
 
         Returns a Cartesian vector in equitorial coordinates
         """
+        return self._xform(a_vector, a_datetime, 1.0)
 
-        return self._xform(a_vector, a_datetime, -1.0)
 
+    @staticmethod
+    def theta2latitude(an_angle):
+        """Converts spherical coordinate theta (angle to +z axis) to latitude/declination"""
+        return coords.angle(90 - an_angle.theta.value)
+
+
+    @staticmethod
+    def phi2longitude(an_angle):
+        """Converts spherical coordinate phi (angle to +x axis of projection in xy plane) to longitude"""
+        if an_angle.phi.value < 0:
+            return coords.angle(360 + an_angle.phi.value)
+        else:
+            return coords.angle(an_angle.phi.value)
 
 
 if __name__ == '__main__':
 
+    # Actuals from http://lambda.gsfc.nasa.gov/toolbox/tb_coordconv.cfm
+
     eceq_xform = EclipticEquitorialTransforms()
 
-    a_date = coords.datetime('2000-01-01T00:00:00')
+    j2000 = coords.datetime('2000-01-01T00:00:00')
 
-    print "For datetime:", a_date
+    print "For datetime:", j2000
 
-    # vernal equinox
-    print # linefeed
-    print 'The First point of Aries (Ux) no-op'
-    Ux = coords.spherical(coords.Ux)
-    print 'Ux', Ux
-    Ux_ec = eceq_xform.toEcliptic(Ux, a_date)
-    print "Ux ecliptic", Ux_ec
-    Ux_eq = eceq_xform.toEquitorial(Ux, a_date)
-    print "Ux equitorial", Ux_eq
-
-
-    # North Pole
-    print # linefeed
-    print 'The North pole (Uz)'
-    Uz = coords.spherical(coords.Uz)
-    print 'Uz', Uz
-    Uz_ec = eceq_xform.toEcliptic(Uz, a_date)
-    print 'Uz ec:', Uz_ec
-    print 'Uz ec theta:', Uz_ec.theta
-    Uz_eq = eceq_xform.toEquitorial(Uz_ec, a_date)
-    print 'Uz toEquitorial(toEcliptic(Uz))', Uz_eq
-
-    # tbd
-    print '\n'
-
-    some_point = coords.spherical(1, coords.declination(30), coords.angle(30))
+    print '='*20
+    print 'J2000 North pole'
+    # Actual: Celestial J2000 +90:00:00.00 Latitude(deg)   +15:00:00.00 Longitude(deg)
+    #         Ecliptic  J2000 +66:33:38.55 Latitude(deg)   +90:00:00.00 Longitude(deg)
+    some_point = coords.spherical(1, coords.latitude(90), coords.angle(15))
     print 'some point:', some_point
-    some_point_ec = eceq_xform.toEcliptic(some_point, a_date)
-    print 'some point ec', some_point_ec
 
-    print 'longitude:', some_point_ec.phi, some_point_ec.phi.value
-    print 'dec:', coords.angle(90 - some_point_ec.theta.value)
+    some_point_ec = eceq_xform.toEcliptic(some_point, j2000)
+    print 'Ecliptic(some point)', some_point_ec
+    print 'latitude:', EclipticEquitorialTransforms.theta2latitude(some_point_ec),
+    print 'longitude:', EclipticEquitorialTransforms.phi2longitude(some_point_ec)
+    # latitude: 66:33:38.5494 longitude: 90:00:00 Good
+
+    # Actual: Ecliptic  J2000 +90:00:00.00 Latitude(deg)   +15:00:00.00 Longitude(deg)
+    #         Celestial J2000 +66:33:38.55 Latitude(deg)   +270:00:00.00 Longitude(deg)
+    some_point_eq = eceq_xform.toEquitorial(some_point, j2000)
+    print 'Equitorial(some point)', some_point_eq
+    print 'latitude:', EclipticEquitorialTransforms.theta2latitude(some_point_eq),
+    print 'longitude:', EclipticEquitorialTransforms.phi2longitude(some_point_eq)
+    # latitude: 66:33:38.5494 longitude: 270:00:00 Good
+
+
+    print '='*20
+    print 'J2000 latitude 45, longitude 15'
+    # Actual: Celestial J2000 +45:00:00.00 Latitude(deg)   +15:00:00.00 Longitude(deg)
+    #         Ecliptic  J2000 +35:10:00.68 Latitude(deg)   +33:19:50.99 Longitude(deg)
+    some_point = coords.spherical(1, coords.latitude(45), coords.angle(15))
+    print 'some point:', some_point
+
+    some_point_ec = eceq_xform.toEcliptic(some_point, j2000)
+    print 'Ecliptic(some point)', some_point_ec
+    print 'latitude:', EclipticEquitorialTransforms.theta2latitude(some_point_ec),
+    print 'longitude:', EclipticEquitorialTransforms.phi2longitude(some_point_ec)
+    # latitude: 35:10:0.677949 longitude: 33:19:50.9946 Good
+
+    # Actual: Ecliptic  J2000 +45:00:00.00 Latitude(deg)   +15:00:00.00 Longitude(deg)
+    #         Celestial J2000 +46:10:59.17 Latitude(deg)   +350:34:35.34 Longitude(deg)
+    some_point_eq = eceq_xform.toEquitorial(some_point, j2000)
+    print 'Equitorial(some point)', some_point_eq
+    print 'latitude:', EclipticEquitorialTransforms.theta2latitude(some_point_eq),
+    print 'longitude:', EclipticEquitorialTransforms.phi2longitude(some_point_eq)
+    # latitude: 46:10:59.1649 longitude: 350:34:35.3393 Good
+
+
+    j2015 = coords.datetime('2015-01-01T00:00:00')
+
+    print '='*20
+    print 'J2015 latitude -60, longitude 200'
+    # Actual: Celestial J2015 -60:00:00.00 Latitude(deg)   +200:00:00.00 Longitude(deg)
+    #         Ecliptic  J2015 -46:35:54.38 Latitude(deg)   +226:51:30.34 Longitude(deg)
+    some_point = coords.spherical(1, coords.declination(-60), coords.angle(200))
+    print 'some point:', some_point
+
+    some_point_ec = eceq_xform.toEcliptic(some_point, j2015)
+    print 'Ecliptic(some point)', some_point_ec
+    print 'latitude:', EclipticEquitorialTransforms.theta2latitude(some_point_ec),
+    print 'longitude:', EclipticEquitorialTransforms.phi2longitude(some_point_ec)
+    # latitude: -46:35:54.3761 longitude: 226:51:30.339 Good
+
+    # Actual: Ecliptic  J2015 -60:00:00.00 Latitude(deg)   +200:00:00.00 Longitude(deg)
+    #         Celestial J2015 -59:36:32.36 Latitude(deg)   +158:14:19.32 Longitude(deg)
+    some_point_eq = eceq_xform.toEquitorial(some_point, j2015)
+    print 'Equitorial(some point)', some_point_eq
+    print 'latitude:', EclipticEquitorialTransforms.theta2latitude(some_point_eq),
+    print 'longitude:', EclipticEquitorialTransforms.phi2longitude(some_point_eq)
+    # latitude: -59:36:32.3636 longitude: 158:14:19.3202 Good
+
 
 
 
@@ -312,22 +354,29 @@ $ ./pylaunch.sh EcEqXforms.py
 
 For datetime: 2000-01-01T00:00:00
 
-The First point of Aries (Ux) no-op
-Ux <spherical><r>1</r><theta>90</theta><phi>0</phi></spherical>
-Ux ecliptic <spherical><r>1</r><theta>90</theta><phi>-1.3955433756e-15</phi></spherical>
-Ux equitorial <spherical><r>1</r><theta>90</theta><phi>1.3955433756e-15</phi></spherical>
+====================
+J2000 North pole
+some point: <spherical><r>1</r><theta>0</theta><phi>15</phi></spherical>
+Ecliptic(some point) <spherical><r>1</r><theta>23.4392918447</theta><phi>90</phi></spherical>
+latitude: 66:33:38.5494 longitude: 90:00:00
+Equitorial(some point) <spherical><r>1</r><theta>23.4392918447</theta><phi>-90</phi></spherical>
+latitude: 66:33:38.5494 longitude: 270:00:00
 
-The North pole (Uz)
-Uz <spherical><r>1</r><theta>0</theta><phi>0</phi></spherical>
-Uz ec: <spherical><r>1</r><theta>23.4392918447</theta><phi>-90</phi></spherical>
-Uz ec theta: 23:26:21.4506
-Uz toEquitorial(toEcliptic(Uz)) <spherical><r>1</r><theta>1.3955433756e-15</theta><phi>0</phi></spherical>
+====================
+J2000 latitude 45, longitude 15
+some point: <spherical><r>1</r><theta>45</theta><phi>15</phi></spherical>
+Ecliptic(some point) <spherical><r>1</r><theta>54.8331450141</theta><phi>33.3308318461</phi></spherical>
+latitude: 35:10:0.677949 longitude: 33:19:50.9946
+Equitorial(some point) <spherical><r>1</r><theta>43.8168986259</theta><phi>-9.42351685438</phi></spherical>
+latitude: 46:10:59.1649 longitude: 350:34:35.3393
 
-
-some point: <spherical><r>1</r><theta>60</theta><phi>30</phi></spherical>
-some point ec <spherical><r>1</r><theta>50.8772722999</theta><phi>14.816726587</phi></spherical>
-longitude: 14:49:0.215713 14.816726587
-dec: 39:07:21.8197
+====================
+J2015 latitude -60, longitude 200
+some point: <spherical><r>1</r><theta>150</theta><phi>200</phi></spherical>
+Ecliptic(some point) <spherical><r>1</r><theta>136.598437793</theta><phi>-133.141572493</phi></spherical>
+latitude: -46:35:54.3761 longitude: 226:51:30.339
+Equitorial(some point) <spherical><r>1</r><theta>149.608989897</theta><phi>158.238700067</phi></spherical>
+latitude: -59:36:32.3636 longitude: 158:14:19.3202
 
 
 ```
