@@ -509,6 +509,41 @@ namespace {
   }
 
 
+  TEST(DateTime, GoodTimeZoneConstructors_pos_hrs) {
+    for (int i(1); i < 13; ++i) {
+      std::stringstream a_date_string;
+      a_date_string << "2014-03-15T12:34:56+" << std::setw(2) << std::setfill('0') << i;
+      Coords::DateTime a_datetime(a_date_string.str());
+      std::stringstream out;
+      out << a_datetime;
+      EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
+      EXPECT_DOUBLE_EQ(i, a_datetime.timeZone());
+    }
+  }
+
+  TEST(DateTime, GoodTimeZoneConstructors_neg_hrs) {
+    for (int i(1); i < 13; ++i) {
+      std::stringstream a_date_string;
+      a_date_string << "2014-03-15T12:34:56-" << std::setw(2) << std::setfill('0') << i;
+      Coords::DateTime a_datetime(a_date_string.str());
+      std::stringstream out;
+      out << a_datetime;
+      EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
+      EXPECT_DOUBLE_EQ(-i, a_datetime.timeZone());
+    }
+  }
+
+  TEST(DateTime, GoodTimeZoneConstructors_mins) {
+    for (int i(0); i < 60; ++i) {
+      std::stringstream a_date_string;
+      a_date_string << "2014-03-15T12:34:56+08:" << std::setw(2) << std::setfill('0') << i;
+      Coords::DateTime a_datetime(a_date_string.str());
+      std::stringstream out;
+      out << a_datetime;
+      EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
+    }
+  }
+
 
   TEST(DateTime, BadTimeZoneConstructor_1) {
     std::string a_date_string("2014-12-07T12:34:56.78+13.987");

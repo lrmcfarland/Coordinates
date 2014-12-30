@@ -37,14 +37,14 @@
 
 // ----- static data members -----
 
-const std::string Coords::DateTime::s_ISO8601_format("((?:-)){0,1}(\\d*)-" // year
-						     "((?:0[1-9]|1[012]))-" // month
-						     "((?:0[1-9]|1\\d|2\\d|3[01]))"  // day
+const std::string Coords::DateTime::s_ISO8601_format("(-){0,1}(\\d*)-" // year
+						     "(0[1-9]|1[012])-" // month
+						     "(0[1-9]|1\\d|2\\d|3[01])"  // day
 						     "T"
-						     "((?:[01]\\d|2[0-3])):" // hour
+						     "([01]\\d|2[0-3]):" // hour
 						     "([0-5]\\d):" // minute
 						     "([0-5]\\d(\\.\\d*){0,1})" // second
-						     "(?:((?:Z)|(\\+|-)((?:0[1-9]|1[12]))(\\:){0,1}([0-5]\\d){0,1})){0,1}" // time zone
+						     "(Z|(\\+|-)(0[0-9]|1[012])(\\:){0,1}([0-5]\\d){0,1}){0,1}" // time zone
 						     );
 
 const std::regex Coords::DateTime::s_ISO8601_rx(Coords::DateTime::s_ISO8601_format);
