@@ -785,6 +785,25 @@ namespace {
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str()); // rounds to midnight
   }
 
+  TEST(DISABLED_DateTime, JulianDateWiki_J2000) {
+
+    // TODO off by half a day.
+
+    std::string a_date_string("2000-01-01T00:00:00"); // J2000
+
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(2451544.5, a_datetime.toJulianDateWiki());
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
+  }
+
+
   TEST(DateTime, JulianDateWiki_3) {
     std::string a_date_string("2013-01-01T00:30:00");
 
@@ -959,6 +978,25 @@ namespace {
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
+  TEST(DISABLED_DateTime, JulianDateNRC_J2000) {
+
+    // TODO off by half a day.
+
+    std::string a_date_string("2000-01-01T00:00:00"); // J2000
+
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(2451544.5, a_datetime.toJulianDateNRC());
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
+  }
+
+
   TEST(DateTime, JulianDateNRC_3) {
     std::string a_date_string("2013-01-01T00:30:00");
 
@@ -1011,7 +1049,7 @@ namespace {
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
-  TEST(DISABLED_DateTime, JulianDateAPC_Julian_0) {
+  TEST(DISABLED_DateTime, ModifiedJulianDateAPC_Julian_0) {
 
     // TODO calculation adds year zero, output rounds by a day
 
@@ -1029,7 +1067,7 @@ namespace {
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str()); // rounds by a day
   }
 
-  TEST(DISABLED_DateTime, JulianDateAPC_Gregorian_0) {
+  TEST(DISABLED_DateTime, ModifiedJulianDateAPC_Gregorian_0) {
 
     // TODO calculation is off by 403, output by a day
 
@@ -1046,6 +1084,7 @@ namespace {
 
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
+
 
   TEST(DateTime, ModifiedJulianDateAPC_pre_Julian2Gregorian) {
     std::string a_date_string("1582-10-14T00:00:00"); // Gregorian replaces Julian
@@ -1115,6 +1154,23 @@ namespace {
 
     Coords::DateTime a_datetime(a_date_string);
     EXPECT_DOUBLE_EQ(Coords::DateTime::s_TruncatedJulianDate - Coords::DateTime::s_ModifiedJulianDate,
+		     a_datetime.toModifiedJulianDateAPC());
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
+  }
+
+  TEST(DateTime, ModifiedJulianDateAPC_J2000) {
+
+    std::string a_date_string("2000-01-01T00:00:00"); // J2000
+
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(2451544.5 - Coords::DateTime::s_ModifiedJulianDate,
 		     a_datetime.toModifiedJulianDateAPC());
 
     Coords::DateTime another_datetime;
