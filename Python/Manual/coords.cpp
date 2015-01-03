@@ -346,6 +346,27 @@ static int Angle_setRadians(Angle* self, PyObject* radians, void* closure) {
   return 0;
 }
 
+// -------------------
+// ----- methods -----
+// -------------------
+
+static PyObject* normalize(PyObject* o1, PyObject* o2) {
+
+  // TODO kwlist?
+
+  double begin(0);
+  double end(0);
+
+  if (!PyArg_ParseTuple(o2, "dd", &begin, &end))
+    return NULL;
+
+  ((Angle*)o1)->m_angle.normalize(begin, end);
+
+  Py_INCREF(Py_None);
+  return Py_None;
+
+}
+
 // --------------------------
 // ----- number methods -----
 // --------------------------
@@ -591,7 +612,7 @@ static PyObject* Angle_nb_inplace_divide(PyObject* o1, PyObject* o2) {
 // ----- instance methods -----
 // ----------------------------
 
-// TODO module methods?
+// TODO as module methods?
 
 // ----- deg2rad -----
 
@@ -604,8 +625,6 @@ static PyObject* deg2rad(PyObject* self, PyObject *args) {
 }
 
 // ----- rad2deg -----
-
-PyDoc_STRVAR(coords_rad2deg__doc__, "converts radians into degrees");
 
 static PyObject* rad2deg(PyObject* self, PyObject *args) {
   double radians(0);
@@ -620,10 +639,13 @@ static PyObject* rad2deg(PyObject* self, PyObject *args) {
 // --------------------------
 
 PyDoc_STRVAR(coords_deg2rad__doc__, "converts degrees into radians");
+PyDoc_STRVAR(coords_rad2deg__doc__, "converts radians into degrees");
+PyDoc_STRVAR(coords_normalize__doc__, "normalizes value to range");
 
 static PyMethodDef Angle_methods[] = {
   {"deg2rad", (PyCFunction) deg2rad, METH_VARARGS, coords_deg2rad__doc__},
   {"rad2deg", (PyCFunction) rad2deg, METH_VARARGS, coords_rad2deg__doc__},
+  {"normalize", (PyCFunction) normalize, METH_VARARGS, coords_normalize__doc__},
   {NULL}  /* Sentinel */
 };
 

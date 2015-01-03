@@ -367,9 +367,48 @@ namespace {
     EXPECT_STREQ("405:00:00", out.str().c_str());
   }
 
-  // TODO fix this angle(45 * 10).normalize() != 180
-  TEST(angle, Normalize) {
+  // ---------------------
+  // ----- normalize -----
+  // ---------------------
+
+  TEST(angle, Normalize_45) {
     Coords::angle a(45 + 360);
+    a.normalize();
+    EXPECT_NEAR(45, a.value(), 1e-15);
+  }
+
+  TEST(angle, Normalize_45_2) {
+    Coords::angle a(45 - 360);
+    a.normalize();
+    EXPECT_NEAR(45, a.value(), 1e-15);
+  }
+
+  TEST(angle, Normalize_45n) {
+    Coords::angle a(-45);
+    a.normalize();
+    EXPECT_NEAR(315, a.value(), 1e-15);
+  }
+
+  TEST(angle, Normalize_45n_2) {
+    Coords::angle a(-45);
+    a.normalize(-180, 180);
+    EXPECT_NEAR(-45, a.value(), 1e-15);
+  }
+
+  TEST(angle, Normalize_45n_360) {
+    Coords::angle a(-45 + 360);
+    a.normalize(-180, 180);
+    EXPECT_NEAR(-45, a.value(), 1e-15);
+  }
+
+  TEST(angle, Normalize_720) {
+    Coords::angle a(45 + 360*2);
+    a.normalize();
+    EXPECT_NEAR(45, a.value(), 1e-15);
+  }
+
+  TEST(angle, Normalize_1080) {
+    Coords::angle a(45 + 360*3);
     a.normalize();
     EXPECT_NEAR(45, a.value(), 1e-15);
   }

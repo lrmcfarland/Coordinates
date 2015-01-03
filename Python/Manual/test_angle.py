@@ -513,6 +513,20 @@ class TestAngle(unittest.TestCase):
         self.assertRaises(coords.Error, lambda a, b: a / b, a1, a2)
         # Note: different from Boost catching RuntimeError
 
+    # normalize
+
+    def test_normzlize_1(self):
+        """Test normalize 1"""
+        a1 = coords.angle(45 + 360)
+        a1.normalize(0, 360)
+        self.assertAlmostEqual(45, a1.value)
+
+    def test_normzlize_2(self):
+        """Test normalize 1"""
+        a1 = coords.angle(-45 + 360)
+        a1.normalize(-180, 180)
+        self.assertAlmostEqual(-45, a1.value)
+
 
    # strings
 

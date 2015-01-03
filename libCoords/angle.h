@@ -95,7 +95,7 @@ namespace Coords {
 
 
     // ----- other methods -----
-    void normalize();  // TODO normalized -> return a new copy?
+    void normalize(const double& begin=0.0, const double& end=360);  // TODO normalized -> return a new copy?
 
   private:
 

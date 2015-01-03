@@ -22,6 +22,7 @@ using namespace boost::python;
 
 void (Coords::angle::*setAngleValue)(const double&) = &Coords::angle::setValue;
 void (Coords::angle::*setAngleRadians)(const double&) = &Coords::angle::setRadians;
+void (Coords::angle::*normalize)(const double&, const double&) = &Coords::angle::normalize;
 
 void (Coords::Cartesian::*setX)(const double&) = &Coords::Cartesian::x;
 void (Coords::Cartesian::*setY)(const double&) = &Coords::Cartesian::y;
@@ -88,6 +89,10 @@ BOOST_PYTHON_MODULE(coords) {
 
     // operator<<(), str not repr
     .def(self_ns::str(self_ns::self))
+
+    // other methods
+    .def("normalize", &Coords::angle::normalize)
+
 
     ; // end of angle class_
 
