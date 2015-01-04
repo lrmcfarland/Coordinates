@@ -634,7 +634,7 @@ namespace {
   // ----- Julian dates -----
   // ------------------------
 
-  // "Actual" dates taken from http://www.imcce.fr/en/grandpublic/temps/jour_julien.php
+  // Actual dates taken from http://www.imcce.fr/en/grandpublic/temps/jour_julien.php
 
   // from http://en.wikipedia.org/wiki/Julian_day
   // JDN 0: noon Jan 01, 4713 BC proleptic Julian calendar,
@@ -1038,7 +1038,7 @@ namespace {
 
     Coords::DateTime a_datetime(a_date_string);
     EXPECT_DOUBLE_EQ(-Coords::DateTime::s_ModifiedJulianDate, a_datetime.toModifiedJulianDateAPC());
-    // TODO asAPCJulianDate() differs from IMCEE on noon vs. midnight on this date?
+    // TODO asAPCJulianDate() differs from IMCCE on noon vs. midnight on this date?
 
     Coords::DateTime another_datetime;
     another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
