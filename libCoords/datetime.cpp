@@ -460,9 +460,6 @@ void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
 
   m_second = 60.0 * (d_minute - floor(d_minute));
 
-  if (m_second < 0.001)
-    m_second = 0; // meh.
-
 }
 
 
@@ -470,13 +467,43 @@ void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
 
 void Coords::DateTime2String(const Coords::DateTime& a_datetime, std::stringstream& a_string) {
 
-  a_string << a_datetime.year() << "-"
-	   << std::setw(2) << std::setfill('0') << a_datetime.month() << "-"
-	   << std::setw(2) << std::setfill('0') << a_datetime.day()
+  int a_year(a_datetime.year());
+  int a_month(a_datetime.month());
+  int a_day(a_datetime.day());
+  int a_hour(a_datetime.hour());
+  int a_minute(a_datetime.minute());
+  double a_second(a_datetime.second());
+
+  // Round seconds (operator<<() output only) to cover rounding issues in calculation.
+
+  if (fabs(a_second) < 0.0001)
+    a_second = 0.0;
+
+  if (60 - a_second < 0.0001 && a_second > 0.0) {
+    a_second = 0.0;
+    a_minute += 1;
+  }
+
+  if (a_minute == 60) {
+    a_minute = 0;
+    a_hour += 1;
+  }
+
+  if (a_hour == 24) {
+    a_hour = 0.0;
+    a_day += 1;
+  }
+
+  // TODO months, years? throw is valid? This is info only. Bad dates
+  // fed back into constructor will throw exceptions. Do here too?
+
+  a_string << a_year << "-"
+	   << std::setw(2) << std::setfill('0') << a_month << "-"
+	   << std::setw(2) << std::setfill('0') << a_day
 	   << "T"
-	   << std::setw(2) << std::setfill('0') << a_datetime.hour() << ":"
-	   << std::setw(2) << std::setfill('0') << a_datetime.minute() << ":"
-	   << std::setw(2) << std::setfill('0') << a_datetime.second(); // TODO needs to pad 1.5
+	   << std::setw(2) << std::setfill('0') << a_hour << ":"
+	   << std::setw(2) << std::setfill('0') << a_minute << ":"
+	   << std::setw(2) << std::setfill('0') << a_second; // TODO needs to set "1.5" to "01.5"
 
   if (a_datetime.isZulu())
     a_string << "Z";

@@ -183,7 +183,7 @@ namespace {
       Coords::DateTime a_datetime(2014, 12, 03, 13, 30, 60, -5.1);
     } catch (Coords::Error& err) {
       std::stringstream emsg;
-      emsg << "2014-12-03T13:30:60-5.1: second out of range.";
+      emsg << "2014-12-03T13:31:00-5.1: second out of range.";
       EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
@@ -1182,6 +1182,24 @@ namespace {
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
+  TEST(DateTime, ModifiedJulianDateAPC_J2000_13) {
+
+    // tests 60 seconds rounds up a minute
+
+    std::string a_date_string("2000-01-01T13:00:00"); // J2000
+
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(51544.541666666664, a_datetime.toModifiedJulianDateAPC());
+
+    Coords::DateTime another_datetime;
+    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
+  }
+
   TEST(DateTime, ModifiedJulianDateAPC_3) {
     std::string a_date_string("2013-01-01T00:30:00");
 
@@ -1276,7 +1294,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
 
-    EXPECT_STREQ("2015-01-08T14:29:60", out.str().c_str()); // TODO rounding error
+    EXPECT_STREQ("2015-01-08T14:30:00", out.str().c_str());
   }
 
   TEST(DateTime, operator_minus_eq_1) {
@@ -1354,7 +1372,7 @@ namespace {
     std::stringstream out;
     out << another_datetime;
 
-    EXPECT_STREQ("2015-01-08T14:49:60", out.str().c_str()); // TODO rounding error
+    EXPECT_STREQ("2015-01-08T14:50:00", out.str().c_str());
   }
 
 
@@ -1371,7 +1389,7 @@ namespace {
     std::stringstream out;
     out << another_datetime;
 
-    EXPECT_STREQ("2015-01-08T14:49:60", out.str().c_str()); // TODO rounding error
+    EXPECT_STREQ("2015-01-08T14:50:00", out.str().c_str());
   }
 
 
@@ -1405,7 +1423,7 @@ namespace {
     std::stringstream out;
     out << another_datetime;
 
-    EXPECT_STREQ("2014-11-09T14:49:60", out.str().c_str()); // TODO rounding error
+    EXPECT_STREQ("2014-11-09T14:50:00", out.str().c_str());
   }
 
 
