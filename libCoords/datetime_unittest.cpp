@@ -1252,7 +1252,7 @@ namespace {
   }
 
 
-  TEST(DateTime, JulianDate_4) {
+  TEST(DateTime, JulianDate_2014_12_09) {
     std::string a_date_string("2014-12-09T00:00:00");
 
     Coords::DateTime a_datetime(a_date_string);
@@ -1280,6 +1280,67 @@ namespace {
     out << a_datetime;
 
     EXPECT_STREQ("2014-12-10T00:00:00", out.str().c_str());
+  }
+
+  // on edge of day transition
+  TEST(DateTime, operator_plus_eq_00_tz1) {
+    std::string a_date_string("2014-12-09T00:00:00+0100");
+
+    Coords::DateTime a_datetime(a_date_string);
+
+    a_datetime += 1;
+
+    EXPECT_DOUBLE_EQ(2457001.5416666665, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << a_datetime;
+
+    EXPECT_STREQ("2014-12-10T00:00:00+0100", out.str().c_str());
+  }
+
+  TEST(DateTime, operator_plus_eq_01_tz2) {
+    std::string a_date_string("2014-12-09T01:00:00+0200");
+
+    Coords::DateTime a_datetime(a_date_string);
+
+    a_datetime += 1;
+
+    EXPECT_DOUBLE_EQ(2457001.625, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << a_datetime;
+
+    EXPECT_STREQ("2014-12-10T01:00:00+0200", out.str().c_str());
+  }
+
+  TEST(DateTime, operator_plus_eq_00_ntz1) {
+    std::string a_date_string("2014-12-09T00:00:00-0100");
+
+    Coords::DateTime a_datetime(a_date_string);
+
+    a_datetime += 1;
+
+    EXPECT_DOUBLE_EQ(2457001.4583333335, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << a_datetime;
+
+    EXPECT_STREQ("2014-12-10T00:00:00-0100", out.str().c_str());
+  }
+
+  TEST(DateTime, operator_plus_eq_23_ntz1) {
+    std::string a_date_string("2014-12-09T23:00:00-0100");
+
+    Coords::DateTime a_datetime(a_date_string);
+
+    a_datetime += 1;
+
+    EXPECT_DOUBLE_EQ(2457002.4166666665, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << a_datetime;
+
+    EXPECT_STREQ("2014-12-10T23:00:00-0100", out.str().c_str());
   }
 
   TEST(DateTime, operator_plus_eq_30) {
@@ -1310,6 +1371,38 @@ namespace {
     out << a_datetime;
 
     EXPECT_STREQ("2014-12-08T00:00:00", out.str().c_str());
+  }
+
+  // on edge of day transition
+  TEST(DateTime, operator_minus_eq_00_tz1) {
+    std::string a_date_string("2014-12-09T00:00:00+0100");
+
+    Coords::DateTime a_datetime(a_date_string);
+
+    a_datetime -= 1;
+
+    EXPECT_DOUBLE_EQ(2456999.5416666665, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << a_datetime;
+
+    EXPECT_STREQ("2014-12-08T00:00:00+0100", out.str().c_str());
+  }
+
+  // on ednge of day transition
+  TEST(DateTime, operator_minus_eq_00_ntz1) {
+    std::string a_date_string("2014-12-09T00:00:00-0100");
+
+    Coords::DateTime a_datetime(a_date_string);
+
+    a_datetime -= 1;
+
+    EXPECT_DOUBLE_EQ(2456999.4583333335, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << a_datetime;
+
+    EXPECT_STREQ("2014-12-08T00:00:00-0100", out.str().c_str());
   }
 
   TEST(DateTime, operator_minus_eq_30) {

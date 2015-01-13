@@ -3265,6 +3265,11 @@ static int datetime_setJulianDate(datetime* self, PyObject* value, void* closure
 
 // TODO boost different from manual accssors
 
+// ----- time zone -----
+static PyObject* datetime_getTimeZone(datetime* self, void* closure) {
+  return PyFloat_FromDouble(self->m_datetime.timeZone());
+}
+
 // ----- Lilian Date -----
 static PyObject* datetime_getLilianDate(datetime* self, void* closure) {
   return PyFloat_FromDouble(self->m_datetime.LilianDate());
@@ -3391,10 +3396,12 @@ static PyObject* datetime_fromJulianDate(PyObject* o1, PyObject* o2) {
 
 PyDoc_STRVAR(datetime_toJulianDate__doc__, "Returns the Julian date of the datetime object");
 PyDoc_STRVAR(datetime_fromJulianDate__doc__, "Sets the Julian date of the datetime object");
+PyDoc_STRVAR(datetime_timezone__doc__, "Returns the time zone of the datetime object");
 
 static PyMethodDef datetime_methods[] = {
   {"toJulianDate", (PyCFunction) datetime_getJulianDate, METH_VARARGS, datetime_toJulianDate__doc__},
   {"fromJulianDate", (PyCFunction) datetime_fromJulianDate, METH_VARARGS, datetime_fromJulianDate__doc__},
+  {"timezone", (PyCFunction) datetime_getTimeZone, METH_VARARGS, datetime_timezone__doc__},
   {NULL}  /* Sentinel */
 };
 
@@ -3405,6 +3412,7 @@ static PyMemberDef datetime_members[] = {
 
 static PyGetSetDef datetime_getseters[] = {
   {sJulianDateStr, (getter)datetime_getJulianDate, (setter)datetime_setJulianDate, sJulianDateStr, NULL},
+  {sTimeZoneStr, (getter)datetime_getTimeZone, NULL, sTimeZoneStr, NULL},
   {sLilianDateStr, (getter)datetime_getLilianDate, NULL, sLilianDateStr, NULL},
   {sModifiedJulianDateStr, (getter)datetime_getModifiedJulianDate, NULL, sModifiedJulianDateStr, NULL},
   {sTruncatedJulianDateStr, (getter)datetime_getTruncatedJulianDate, NULL, sTruncatedJulianDateStr, NULL},

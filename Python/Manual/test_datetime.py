@@ -152,7 +152,9 @@ class TestDateTime(unittest.TestCase):
         a_date_string = '1962-07-10T07:30:00+05:00'
         a = coords.datetime(a_date_string)
         a += 365.0
-        self.assertEqual('1963-07-10T17:30:00+05:00', str(a))
+        self.assertEqual('1963-07-10T07:30:00+05:00', str(a))
+        self.assertEqual(5, a.timezone())
+
 
     def test_operator_inplace_plus_exception_string(self):
         """Test operator+=(string) exception"""
@@ -173,15 +175,16 @@ class TestDateTime(unittest.TestCase):
 
     def test_datetime_plus_datetime_1(self):
         """Test datetime + datetime"""
-        a = coords.datetime('1962-07-10T07:30:00+05:00')
+        a = coords.datetime('1962-07-10T07:30:00-06:00')
         b = 365 + a
-        self.assertEqual('1963-07-10T17:30:00+05:00', str(b))
+        self.assertEqual('1963-07-10T07:30:00-06:00', str(b))
+        self.assertEqual(-6, a.timezone())
 
     def test_datetime_plus_datetime_2(self):
         """Test datetime + datetime"""
         a = coords.datetime('1962-07-10T07:30:00+05:00')
         b = a + 365 # commute
-        self.assertEqual('1963-07-10T17:30:00+05:00', str(b))
+        self.assertEqual('1963-07-10T07:30:00+05:00', str(b))
 
     # minus
 
@@ -189,7 +192,8 @@ class TestDateTime(unittest.TestCase):
         """Test operator-=(double)"""
         a = coords.datetime('1962-07-10T07:30:00+05:00')
         a -= 365
-        self.assertEqual('1961-07-10T17:30:00+05:00', str(a))
+        self.assertEqual('1961-07-10T07:30:00+05:00', str(a))
+        self.assertEqual(5, a.timezone())
 
     def test_operator_inplace_minus_exception_string(self):
         """Test operator-=(string) exception"""
@@ -211,9 +215,10 @@ class TestDateTime(unittest.TestCase):
 
     def test_datetime_minus_datetime_1(self):
         """Test datetime - datetime"""
-        a = coords.datetime('1962-07-10T07:30:00+05:00')
-        b = coords.datetime('1963-07-10T07:30:00+05:00')
+        a = coords.datetime('1962-07-10T07:30:00-05:00')
+        b = coords.datetime('1963-07-10T07:30:00-05:00')
         self.assertEqual(365, b - a)
+        self.assertEqual(-5, a.timezone())
 
 
     def test_datetime_minus_datetime_2(self):

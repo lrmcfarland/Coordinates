@@ -256,7 +256,7 @@ double Coords::DateTime::toJulianDateWiki() const {
 
   }
 
-  double partial_day((Coords::degrees2seconds(m_hour, m_minute, m_second) + timeZone()*3600)/86400.0);
+  double partial_day(Coords::degrees2seconds(m_hour + timeZone(), m_minute, m_second)/86400.0);
 
   return static_cast<double>(jdays) + partial_day;
 
@@ -293,16 +293,14 @@ void Coords::DateTime::fromJulianDateWiki(const double& jdays) {
 
   m_year = e/p - y + (n + m - m_month)/n;
 
-  double d_hour = 24.0 * (jdays - floor(jdays)) + timeZone();
+  double d_hour = 24.0 * (jdays - floor(jdays));
   m_hour = d_hour; // implicit cast to int
+  m_hour -= timeZone();
 
   double d_minute = 60.0 * (d_hour - floor(d_hour));
   m_minute = d_minute; // implicit cast to int
 
   m_second = 60.0 * (d_minute - floor(d_minute));
-
-  if (m_second < 0.0001)
-    m_second = 0; // meh.
 
 }
 
@@ -340,7 +338,7 @@ double Coords::DateTime::toJulianDateNRC() const {
     jdays += 2 - ja + static_cast<int>(0.25*ja);
   }
 
-  double partial_day((Coords::degrees2seconds(m_hour, m_minute, m_second) + timeZone()*3600)/86400.0);
+  double partial_day(Coords::degrees2seconds(m_hour + timeZone(), m_minute, m_second)/86400.0);
 
   return static_cast<double>(jdays) + partial_day;
 
@@ -384,7 +382,7 @@ void Coords::DateTime::fromJulianDateNRC(const double& jdays) {
   if (m_year <= 0)
     --m_year;
 
-  // TODO partial day?
+  // TODO partial day? and timeZone?
 
 }
 
@@ -413,7 +411,7 @@ double Coords::DateTime::toModifiedJulianDateAPC() const {
 
   jdays = 365L*l_year - 679004L + b + static_cast<int>(30.6001*(l_month+1)) + l_day; // at midnight
 
-  double partial_day((Coords::degrees2seconds(m_hour, m_minute, m_second) + timeZone()*3600)/86400.0);
+  double partial_day(Coords::degrees2seconds(m_hour + timeZone(), m_minute, m_second)/86400.0);
 
   return static_cast<double>(jdays) + partial_day;
 
@@ -452,8 +450,9 @@ void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
   m_month = f - 1 - 12*(f/14);
   m_year = d - 4715 - ((7+m_month)/10);
 
-  double d_hour = 24.0 * (jdays - floor(jdays)) + timeZone();
+  double d_hour = 24.0 * (jdays - floor(jdays));
   m_hour = d_hour; // implicit cast to int
+  m_hour -= timeZone();
 
   double d_minute = 60.0 * (d_hour - floor(d_hour));
   m_minute = d_minute; // implicit cast to int

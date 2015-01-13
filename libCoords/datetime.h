@@ -99,6 +99,7 @@ namespace Coords {
     DateTime& operator-=(const double& rhs);
 
     // ----- Julian date methods -----
+    double time_zone() const {return timeZone();} // copy timezone for non-const python wrappers
 
     double toJulianDate() const {return toModifiedJulianDateAPC() + s_ModifiedJulianDate;}
     void   fromJulianDate(const double& jdays) {fromModifiedJulianDateAPC(jdays - s_ModifiedJulianDate);}

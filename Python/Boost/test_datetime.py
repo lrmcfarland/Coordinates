@@ -58,6 +58,7 @@ class TestDateTime(unittest.TestCase):
         a_date_string = '1962-07-10T07:30:00+05:00'
         a = coords.datetime(a_date_string)
         self.assertEqual(a_date_string, str(a))
+        self.assertEqual(5, a.time_zone())
 
 
     def test_string_constructor_exception(self):
@@ -90,16 +91,18 @@ class TestDateTime(unittest.TestCase):
         a_date_string = '1962-07-10T07:30:00+05:00'
         a = coords.datetime(a_date_string)
         a += 365
-        self.assertEqual('1963-07-10T17:30:00+05:00', str(a))
+        self.assertEqual('1963-07-10T07:30:00+05:00', str(a))
+        self.assertEqual(5, a.timezone())
 
 
     def test_operator_plus(self):
         """Test operator plus"""
-        a_date_string = '1962-07-10T07:30:00+05:00'
+        a_date_string = '1962-07-10T07:30:00-06:00'
         a = coords.datetime(a_date_string)
         b = coords.datetime
         b = 365 + a
-        self.assertEqual('1963-07-10T17:30:00+05:00', str(b))
+        self.assertEqual('1963-07-10T07:30:00-06:00', str(b))
+        self.assertEqual(-6, a.timezone())
 
 
     def test_operator_minus_equal(self):
@@ -107,7 +110,7 @@ class TestDateTime(unittest.TestCase):
         a_date_string = '1962-07-10T07:30:00+05:00'
         a = coords.datetime(a_date_string)
         a -= 365
-        self.assertEqual('1961-07-10T17:30:00+05:00', str(a))
+        self.assertEqual('1961-07-10T07:30:00+05:00', str(a))
 
 
     def test_operator_minus_datetime_1(self):
