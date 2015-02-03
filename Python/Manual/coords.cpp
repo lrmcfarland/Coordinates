@@ -3492,7 +3492,7 @@ PyTypeObject datetimeType = {
   0,                                 /* tp_setattro */
   0,                                 /* tp_as_buffer */
   Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
-  "angle objects",                   /* tp_doc */
+  "datetime objects",                /* tp_doc */
   0,                                 /* tp_traverse */
   0,                                 /* tp_clear */
   0,                                 /* tp_richcompare */
