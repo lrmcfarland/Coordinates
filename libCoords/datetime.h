@@ -92,6 +92,8 @@ namespace Coords {
     const double& TruncatedJulianDate() const {return s_TruncatedJulianDate;}
     const double& J2000() const {return s_J2000;}
 
+    double UT() const {return degrees2seconds(hour() + timeZone(), minute(), second())/3600.0;}
+
 
     // ----- in-place operators -----
 

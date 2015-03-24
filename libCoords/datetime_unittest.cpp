@@ -630,6 +630,36 @@ namespace {
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
   }
 
+
+  // -----------------------------
+  // ----- special accessors -----
+  // -----------------------------
+
+  TEST(DateTime, UT_0) {
+    std::string a_date_string("2015-01-01T00:00:00");
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(0, a_datetime.UT());
+  }
+
+  TEST(DateTime, UT_12) {
+    std::string a_date_string("2015-01-01T12:00:00");
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(12, a_datetime.UT());
+  }
+
+  TEST(DateTime, UT_12_30) {
+    std::string a_date_string("2015-01-01T12:30:00");
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(12.5, a_datetime.UT());
+  }
+
+  TEST(DateTime, UT_12_30_Zn8) {
+    std::string a_date_string("2015-01-01T12:30:00-08");
+    Coords::DateTime a_datetime(a_date_string);
+    EXPECT_DOUBLE_EQ(4.5, a_datetime.UT());
+  }
+
+
   // ------------------------
   // ----- Julian dates -----
   // ------------------------

@@ -50,6 +50,24 @@ class TestDateTime(unittest.TestCase):
         self.assertEqual(2451545.0, a.J2000)
 
 
+    def test_ut_accessor_1(self):
+        """Test UT accessor 1"""
+        a_date_string = '2015-01-01T12:30:30-08:00'
+        a = coords.datetime(a_date_string)
+        self.assertEqual(4.508333333333334, a.UT())
+
+
+    def test_ut_accessor_n1(self):
+        """Test UT accessor n1,
+
+        TODO negative time puts it on the previous day
+        """
+
+        a_date_string = '2015-01-01T07:30:00-08:00'
+        a = coords.datetime(a_date_string)
+        self.assertEqual(-1.5, a.UT())
+
+
     def test_default_constructor(self):
         """Test default constructor"""
         a = coords.datetime()

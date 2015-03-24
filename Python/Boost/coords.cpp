@@ -288,6 +288,7 @@ BOOST_PYTHON_MODULE(coords) {
 
     // other methods
     .def("timezone", &Coords::DateTime::time_zone)
+    .def("UT", &Coords::DateTime::UT)
 
     .def("toJulianDate", &Coords::DateTime::toJulianDate)
     .def("fromJulianDate", &Coords::DateTime::fromJulianDate)

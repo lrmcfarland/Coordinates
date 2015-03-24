@@ -46,6 +46,23 @@ class TestDateTime(unittest.TestCase):
         """Test truncated date accessor"""
         self.assertEqual(2451545.0, coords.datetime.J2000)
 
+    def test_ut_accessor_1(self):
+        """Test UT accessor 1"""
+        a_date_string = '2015-01-01T12:30:30-08:00'
+        a = coords.datetime(a_date_string)
+        self.assertEqual(4.508333333333334, a.UT())
+
+
+    def test_ut_accessor_n1(self):
+        """Test UT accessor n1,
+
+        TODO negative time puts it on the previous day
+        """
+
+        a_date_string = '2015-01-01T07:30:00-08:00'
+        a = coords.datetime(a_date_string)
+        self.assertEqual(-1.5, a.UT())
+
 
     def test_default_constructor(self):
         """Test default constructor"""
@@ -55,10 +72,10 @@ class TestDateTime(unittest.TestCase):
 
     def test_string_constructor(self):
         """Test string constructor"""
-        a_date_string = '1962-07-10T07:30:00+05:00'
+        a_date_string = '1962-07-10T07:30:00-05:00'
         a = coords.datetime(a_date_string)
         self.assertEqual(a_date_string, str(a))
-        self.assertEqual(5, a.time_zone())
+        self.assertEqual(-5, a.timezone())
 
 
     def test_string_constructor_exception(self):

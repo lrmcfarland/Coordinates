@@ -138,6 +138,7 @@ static char sMonthStr[] = "month";
 static char sDayStr[]   = "day";
 static char sHourStr[]  = "hour";
 static char sTimeZoneStr[]  = "timezone";
+static char sUTStr[]  = "UT";
 
 static char sJulianDateStr[]  = "JulianDate";
 static char sLilianDateStr[]  = "LilianDate";
@@ -3270,6 +3271,11 @@ static PyObject* datetime_getTimeZone(datetime* self, void* closure) {
   return PyFloat_FromDouble(self->m_datetime.timeZone());
 }
 
+// ----- UT -----
+static PyObject* datetime_getUT(datetime* self, void* closure) {
+  return PyFloat_FromDouble(self->m_datetime.UT());
+}
+
 // ----- Lilian Date -----
 static PyObject* datetime_getLilianDate(datetime* self, void* closure) {
   return PyFloat_FromDouble(self->m_datetime.LilianDate());
@@ -3397,11 +3403,13 @@ static PyObject* datetime_fromJulianDate(PyObject* o1, PyObject* o2) {
 PyDoc_STRVAR(datetime_toJulianDate__doc__, "Returns the Julian date of the datetime object");
 PyDoc_STRVAR(datetime_fromJulianDate__doc__, "Sets the Julian date of the datetime object");
 PyDoc_STRVAR(datetime_timezone__doc__, "Returns the time zone of the datetime object");
+PyDoc_STRVAR(datetime_UT__doc__, "Returns universal time of the datetime object");
 
 static PyMethodDef datetime_methods[] = {
   {"toJulianDate", (PyCFunction) datetime_getJulianDate, METH_VARARGS, datetime_toJulianDate__doc__},
   {"fromJulianDate", (PyCFunction) datetime_fromJulianDate, METH_VARARGS, datetime_fromJulianDate__doc__},
   {"timezone", (PyCFunction) datetime_getTimeZone, METH_VARARGS, datetime_timezone__doc__},
+  {"UT", (PyCFunction) datetime_getUT, METH_VARARGS, datetime_UT__doc__},
   {NULL}  /* Sentinel */
 };
 
@@ -3413,6 +3421,7 @@ static PyMemberDef datetime_members[] = {
 static PyGetSetDef datetime_getseters[] = {
   {sJulianDateStr, (getter)datetime_getJulianDate, (setter)datetime_setJulianDate, sJulianDateStr, NULL},
   {sTimeZoneStr, (getter)datetime_getTimeZone, NULL, sTimeZoneStr, NULL},
+  {sUTStr, (getter)datetime_getUT, NULL, sUTStr, NULL},
   {sLilianDateStr, (getter)datetime_getLilianDate, NULL, sLilianDateStr, NULL},
   {sModifiedJulianDateStr, (getter)datetime_getModifiedJulianDate, NULL, sModifiedJulianDateStr, NULL},
   {sTruncatedJulianDateStr, (getter)datetime_getTruncatedJulianDate, NULL, sTruncatedJulianDateStr, NULL},
