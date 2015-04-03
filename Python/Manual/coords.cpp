@@ -353,6 +353,12 @@ static int Angle_setRadians(Angle* self, PyObject* radians, void* closure) {
 
 static PyObject* normalize(PyObject* o1, PyObject* o2) {
 
+  if (!is_AngleType(o1)) {
+    // TODO coords.Error?
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
   // TODO kwlist?
 
   double begin(0);
@@ -366,6 +372,28 @@ static PyObject* normalize(PyObject* o1, PyObject* o2) {
   Py_INCREF(Py_None);
   return Py_None;
 
+}
+
+static PyObject* complement(PyObject* o1) {
+
+  if (!is_AngleType(o1)) {
+    // TODO coords.Error?
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
+
+  Angle* result_angle(NULL);
+
+  new_AngleType(&result_angle);
+
+  if (result_angle == NULL) {
+    PyErr_SetString(sCoordsException, "add failed to create coord.angle");
+    return NULL;
+  }
+
+  result_angle->m_angle = ((Angle*)o1)->m_angle.complement();
+
+  return (PyObject*) result_angle;
 }
 
 // --------------------------
@@ -641,12 +669,14 @@ static PyObject* rad2deg(PyObject* self, PyObject *args) {
 
 PyDoc_STRVAR(coords_deg2rad__doc__, "converts degrees into radians");
 PyDoc_STRVAR(coords_rad2deg__doc__, "converts radians into degrees");
-PyDoc_STRVAR(coords_normalize__doc__, "normalizes value to range");
+PyDoc_STRVAR(coords_normalize__doc__, "normalizes the value to given range");
+PyDoc_STRVAR(coords_complement__doc__, "returns the complement of the angle");
 
 static PyMethodDef Angle_methods[] = {
   {"deg2rad", (PyCFunction) deg2rad, METH_VARARGS, coords_deg2rad__doc__},
   {"rad2deg", (PyCFunction) rad2deg, METH_VARARGS, coords_rad2deg__doc__},
   {"normalize", (PyCFunction) normalize, METH_VARARGS, coords_normalize__doc__},
+  {"complement", (PyCFunction) complement, METH_VARARGS, coords_complement__doc__},
   {NULL}  /* Sentinel */
 };
 

@@ -528,6 +528,22 @@ class TestAngle(unittest.TestCase):
         self.assertAlmostEqual(-45, a1.value)
 
 
+    # complement
+
+    def test_complement_45(self):
+        """Test complement 45"""
+        a1 = coords.angle(45)
+        c1 = a1.complement()
+        self.assertAlmostEqual(45, c1.value)
+
+
+    def test_complement_60(self):
+        """Test complement 60"""
+        a1 = coords.angle(60)
+        c1 = a1.complement()
+        self.assertAlmostEqual(30, c1.value)
+
+
    # strings
 
     def test_str(self):

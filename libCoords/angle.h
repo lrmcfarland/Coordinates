@@ -42,6 +42,7 @@ namespace Coords {
     // base class for latitude, longitude, declination and right ascension
 
   public:
+
     // angle unit convertors
     static double deg2rad(const double& deg) {return deg*M_PI/180.0;}
     static double rad2deg(const double& rad) {return rad*180.0/M_PI;}
@@ -96,6 +97,8 @@ namespace Coords {
 
     // ----- other methods -----
     void normalize(const double& begin=0.0, const double& end=360);  // TODO normalized -> return a new copy?
+
+    angle complement() const {return angle(90 - value());}
 
   private:
 

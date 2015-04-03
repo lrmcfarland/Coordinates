@@ -413,6 +413,22 @@ namespace {
     EXPECT_NEAR(45, a.value(), 1e-15);
   }
 
+  // ----------------------
+  // ----- complement -----
+  // ----------------------
+
+  TEST(angle, Complement_45) {
+    Coords::angle a(45);
+    Coords::angle c = a.complement();
+    EXPECT_NEAR(45, c.value(), 1e-15);
+  }
+
+  TEST(angle, Complement_30) {
+    Coords::angle a(30);
+    Coords::angle c = a.complement();
+    EXPECT_NEAR(60, c.value(), 1e-15);
+  }
+
 
   // -----------------
   // ----- Utils -----
