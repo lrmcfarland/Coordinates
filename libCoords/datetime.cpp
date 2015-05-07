@@ -210,12 +210,12 @@ Coords::DateTime& Coords::DateTime::operator=(const Coords::DateTime& rhs) {
 // ----- operators -----
 
 Coords::DateTime& Coords::DateTime::operator+=(const double& rhs) {
-  this->fromJulianDate(this->toJulianDate() + rhs);
+  this->fromJulianDate(this->toJulianDate() + rhs, this->timezone());
   return *this;
 }
 
 Coords::DateTime& Coords::DateTime::operator-=(const double& rhs) {
-  this->fromJulianDate(this->toJulianDate() - rhs);
+  this->fromJulianDate(this->toJulianDate() - rhs, this->timezone());
   return *this;
 }
 
@@ -419,6 +419,9 @@ double Coords::DateTime::toModifiedJulianDateAPC() const {
 
   jdays = 365L*l_year - 679004L + b + static_cast<int>(30.6001*(l_month+1)) + l_day; // at midnight
 
+  // TODO if timezone makes partial day less than 0, previous day
+
+
   double partial_day(Coords::degrees2seconds(m_hour + timezone(), m_minute, m_second)/86400.0);
 
 
@@ -431,12 +434,14 @@ double Coords::DateTime::toModifiedJulianDateAPC() const {
 }
 
 
-void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
+void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays, const double& a_timezone) {
 
   // Calculates Gregorian calendar date from Julian day number.
   // from Astronomy on the Personal Computer, Montenbruck and Pfleger, p. 15-16
 
   // ASSUMES: jdays are Modified Julian Days
+
+  m_timezone = a_timezone;
 
   long int a(0);
   long int b(0);
@@ -538,6 +543,8 @@ void Coords::DateTime2String(const Coords::DateTime& a_datetime, std::stringstre
 
       if (a_datetime.timezoneMM() != "")
 	a_string << a_datetime.timezoneMM();
+
+      // TODO this should never happen case when timezone set by fromJulianDate
 
     } else {
 

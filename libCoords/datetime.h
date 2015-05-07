@@ -103,7 +103,9 @@ namespace Coords {
     // ----- Julian date methods -----
 
     double toJulianDate() const {return toModifiedJulianDateAPC() + s_ModifiedJulianDate;}
-    void   fromJulianDate(const double& jdays) {fromModifiedJulianDateAPC(jdays - s_ModifiedJulianDate);}
+    void   fromJulianDate(const double& jdays, const double& a_timezone=0) {
+      fromModifiedJulianDateAPC(jdays - s_ModifiedJulianDate, a_timezone);
+    }
 
 
     double toJulianDateWiki() const;
@@ -113,7 +115,7 @@ namespace Coords {
     void   fromJulianDateNRC(const double& jdays);
 
     double toModifiedJulianDateAPC() const;
-    void   fromModifiedJulianDateAPC(const double& jdays);
+    void   fromModifiedJulianDateAPC(const double& jdays, const double& a_timezone=0);
 
 
     // TODO J1950, J2000
