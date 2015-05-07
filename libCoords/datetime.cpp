@@ -32,6 +32,10 @@
 #include <iostream>
 #endif
 
+
+#include <iostream> // TODO rm
+
+
 #include<datetime.h>
 #include <utils.h>
 
@@ -258,7 +262,7 @@ double Coords::DateTime::toJulianDateWiki() const {
 
   double partial_day(Coords::degrees2seconds(m_hour + timeZone(), m_minute, m_second)/86400.0);
 
-  return static_cast<double>(jdays) + partial_day;
+  return static_cast<double>(jdays) + partial_day; // TODO time zone
 
 }
 
@@ -295,7 +299,11 @@ void Coords::DateTime::fromJulianDateWiki(const double& jdays) {
 
   double d_hour = 24.0 * (jdays - floor(jdays));
   m_hour = d_hour; // implicit cast to int
-  m_hour -= timeZone();
+
+
+  m_hour -= timeZone(); // TODO if crosses day boundry?
+
+
 
   double d_minute = 60.0 * (d_hour - floor(d_hour));
   m_minute = d_minute; // implicit cast to int
@@ -413,7 +421,12 @@ double Coords::DateTime::toModifiedJulianDateAPC() const {
 
   double partial_day(Coords::degrees2seconds(m_hour + timeZone(), m_minute, m_second)/86400.0);
 
-  return static_cast<double>(jdays) + partial_day;
+
+
+  std::cout << "partial day " << partial_day << std::endl; // TODO rm
+
+
+  return static_cast<double>(jdays) + fabs(partial_day); // fabs for timezones that pull back accross midnight.
 
 }
 

@@ -1262,6 +1262,111 @@ namespace {
   }
 
 
+
+  TEST(DateTime, ModifiedJulianDateAPC_timezone_04) {
+
+    // TODO if timezone doesn't pull it across the date (midnight), ok
+
+    std::string a_date_string("2015-05-04T06:00:00-04");
+    Coords::DateTime a_datetime(a_date_string);
+
+    std::string another_date_string("2015-05-04T06:30:00-04");
+    Coords::DateTime another_datetime(another_date_string);
+
+    std::cout << a_datetime << "  "
+	      << std::setprecision(12)
+	      << a_datetime.toJulianDate()
+	      << std::endl; // TODO rm
+
+    std::cout << another_datetime << "  "
+	      << std::setprecision(12)
+	      << another_datetime.toJulianDate()
+	      << std::endl; // TODO rm
+
+    std::cout << std::setprecision(12) << another_datetime.toJulianDate() - a_datetime.toJulianDate() << std::endl; // TODO rm
+
+    std::cout << std::setprecision(12)
+	      << (another_datetime.toJulianDate() - a_datetime.toJulianDate())*24*60
+	      << std::endl; // TODO rm
+
+
+    EXPECT_NEAR(30, (another_datetime.toJulianDate() - a_datetime.toJulianDate())*24*60, 1e-6);
+
+
+    // TODO show timezone is necessarily lost on reconstructed string
+
+  }
+
+
+  TEST(DateTime, ModifiedJulianDateAPC_timezone_n08) {
+
+    // TODO if timezone does pull it across the date (midnight), adds wrong.
+
+    std::string a_date_string("2015-05-04T06:00:00-08");
+    Coords::DateTime a_datetime(a_date_string);
+
+    std::string another_date_string("2015-05-04T06:30:00-08");
+    Coords::DateTime another_datetime(another_date_string);
+
+    std::cout << a_datetime << "  "
+	      << std::setprecision(12)
+	      << a_datetime.toJulianDate()
+	      << std::endl; // TODO rm
+
+    std::cout << another_datetime << "  "
+	      << std::setprecision(12)
+	      << another_datetime.toJulianDate()
+	      << std::endl; // TODO rm
+
+    std::cout << std::setprecision(12) << another_datetime.toJulianDate() - a_datetime.toJulianDate() << std::endl; // TODO rm
+
+    std::cout << std::setprecision(12)
+	      << (another_datetime.toJulianDate() - a_datetime.toJulianDate())*24*60
+	      << std::endl; // TODO rm
+
+
+    EXPECT_NEAR(30, (another_datetime.toJulianDate() - a_datetime.toJulianDate())*24*60, 1e-6);
+
+
+    // TODO show timezone is necessarily lost on reconstructed string
+
+  }
+
+
+  TEST(DateTime, ModifiedJulianDateAPC_timezone_08) {
+
+    // TODO if timezone does pushes it across the date (midnight), adds wrong.
+
+    std::string a_date_string("2015-05-04T16:00:00+08");
+    Coords::DateTime a_datetime(a_date_string);
+
+    std::string another_date_string("2015-05-04T16:30:00+08");
+    Coords::DateTime another_datetime(another_date_string);
+
+    std::cout << a_datetime << "  "
+	      << std::setprecision(12)
+	      << a_datetime.toJulianDate()
+	      << std::endl; // TODO rm
+
+    std::cout << another_datetime << "  "
+	      << std::setprecision(12)
+	      << another_datetime.toJulianDate()
+	      << std::endl; // TODO rm
+
+    std::cout << std::setprecision(12) << another_datetime.toJulianDate() - a_datetime.toJulianDate() << std::endl; // TODO rm
+
+    std::cout << std::setprecision(12)
+	      << (another_datetime.toJulianDate() - a_datetime.toJulianDate())*24*60
+	      << std::endl; // TODO rm
+
+    EXPECT_NEAR(30, (another_datetime.toJulianDate() - a_datetime.toJulianDate())*24*60, 1e-6);
+
+
+  }
+
+
+
+
   // ---------------------------------
   // ----- Julian Date operators -----
   // ---------------------------------
@@ -1348,7 +1453,12 @@ namespace {
 
     Coords::DateTime a_datetime(a_date_string);
 
-    a_datetime += 1;
+
+    std::cout << a_datetime << " " << a_datetime.toJulianDate() << std::endl; // TODO rm
+
+
+    a_datetime += 1; // TODO see operator += convert to julian date and loose timezone info
+
 
     EXPECT_DOUBLE_EQ(2457001.4583333335, a_datetime.toJulianDate());
 
