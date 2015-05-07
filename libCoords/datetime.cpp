@@ -58,7 +58,7 @@ const double Coords::DateTime::s_J2000(2451545.0);
 Coords::DateTime::DateTime(const std::string& an_iso8601_time)
   : m_year(1970), m_month(1), m_day(1),
     m_hour(0), m_minute(0), m_second(0),
-    m_is_zulu(false), m_has_time_zone_colon(false), m_time_zone(0), m_is_leap_year(false)
+    m_is_zulu(false), m_has_timezone_colon(false), m_timezone(0), m_is_leap_year(false)
 {
 
   std::smatch m;
@@ -89,23 +89,23 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
 
   if (m[9] == "Z") {
     m_is_zulu = true;
-    m_time_zone = 0;
+    m_timezone = 0;
 
   } else {
 
-    m_time_zone_hh = m[11];
-    m_time_zone_mm = m[13];
+    m_timezone_hh = m[11];
+    m_timezone_mm = m[13];
 
-    m_time_zone = Coords::stod(m[11]);
+    m_timezone = Coords::stod(m[11]);
 
     if (m[12] == ":")
-      m_has_time_zone_colon = true;
+      m_has_timezone_colon = true;
 
     if (m[13] != "")
-      m_time_zone += Coords::stod(m[13])/60.0;
+      m_timezone += Coords::stod(m[13])/60.0;
 
     if (m[10] == "-")
-      m_time_zone *= -1;
+      m_timezone *= -1;
 
   }
 
@@ -162,7 +162,7 @@ void Coords::DateTime::isValid(const std::string& an_iso8601_time) throw (Error)
   if (m_second < 0 || m_second >= 60)
     throwError(an_iso8601_time, "second out of range.");
 
-  if (m_time_zone < -12 || m_time_zone > 12)
+  if (m_timezone < -12 || m_timezone > 12)
     throwError(an_iso8601_time, "time zone out of range.");
 
 }
@@ -177,10 +177,10 @@ Coords::DateTime::DateTime(const Coords::DateTime& a) {
   m_minute = a.m_minute;
   m_second = a.m_second;
   m_is_zulu = a.m_is_zulu;
-  m_time_zone_hh = a.m_time_zone_hh;
-  m_time_zone_mm = a.m_time_zone_mm;
-  m_has_time_zone_colon = a.m_has_time_zone_colon;
-  m_time_zone = a.m_time_zone;
+  m_timezone_hh = a.m_timezone_hh;
+  m_timezone_mm = a.m_timezone_mm;
+  m_has_timezone_colon = a.m_has_timezone_colon;
+  m_timezone = a.m_timezone;
   m_is_leap_year = a.m_is_leap_year;
 }
 
@@ -195,10 +195,10 @@ Coords::DateTime& Coords::DateTime::operator=(const Coords::DateTime& rhs) {
   m_minute = rhs.m_minute;
   m_second = rhs.m_second;
   m_is_zulu = rhs.m_is_zulu;
-  m_time_zone_hh = rhs.m_time_zone_hh;
-  m_time_zone_mm = rhs.m_time_zone_mm;
-  m_has_time_zone_colon = rhs.m_has_time_zone_colon;
-  m_time_zone = rhs.m_time_zone;
+  m_timezone_hh = rhs.m_timezone_hh;
+  m_timezone_mm = rhs.m_timezone_mm;
+  m_has_timezone_colon = rhs.m_has_timezone_colon;
+  m_timezone = rhs.m_timezone;
   m_is_leap_year = rhs.m_is_leap_year;
   return *this;
 }
@@ -206,12 +206,12 @@ Coords::DateTime& Coords::DateTime::operator=(const Coords::DateTime& rhs) {
 // ----- operators -----
 
 Coords::DateTime& Coords::DateTime::operator+=(const double& rhs) {
-  this->fromJulianDate(this->toJulianDate() + rhs);
+  this->fromJulianDate(this->toJulianDate() + rhs, this->timezone());
   return *this;
 }
 
 Coords::DateTime& Coords::DateTime::operator-=(const double& rhs) {
-  this->fromJulianDate(this->toJulianDate() - rhs);
+  this->fromJulianDate(this->toJulianDate() - rhs, this->timezone());
   return *this;
 }
 
@@ -256,7 +256,8 @@ double Coords::DateTime::toJulianDateWiki() const {
 
   }
 
-  double partial_day(Coords::degrees2seconds(m_hour + timeZone(), m_minute, m_second)/86400.0);
+  double partial_day(Coords::degrees2seconds(m_hour, m_minute, m_second)/86400.0);
+  partial_day += timezone()/24.0;
 
   return static_cast<double>(jdays) + partial_day;
 
@@ -295,7 +296,7 @@ void Coords::DateTime::fromJulianDateWiki(const double& jdays) {
 
   double d_hour = 24.0 * (jdays - floor(jdays));
   m_hour = d_hour; // implicit cast to int
-  m_hour -= timeZone();
+  m_hour -= timezone();
 
   double d_minute = 60.0 * (d_hour - floor(d_hour));
   m_minute = d_minute; // implicit cast to int
@@ -338,7 +339,7 @@ double Coords::DateTime::toJulianDateNRC() const {
     jdays += 2 - ja + static_cast<int>(0.25*ja);
   }
 
-  double partial_day(Coords::degrees2seconds(m_hour + timeZone(), m_minute, m_second)/86400.0);
+  double partial_day(Coords::degrees2seconds(m_hour + timezone(), m_minute, m_second)/86400.0);
 
   return static_cast<double>(jdays) + partial_day;
 
@@ -382,7 +383,7 @@ void Coords::DateTime::fromJulianDateNRC(const double& jdays) {
   if (m_year <= 0)
     --m_year;
 
-  // TODO partial day? and timeZone?
+  // TODO partial day? and timezone?
 
 }
 
@@ -411,19 +412,22 @@ double Coords::DateTime::toModifiedJulianDateAPC() const {
 
   jdays = 365L*l_year - 679004L + b + static_cast<int>(30.6001*(l_month+1)) + l_day; // at midnight
 
-  double partial_day(Coords::degrees2seconds(m_hour + timeZone(), m_minute, m_second)/86400.0);
+  double partial_day(Coords::degrees2seconds(m_hour, m_minute, m_second)/86400.0);
+  partial_day += timezone()/24.0;
 
   return static_cast<double>(jdays) + partial_day;
 
 }
 
 
-void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
+void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays, const double& a_timezone) {
 
   // Calculates Gregorian calendar date from Julian day number.
   // from Astronomy on the Personal Computer, Montenbruck and Pfleger, p. 15-16
 
   // ASSUMES: jdays are Modified Julian Days
+
+  m_timezone = a_timezone;
 
   long int a(0);
   long int b(0);
@@ -452,7 +456,7 @@ void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
 
   double d_hour = 24.0 * (jdays - floor(jdays));
   m_hour = d_hour; // implicit cast to int
-  m_hour -= timeZone();
+  m_hour -= timezone();
 
   double d_minute = 60.0 * (d_hour - floor(d_hour));
   m_minute = d_minute; // implicit cast to int
@@ -507,31 +511,34 @@ void Coords::DateTime2String(const Coords::DateTime& a_datetime, std::stringstre
   if (a_datetime.isZulu())
     a_string << "Z";
 
-  if (a_datetime.timeZone() != 0) {
+  if (a_datetime.timezone() != 0) {
 
-    if (a_datetime.timeZoneHH() != "") {
+    if (a_datetime.timezoneHH() != "") {
 
-      // ASSUMES: having timeZoneHH means it was constructed from an ISO-8601 string
+      // ASSUMES: having timezoneHH means it was constructed from an ISO-8601 string
 
-      if (a_datetime.timeZone() > 0)
+      if (a_datetime.timezone() > 0)
 	a_string << "+";
       else
 	a_string << "-";
 
-      a_string << a_datetime.timeZoneHH();
+      a_string << a_datetime.timezoneHH();
 
-      if (a_datetime.hasTimeZoneColon())
+      if (a_datetime.hasTimezoneColon())
 	a_string << ":";
 
-      if (a_datetime.timeZoneMM() != "")
-	a_string << a_datetime.timeZoneMM();
+      if (a_datetime.timezoneMM() != "")
+	a_string << a_datetime.timezoneMM();
 
     } else {
 
-      if (a_datetime.timeZone() > 0)
+      if (a_datetime.timezone() > 0)
 	a_string << "+";
-      a_string << a_datetime.timeZone();
+      a_string << a_datetime.timezone();
 
     }
   }
+
+  // TODO fall through exception?
+
 }

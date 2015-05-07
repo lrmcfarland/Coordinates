@@ -3298,7 +3298,7 @@ static int datetime_setJulianDate(datetime* self, PyObject* value, void* closure
 
 // ----- time zone -----
 static PyObject* datetime_getTimeZone(datetime* self, void* closure) {
-  return PyFloat_FromDouble(self->m_datetime.timeZone());
+  return PyFloat_FromDouble(self->m_datetime.timezone());
 }
 
 // ----- UT -----

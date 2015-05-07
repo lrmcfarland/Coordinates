@@ -57,10 +57,10 @@ namespace Coords {
 		      const int& a_hour = 0,
 		      const int& a_minute = 0,
 		      const double& a_second = 0,
-		      const double& a_time_zone = 0)
+		      const double& a_timezone = 0)
       : m_year(a_year), m_month(a_month), m_day(a_day),
       m_hour(a_hour), m_minute(a_minute), m_second(a_second),
-      m_is_zulu(false), m_has_time_zone_colon(false), m_time_zone(a_time_zone), m_is_leap_year(false)
+      m_is_zulu(false), m_has_timezone_colon(false), m_timezone(a_timezone), m_is_leap_year(false)
       {isValid();};
 
     ~DateTime() {};
@@ -81,10 +81,10 @@ namespace Coords {
     const double& second() const {return m_second;}
 
     const bool& isZulu() const {return m_is_zulu;}
-    const std::string& timeZoneHH() const {return m_time_zone_hh;}
-    const std::string& timeZoneMM() const {return m_time_zone_mm;}
-    const bool& hasTimeZoneColon() const {return m_has_time_zone_colon;}
-    const double& timeZone() const {return m_time_zone;}
+    const std::string& timezoneHH() const {return m_timezone_hh;}
+    const std::string& timezoneMM() const {return m_timezone_mm;}
+    const bool& hasTimezoneColon() const {return m_has_timezone_colon;}
+    double timezone() const {return m_timezone;} // copy timezone for non-const python wrappers
 
     // helpers for Python manual wrappers
     const double& LilianDate() const {return s_LilianDate;}
@@ -92,7 +92,7 @@ namespace Coords {
     const double& TruncatedJulianDate() const {return s_TruncatedJulianDate;}
     const double& J2000() const {return s_J2000;}
 
-    double UT() const {return degrees2seconds(hour() + timeZone(), minute(), second())/3600.0;}
+    double UT() const {return degrees2seconds(hour() + timezone(), minute(), second())/3600.0;}
 
 
     // ----- in-place operators -----
@@ -101,10 +101,11 @@ namespace Coords {
     DateTime& operator-=(const double& rhs);
 
     // ----- Julian date methods -----
-    double time_zone() const {return timeZone();} // copy timezone for non-const python wrappers
 
     double toJulianDate() const {return toModifiedJulianDateAPC() + s_ModifiedJulianDate;}
-    void   fromJulianDate(const double& jdays) {fromModifiedJulianDateAPC(jdays - s_ModifiedJulianDate);}
+    void   fromJulianDate(const double& jdays, const double& a_timezone=0) {
+      fromModifiedJulianDateAPC(jdays - s_ModifiedJulianDate, a_timezone);
+    }
 
 
     double toJulianDateWiki() const;
@@ -114,7 +115,7 @@ namespace Coords {
     void   fromJulianDateNRC(const double& jdays);
 
     double toModifiedJulianDateAPC() const;
-    void   fromModifiedJulianDateAPC(const double& jdays);
+    void   fromModifiedJulianDateAPC(const double& jdays, const double& a_timezone=0);
 
 
     // TODO J1950, J2000
@@ -131,11 +132,11 @@ namespace Coords {
     double m_second;
 
     bool m_is_zulu;
-    std::string m_time_zone_hh;
-    std::string m_time_zone_mm;
-    bool m_has_time_zone_colon; // for operator<<() idempotence
+    std::string m_timezone_hh;
+    std::string m_timezone_mm;
+    bool m_has_timezone_colon; // for operator<<() idempotence
 
-    double m_time_zone;
+    double m_timezone;
 
     bool m_is_leap_year;
 

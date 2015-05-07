@@ -246,7 +246,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
     }
   }
 
@@ -283,7 +283,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
     }
   }
 
@@ -296,7 +296,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
     }
   }
 
@@ -431,7 +431,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
     }
   }
 
@@ -457,7 +457,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
     }
   }
 
@@ -482,7 +482,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
     }
   }
 
@@ -517,7 +517,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(i, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(i, a_datetime.timezone());
     }
   }
 
@@ -529,7 +529,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(-i, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(-i, a_datetime.timezone());
     }
   }
 
@@ -583,7 +583,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(4.5, a_datetime.timeZone());
+    EXPECT_DOUBLE_EQ(4.5, a_datetime.timezone());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_3) {
@@ -592,7 +592,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(4.25, a_datetime.timeZone());
+    EXPECT_DOUBLE_EQ(4.25, a_datetime.timezone());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_4) {
@@ -610,7 +610,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(-4.5, a_datetime.timeZone());
+    EXPECT_DOUBLE_EQ(-4.5, a_datetime.timezone());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_6) {
@@ -619,7 +619,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(-4.75, a_datetime.timeZone());
+    EXPECT_DOUBLE_EQ(-4.75, a_datetime.timezone());
   }
 
   TEST(DateTime, LetsGetBiblical_1) {
@@ -1262,6 +1262,47 @@ namespace {
   }
 
 
+  TEST(DateTime, ModifiedJulianDateAPC_timezone_04) {
+
+    std::string a_date_string("2015-05-04T06:00:00-04");
+    Coords::DateTime a_datetime(a_date_string);
+
+    std::string another_date_string("2015-05-04T06:30:00-04");
+    Coords::DateTime another_datetime(another_date_string);
+
+    EXPECT_NEAR(30, (another_datetime.toJulianDate() - a_datetime.toJulianDate())*24*60, 1e-6);
+
+  }
+
+
+  TEST(DateTime, ModifiedJulianDateAPC_timezone_n08) {
+
+    std::string a_date_string("2015-05-04T06:00:00-08");
+    Coords::DateTime a_datetime(a_date_string);
+
+    std::string another_date_string("2015-05-04T06:30:00-08");
+    Coords::DateTime another_datetime(another_date_string);
+
+    EXPECT_NEAR(30, (another_datetime.toJulianDate() - a_datetime.toJulianDate())*24*60, 1e-6);
+
+  }
+
+
+  TEST(DateTime, ModifiedJulianDateAPC_timezone_08) {
+
+    std::string a_date_string("2015-05-04T16:00:00+08");
+    Coords::DateTime a_datetime(a_date_string);
+
+    std::string another_date_string("2015-05-04T16:30:00+08");
+    Coords::DateTime another_datetime(another_date_string);
+
+    EXPECT_NEAR(30, (another_datetime.toJulianDate() - a_datetime.toJulianDate())*24*60, 1e-6);
+
+  }
+
+
+
+
   // ---------------------------------
   // ----- Julian Date operators -----
   // ---------------------------------
@@ -1320,7 +1361,7 @@ namespace {
 
     a_datetime += 1;
 
-    EXPECT_DOUBLE_EQ(2457001.5416666665, a_datetime.toJulianDate());
+    EXPECT_DOUBLE_EQ(2457001.4583333335, a_datetime.toJulianDate());
 
     std::stringstream out;
     out << a_datetime;
@@ -1411,7 +1452,7 @@ namespace {
 
     a_datetime -= 1;
 
-    EXPECT_DOUBLE_EQ(2456999.5416666665, a_datetime.toJulianDate());
+    EXPECT_DOUBLE_EQ(2456999.4583333335, a_datetime.toJulianDate());
 
     std::stringstream out;
     out << a_datetime;
