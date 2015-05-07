@@ -62,7 +62,7 @@ const double Coords::DateTime::s_J2000(2451545.0);
 Coords::DateTime::DateTime(const std::string& an_iso8601_time)
   : m_year(1970), m_month(1), m_day(1),
     m_hour(0), m_minute(0), m_second(0),
-    m_is_zulu(false), m_has_time_zone_colon(false), m_time_zone(0), m_is_leap_year(false)
+    m_is_zulu(false), m_has_timezone_colon(false), m_timezone(0), m_is_leap_year(false)
 {
 
   std::smatch m;
@@ -93,23 +93,23 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
 
   if (m[9] == "Z") {
     m_is_zulu = true;
-    m_time_zone = 0;
+    m_timezone = 0;
 
   } else {
 
-    m_time_zone_hh = m[11];
-    m_time_zone_mm = m[13];
+    m_timezone_hh = m[11];
+    m_timezone_mm = m[13];
 
-    m_time_zone = Coords::stod(m[11]);
+    m_timezone = Coords::stod(m[11]);
 
     if (m[12] == ":")
-      m_has_time_zone_colon = true;
+      m_has_timezone_colon = true;
 
     if (m[13] != "")
-      m_time_zone += Coords::stod(m[13])/60.0;
+      m_timezone += Coords::stod(m[13])/60.0;
 
     if (m[10] == "-")
-      m_time_zone *= -1;
+      m_timezone *= -1;
 
   }
 
@@ -166,7 +166,7 @@ void Coords::DateTime::isValid(const std::string& an_iso8601_time) throw (Error)
   if (m_second < 0 || m_second >= 60)
     throwError(an_iso8601_time, "second out of range.");
 
-  if (m_time_zone < -12 || m_time_zone > 12)
+  if (m_timezone < -12 || m_timezone > 12)
     throwError(an_iso8601_time, "time zone out of range.");
 
 }
@@ -181,10 +181,10 @@ Coords::DateTime::DateTime(const Coords::DateTime& a) {
   m_minute = a.m_minute;
   m_second = a.m_second;
   m_is_zulu = a.m_is_zulu;
-  m_time_zone_hh = a.m_time_zone_hh;
-  m_time_zone_mm = a.m_time_zone_mm;
-  m_has_time_zone_colon = a.m_has_time_zone_colon;
-  m_time_zone = a.m_time_zone;
+  m_timezone_hh = a.m_timezone_hh;
+  m_timezone_mm = a.m_timezone_mm;
+  m_has_timezone_colon = a.m_has_timezone_colon;
+  m_timezone = a.m_timezone;
   m_is_leap_year = a.m_is_leap_year;
 }
 
@@ -199,10 +199,10 @@ Coords::DateTime& Coords::DateTime::operator=(const Coords::DateTime& rhs) {
   m_minute = rhs.m_minute;
   m_second = rhs.m_second;
   m_is_zulu = rhs.m_is_zulu;
-  m_time_zone_hh = rhs.m_time_zone_hh;
-  m_time_zone_mm = rhs.m_time_zone_mm;
-  m_has_time_zone_colon = rhs.m_has_time_zone_colon;
-  m_time_zone = rhs.m_time_zone;
+  m_timezone_hh = rhs.m_timezone_hh;
+  m_timezone_mm = rhs.m_timezone_mm;
+  m_has_timezone_colon = rhs.m_has_timezone_colon;
+  m_timezone = rhs.m_timezone;
   m_is_leap_year = rhs.m_is_leap_year;
   return *this;
 }
