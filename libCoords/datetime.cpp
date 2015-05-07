@@ -32,10 +32,6 @@
 #include <iostream>
 #endif
 
-
-#include <iostream> // TODO rm
-
-
 #include<datetime.h>
 #include <utils.h>
 
@@ -260,9 +256,10 @@ double Coords::DateTime::toJulianDateWiki() const {
 
   }
 
-  double partial_day(Coords::degrees2seconds(m_hour + timezone(), m_minute, m_second)/86400.0);
+  double partial_day(Coords::degrees2seconds(m_hour, m_minute, m_second)/86400.0);
+  partial_day += timezone()/24.0;
 
-  return static_cast<double>(jdays) + partial_day; // TODO time zone
+  return static_cast<double>(jdays) + partial_day;
 
 }
 
@@ -299,11 +296,7 @@ void Coords::DateTime::fromJulianDateWiki(const double& jdays) {
 
   double d_hour = 24.0 * (jdays - floor(jdays));
   m_hour = d_hour; // implicit cast to int
-
-
-  m_hour -= timezone(); // TODO if crosses day boundry?
-
-
+  m_hour -= timezone();
 
   double d_minute = 60.0 * (d_hour - floor(d_hour));
   m_minute = d_minute; // implicit cast to int
@@ -419,17 +412,10 @@ double Coords::DateTime::toModifiedJulianDateAPC() const {
 
   jdays = 365L*l_year - 679004L + b + static_cast<int>(30.6001*(l_month+1)) + l_day; // at midnight
 
-  // TODO if timezone makes partial day less than 0, previous day
+  double partial_day(Coords::degrees2seconds(m_hour, m_minute, m_second)/86400.0);
+  partial_day += timezone()/24.0;
 
-
-  double partial_day(Coords::degrees2seconds(m_hour + timezone(), m_minute, m_second)/86400.0);
-
-
-
-  std::cout << "partial day " << partial_day << std::endl; // TODO rm
-
-
-  return static_cast<double>(jdays) + fabs(partial_day); // fabs for timezones that pull back accross midnight.
+  return static_cast<double>(jdays) + partial_day;
 
 }
 
@@ -544,8 +530,6 @@ void Coords::DateTime2String(const Coords::DateTime& a_datetime, std::stringstre
       if (a_datetime.timezoneMM() != "")
 	a_string << a_datetime.timezoneMM();
 
-      // TODO this should never happen case when timezone set by fromJulianDate
-
     } else {
 
       if (a_datetime.timezone() > 0)
@@ -554,4 +538,7 @@ void Coords::DateTime2String(const Coords::DateTime& a_datetime, std::stringstre
 
     }
   }
+
+  // TODO fall through exception?
+
 }

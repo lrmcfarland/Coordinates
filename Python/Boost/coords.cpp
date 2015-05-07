@@ -33,7 +33,6 @@ void (Coords::spherical::*setR)(const double&) = &Coords::spherical::r;
 void (Coords::spherical::*setTheta)(const Coords::angle&) = &Coords::spherical::theta;
 void (Coords::spherical::*setPhi)(const Coords::angle&) = &Coords::spherical::phi;
 
-
 BOOST_PYTHON_MODULE(coords) {
 
 
@@ -293,9 +292,9 @@ BOOST_PYTHON_MODULE(coords) {
     .def("UT", &Coords::DateTime::UT)
 
     .def("toJulianDate", &Coords::DateTime::toJulianDate)
-    .def("fromJulianDate", &Coords::DateTime::fromJulianDate)
+    .def("fromJulianDate", &Coords::DateTime::fromJulianDate) // TODO default timezone
 
-    // TODO other Julian Date methods, Wiki, NRC, APC
+    // TODO other Julian Date methods, default timezone, Wiki, NRC, APC
 
     ; // end of class_
 
