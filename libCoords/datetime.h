@@ -81,10 +81,10 @@ namespace Coords {
     const double& second() const {return m_second;}
 
     const bool& isZulu() const {return m_is_zulu;}
-    const std::string& timeZoneHH() const {return m_timezone_hh;}
-    const std::string& timeZoneMM() const {return m_timezone_mm;}
-    const bool& hasTimeZoneColon() const {return m_has_timezone_colon;}
-    const double& timeZone() const {return m_timezone;}
+    const std::string& timezoneHH() const {return m_timezone_hh;}
+    const std::string& timezoneMM() const {return m_timezone_mm;}
+    const bool& hasTimezoneColon() const {return m_has_timezone_colon;}
+    double timezone() const {return m_timezone;} // copy timezone for non-const python wrappers
 
     // helpers for Python manual wrappers
     const double& LilianDate() const {return s_LilianDate;}
@@ -92,7 +92,7 @@ namespace Coords {
     const double& TruncatedJulianDate() const {return s_TruncatedJulianDate;}
     const double& J2000() const {return s_J2000;}
 
-    double UT() const {return degrees2seconds(hour() + timeZone(), minute(), second())/3600.0;}
+    double UT() const {return degrees2seconds(hour() + timezone(), minute(), second())/3600.0;}
 
 
     // ----- in-place operators -----
@@ -101,7 +101,6 @@ namespace Coords {
     DateTime& operator-=(const double& rhs);
 
     // ----- Julian date methods -----
-    double timezone() const {return timeZone();} // copy timezone for non-const python wrappers
 
     double toJulianDate() const {return toModifiedJulianDateAPC() + s_ModifiedJulianDate;}
     void   fromJulianDate(const double& jdays) {fromModifiedJulianDateAPC(jdays - s_ModifiedJulianDate);}

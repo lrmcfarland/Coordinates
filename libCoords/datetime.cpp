@@ -260,7 +260,7 @@ double Coords::DateTime::toJulianDateWiki() const {
 
   }
 
-  double partial_day(Coords::degrees2seconds(m_hour + timeZone(), m_minute, m_second)/86400.0);
+  double partial_day(Coords::degrees2seconds(m_hour + timezone(), m_minute, m_second)/86400.0);
 
   return static_cast<double>(jdays) + partial_day; // TODO time zone
 
@@ -301,7 +301,7 @@ void Coords::DateTime::fromJulianDateWiki(const double& jdays) {
   m_hour = d_hour; // implicit cast to int
 
 
-  m_hour -= timeZone(); // TODO if crosses day boundry?
+  m_hour -= timezone(); // TODO if crosses day boundry?
 
 
 
@@ -346,7 +346,7 @@ double Coords::DateTime::toJulianDateNRC() const {
     jdays += 2 - ja + static_cast<int>(0.25*ja);
   }
 
-  double partial_day(Coords::degrees2seconds(m_hour + timeZone(), m_minute, m_second)/86400.0);
+  double partial_day(Coords::degrees2seconds(m_hour + timezone(), m_minute, m_second)/86400.0);
 
   return static_cast<double>(jdays) + partial_day;
 
@@ -390,7 +390,7 @@ void Coords::DateTime::fromJulianDateNRC(const double& jdays) {
   if (m_year <= 0)
     --m_year;
 
-  // TODO partial day? and timeZone?
+  // TODO partial day? and timezone?
 
 }
 
@@ -419,7 +419,7 @@ double Coords::DateTime::toModifiedJulianDateAPC() const {
 
   jdays = 365L*l_year - 679004L + b + static_cast<int>(30.6001*(l_month+1)) + l_day; // at midnight
 
-  double partial_day(Coords::degrees2seconds(m_hour + timeZone(), m_minute, m_second)/86400.0);
+  double partial_day(Coords::degrees2seconds(m_hour + timezone(), m_minute, m_second)/86400.0);
 
 
 
@@ -465,7 +465,7 @@ void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
 
   double d_hour = 24.0 * (jdays - floor(jdays));
   m_hour = d_hour; // implicit cast to int
-  m_hour -= timeZone();
+  m_hour -= timezone();
 
   double d_minute = 60.0 * (d_hour - floor(d_hour));
   m_minute = d_minute; // implicit cast to int
@@ -520,30 +520,30 @@ void Coords::DateTime2String(const Coords::DateTime& a_datetime, std::stringstre
   if (a_datetime.isZulu())
     a_string << "Z";
 
-  if (a_datetime.timeZone() != 0) {
+  if (a_datetime.timezone() != 0) {
 
-    if (a_datetime.timeZoneHH() != "") {
+    if (a_datetime.timezoneHH() != "") {
 
-      // ASSUMES: having timeZoneHH means it was constructed from an ISO-8601 string
+      // ASSUMES: having timezoneHH means it was constructed from an ISO-8601 string
 
-      if (a_datetime.timeZone() > 0)
+      if (a_datetime.timezone() > 0)
 	a_string << "+";
       else
 	a_string << "-";
 
-      a_string << a_datetime.timeZoneHH();
+      a_string << a_datetime.timezoneHH();
 
-      if (a_datetime.hasTimeZoneColon())
+      if (a_datetime.hasTimezoneColon())
 	a_string << ":";
 
-      if (a_datetime.timeZoneMM() != "")
-	a_string << a_datetime.timeZoneMM();
+      if (a_datetime.timezoneMM() != "")
+	a_string << a_datetime.timezoneMM();
 
     } else {
 
-      if (a_datetime.timeZone() > 0)
+      if (a_datetime.timezone() > 0)
 	a_string << "+";
-      a_string << a_datetime.timeZone();
+      a_string << a_datetime.timezone();
 
     }
   }

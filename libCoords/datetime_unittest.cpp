@@ -246,7 +246,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
     }
   }
 
@@ -283,7 +283,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
     }
   }
 
@@ -296,7 +296,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
     }
   }
 
@@ -431,7 +431,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
     }
   }
 
@@ -457,7 +457,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
     }
   }
 
@@ -482,7 +482,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
     }
   }
 
@@ -517,7 +517,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(i, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(i, a_datetime.timezone());
     }
   }
 
@@ -529,7 +529,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_date_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(-i, a_datetime.timeZone());
+      EXPECT_DOUBLE_EQ(-i, a_datetime.timezone());
     }
   }
 
@@ -583,7 +583,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(4.5, a_datetime.timeZone());
+    EXPECT_DOUBLE_EQ(4.5, a_datetime.timezone());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_3) {
@@ -592,7 +592,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(4.25, a_datetime.timeZone());
+    EXPECT_DOUBLE_EQ(4.25, a_datetime.timezone());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_4) {
@@ -610,7 +610,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(-4.5, a_datetime.timeZone());
+    EXPECT_DOUBLE_EQ(-4.5, a_datetime.timezone());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_6) {
@@ -619,7 +619,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_date_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(-4.75, a_datetime.timeZone());
+    EXPECT_DOUBLE_EQ(-4.75, a_datetime.timezone());
   }
 
   TEST(DateTime, LetsGetBiblical_1) {
