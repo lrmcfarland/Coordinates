@@ -99,7 +99,7 @@ class TestDateTime(unittest.TestCase):
     def test_from_julian_date(self):
         """Test from Julian date"""
         a = coords.datetime()
-        a.fromJulianDate(coords.datetime.ModifiedJulianDate, 0) # TODO default timezone
+        a.fromJulianDate(coords.datetime.ModifiedJulianDate)
         self.assertEqual(coords.datetime.ModifiedJulianDate, a.toJulianDate())
 
 
