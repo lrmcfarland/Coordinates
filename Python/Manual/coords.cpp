@@ -620,7 +620,7 @@ static PyObject* Angle_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "angle::operator-=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "angle::operator*=() called with unsupported type");
   return NULL;
 }
 
@@ -632,7 +632,7 @@ static PyObject* Angle_nb_inplace_divide(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "angle::operator-=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "angle::operator/=() called with unsupported type");
   return NULL;
 }
 
@@ -3395,7 +3395,7 @@ static PyObject* datetime_nb_inplace_add(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "datetime::operator-=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "datetime::operator+=() called with unsupported type");
   return NULL;
 }
 
