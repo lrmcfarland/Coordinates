@@ -241,7 +241,6 @@ void Coords::DateTime::timezone(const double& a_timezone) {
 
   // TODO compute directly?
   if (m_timezone != 0) {
-    // throw Coords::Error("TODO converter assumes initial timezone is zero");
     this->fromJulianDate(this->toJulianDate(), 0);
   }
 
