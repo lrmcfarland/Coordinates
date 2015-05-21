@@ -233,11 +233,12 @@ double Coords::operator-(const Coords::DateTime& lhs, const Coords::DateTime& rh
   return lhs.toJulianDate() - rhs.toJulianDate();
 }
 
-
-
 // ----- timezone -----
 
 void Coords::DateTime::timezone(const double& a_timezone) {
+
+  if (a_timezone < -12 || a_timezone > 12)
+    throw Coords::Error("timezone out of range");
 
   // TODO compute directly?
   if (m_timezone != 0) {
@@ -437,6 +438,9 @@ void Coords::DateTime::fromJulianDateWiki(const double& jdays) {
   m_second = 60.0 * (d_minute - floor(d_minute));
 
   m_timezone = 0;
+  m_timezone_hh.clear(); // for operator<<()
+  m_has_timezone_colon = false;
+  m_timezone_mm.clear();
 
 }
 
@@ -520,7 +524,9 @@ void Coords::DateTime::fromJulianDateNRC(const double& jdays) {
 
   m_timezone = 0;
 
-  // TODO other timezone stuff?
+  m_timezone_hh.clear(); // for operator<<()
+  m_has_timezone_colon = false;
+  m_timezone_mm.clear();
 
 }
 

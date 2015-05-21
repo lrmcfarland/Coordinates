@@ -2046,6 +2046,31 @@ namespace {
   }
 
 
+  TEST(DateTime, set_timezone_range_hi) {
+
+    // timezone out of range
+
+    std::string a_datetime_string("2015-05-21T23:00:00Z");
+    Coords::DateTime a_datetime(a_datetime_string);
+
+    EXPECT_THROW(a_datetime.timezone(13), Coords::Error);
+
+
+  }
+
+
+  TEST(DateTime, set_timezone_range_lo) {
+
+    // timezone out of range
+
+    std::string a_datetime_string("2015-05-21T23:00:00Z");
+    Coords::DateTime a_datetime(a_datetime_string);
+
+    EXPECT_THROW(a_datetime.timezone(-13), Coords::Error);
+
+
+  }
+
 
 } // end anonymous namespace
 
