@@ -75,7 +75,7 @@ class TestDateTime(unittest.TestCase):
         a_date_string = '1962-07-10T07:30:00-05:00'
         a = coords.datetime(a_date_string)
         self.assertEqual(a_date_string, str(a))
-        self.assertEqual(-5, a.timezone())
+        self.assertEqual(-5, a.getTimezone())
 
 
     def test_string_constructor_exception(self):
@@ -109,7 +109,7 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime(a_date_string)
         a += 365
         self.assertEqual('1963-07-10T07:30:00+05:00', str(a))
-        self.assertEqual(5, a.timezone())
+        self.assertEqual(5, a.getTimezone())
 
 
     def test_operator_plus(self):
@@ -119,7 +119,7 @@ class TestDateTime(unittest.TestCase):
         b = coords.datetime
         b = 365 + a
         self.assertEqual('1963-07-10T07:30:00-06:00', str(b))
-        self.assertEqual(-6, a.timezone())
+        self.assertEqual(-6, a.getTimezone())
 
 
     def test_operator_minus_equal(self):
@@ -150,6 +150,18 @@ class TestDateTime(unittest.TestCase):
         b = coords.datetime('2012-07-10T07:30:00+05:00')
         self.assertEqual(18263.0, b - a)
 
+
+    def test_set_timezone_method(self):
+        """Test set time zone method"""
+        a = coords.datetime('1962-07-10T07:30:00')
+        a.setTimezone(-8)
+        self.assertEqual('1962-07-10T15:30:00-08', str(a))
+
+    def test_set_timezone_property(self):
+        """Test set time zone property"""
+        a = coords.datetime('1962-07-10T07:30:00')
+        a.timezone = -8
+        self.assertEqual('1962-07-10T15:30:00-08', str(a))
 
 
 if __name__ == '__main__':

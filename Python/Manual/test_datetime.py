@@ -171,7 +171,7 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime(a_date_string)
         a += 365.0
         self.assertEqual('1963-07-10T07:30:00+05:00', str(a))
-        self.assertEqual(5, a.timezone())
+        self.assertEqual(5, a.timezone)
 
 
     def test_operator_inplace_plus_exception_string(self):
@@ -196,7 +196,7 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime('1962-07-10T07:30:00-06:00')
         b = 365 + a
         self.assertEqual('1963-07-10T07:30:00-06:00', str(b))
-        self.assertEqual(-6, a.timezone())
+        self.assertEqual(-6, a.timezone)
 
     def test_datetime_plus_datetime_2(self):
         """Test datetime + datetime"""
@@ -211,7 +211,7 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime('1962-07-10T07:30:00+05:00')
         a -= 365
         self.assertEqual('1961-07-10T07:30:00+05:00', str(a))
-        self.assertEqual(5, a.timezone())
+        self.assertEqual(5, a.timezone)
 
     def test_operator_inplace_minus_exception_string(self):
         """Test operator-=(string) exception"""
@@ -236,7 +236,7 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime('1962-07-10T07:30:00-05:00')
         b = coords.datetime('1963-07-10T07:30:00-05:00')
         self.assertEqual(365, b - a)
-        self.assertEqual(-5, a.timezone())
+        self.assertEqual(-5, a.timezone)
 
 
     def test_datetime_minus_datetime_2(self):
@@ -244,6 +244,22 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime('1962-07-10T07:30:00+05:00')
         b = coords.datetime('1963-07-10T07:30:00+05:00')
         self.assertEqual(-365.0, a - b)
+
+    @unittest.skip('TODO')
+    def test_set_timezone_method(self):
+        """Test set time zone method"""
+        a = coords.datetime('1962-07-10T07:30:00')
+
+        print a.getTimezone() # TODO rm
+
+        a.setTimezone(-8)
+        self.assertEqual('1962-07-10T15:30:00-08', str(a))
+
+    def test_set_timezone_property(self):
+        """Test set time zone property"""
+        a = coords.datetime('1962-07-10T07:30:00')
+        a.timezone = -8
+        self.assertEqual('1962-07-10T15:30:00-08', str(a))
 
 
 if __name__ == '__main__':

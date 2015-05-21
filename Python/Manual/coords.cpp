@@ -3301,6 +3301,24 @@ static PyObject* datetime_getTimeZone(datetime* self, void* closure) {
   return PyFloat_FromDouble(self->m_datetime.timezone());
 }
 
+static int datetime_setTimeZone(datetime* self, PyObject* a_timezone, void* closure) {
+
+  if (a_timezone == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete timezone");
+    return -1;
+  }
+
+  if (!PyFloat_Check(a_timezone) && !PyInt_Check(a_timezone)) {
+    PyErr_SetString(sCoordsException, "timezone must be a float or int");
+    return -1;
+  }
+
+  self->m_datetime.timezone(PyFloat_AsDouble(a_timezone));
+
+  return 0;
+}
+
+
 // ----- UT -----
 static PyObject* datetime_getUT(datetime* self, void* closure) {
   return PyFloat_FromDouble(self->m_datetime.UT());
@@ -3432,13 +3450,15 @@ static PyObject* datetime_fromJulianDate(PyObject* o1, PyObject* o2) {
 
 PyDoc_STRVAR(datetime_toJulianDate__doc__, "Returns the Julian date of the datetime object");
 PyDoc_STRVAR(datetime_fromJulianDate__doc__, "Sets the Julian date of the datetime object");
-PyDoc_STRVAR(datetime_timezone__doc__, "Returns the time zone of the datetime object");
+PyDoc_STRVAR(datetime_get_timezone__doc__, "Returns the time zone of the datetime object");
+PyDoc_STRVAR(datetime_set_timezone__doc__, "Sets the time zone of the datetime object");
 PyDoc_STRVAR(datetime_UT__doc__, "Returns universal time of the datetime object");
 
 static PyMethodDef datetime_methods[] = {
   {"toJulianDate", (PyCFunction) datetime_getJulianDate, METH_VARARGS, datetime_toJulianDate__doc__},
   {"fromJulianDate", (PyCFunction) datetime_fromJulianDate, METH_VARARGS, datetime_fromJulianDate__doc__},
-  {"timezone", (PyCFunction) datetime_getTimeZone, METH_VARARGS, datetime_timezone__doc__},
+  {"getTimezone", (PyCFunction) datetime_getTimeZone, METH_VARARGS, datetime_get_timezone__doc__},
+  {"setTimezone", (PyCFunction) datetime_setTimeZone, METH_VARARGS, datetime_set_timezone__doc__},
   {"UT", (PyCFunction) datetime_getUT, METH_VARARGS, datetime_UT__doc__},
   {NULL}  /* Sentinel */
 };
@@ -3450,7 +3470,7 @@ static PyMemberDef datetime_members[] = {
 
 static PyGetSetDef datetime_getseters[] = {
   {sJulianDateStr, (getter)datetime_getJulianDate, (setter)datetime_setJulianDate, sJulianDateStr, NULL},
-  {sTimeZoneStr, (getter)datetime_getTimeZone, NULL, sTimeZoneStr, NULL},
+  {sTimeZoneStr, (getter)datetime_getTimeZone, (setter)datetime_setTimeZone, sTimeZoneStr, NULL},
   {sUTStr, (getter)datetime_getUT, NULL, sUTStr, NULL},
   {sLilianDateStr, (getter)datetime_getLilianDate, NULL, sLilianDateStr, NULL},
   {sModifiedJulianDateStr, (getter)datetime_getModifiedJulianDate, NULL, sModifiedJulianDateStr, NULL},

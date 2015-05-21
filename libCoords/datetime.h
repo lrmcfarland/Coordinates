@@ -84,7 +84,11 @@ namespace Coords {
     const std::string& timezoneHH() const {return m_timezone_hh;}
     const std::string& timezoneMM() const {return m_timezone_mm;}
     const bool& hasTimezoneColon() const {return m_has_timezone_colon;}
-    double timezone() const {return m_timezone;} // copy timezone for non-const python wrappers
+    double timezone() const {return m_timezone;} // copy of timezone for non-const python wrappers
+    void timezone(const double& a_timezone); // changes timezone and hour (day, month, year if needed) to keep UT same
+
+    double getTimezone() {return timezone();} // for boost python wrappers
+    void setTimezone(const double& a_timezone) {return timezone(a_timezone);} // for boost python wrappers
 
     // helpers for Python manual wrappers
     const double& LilianDate() const {return s_LilianDate;}

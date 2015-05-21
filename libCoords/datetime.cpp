@@ -39,7 +39,7 @@
 
 const std::string Coords::DateTime::s_ISO8601_format("(-){0,1}(\\d*)-" // year
 						     "(0[1-9]|1[012])-" // month
-						     "(0[1-9]|1\\d|2\\d|3[01])"  // day
+						     "(0[1-9]|1\\d|2\\d|3[01])" // day
 						     "T"
 						     "([01]\\d|2[0-3]):" // hour
 						     "([0-5]\\d):" // minute
@@ -153,13 +153,13 @@ void Coords::DateTime::isValid(const std::string& an_iso8601_time) throw (Error)
 
   }
 
-  if (m_hour < 0 || m_hour >= 60)
+  if (m_hour < 0 || m_hour > 24)
     throwError(an_iso8601_time, "hour out of range.");
 
-  if (m_minute < 0 || m_minute >= 60)
+  if (m_minute < 0 || m_minute > 60)
     throwError(an_iso8601_time, "minute out of range.");
 
-  if (m_second < 0 || m_second >= 60)
+  if (m_second < 0 || m_second > 60)
     throwError(an_iso8601_time, "second out of range.");
 
   if (m_timezone < -12 || m_timezone > 12)
@@ -232,6 +232,131 @@ Coords::DateTime Coords::operator-(const Coords::DateTime& lhs, const double& rh
 double Coords::operator-(const Coords::DateTime& lhs, const Coords::DateTime& rhs) {
   return lhs.toJulianDate() - rhs.toJulianDate();
 }
+
+
+
+// ----- timezone -----
+
+void Coords::DateTime::timezone(const double& a_timezone) {
+
+  if (m_hour - a_timezone < 0) {
+
+    // pulled back across date
+
+    if (m_month == 1) {
+
+      if (m_day == 1) {
+
+	m_year -= 1;
+	m_month = 12;
+	m_day = 31;
+
+      } else {
+
+	m_day -= 1;
+
+      }
+
+    } else { // Not Jan
+
+      if (m_day == 1) {
+
+	m_month -= 1;
+
+	if (m_month == 2) {
+
+	  if (m_is_leap_year)
+	    m_day = 29;
+	  else
+	    m_day = 28;
+
+	} else if (m_month == 9 || m_month == 4 || m_month == 6 || m_month == 11) {
+	  // 30 day month
+
+	  m_day = 30;
+
+	} else { // 31 day month
+
+	  m_day = 31;
+
+	}
+
+      } else { // Not first of month
+
+	m_day -= 1;
+
+      }
+
+    }
+
+    m_hour = m_hour - a_timezone + 24;
+
+
+  } else if (m_hour - a_timezone > 24) {
+
+    // pushed to next day
+
+    if (m_month == 2) {
+
+      if (m_is_leap_year) {
+
+	if (m_day == 29) {
+	  m_month += 1;
+	  m_day = 1;
+	}
+
+      } else {
+
+	if (m_day == 28) {
+	  m_month += 1;
+	  m_day = 1;
+	}
+
+      }
+
+    } else if (m_month == 12) {
+
+      m_year += 1;
+      m_month = 1;
+      m_day = 1;
+
+    } else if (m_month == 9 || m_month == 4 || m_month == 6 || m_month == 11) {
+
+      // 30 day months
+
+      if (m_day == 30) {
+	m_month += 1;
+	m_day = 1;
+      } else {
+	m_day += 1;
+      }
+
+    } else { // 31 day months. December is a special case handled above.
+
+      if (m_day == 31) {
+	m_month += 1;
+	m_day = 1;
+      } else {
+	m_day += 1;
+      }
+
+    }
+
+    m_hour = m_hour - a_timezone - 24;
+
+  } else { // no day, month or year change
+    m_hour -= a_timezone;
+
+  }
+
+  m_timezone = a_timezone;
+
+  std::stringstream current_time;
+  current_time << *this;
+  isValid(current_time.str());
+
+}
+
 
 
 // ----- as Julian Date -----
@@ -522,19 +647,24 @@ void Coords::DateTime2String(const Coords::DateTime& a_datetime, std::stringstre
       else
 	a_string << "-";
 
-      a_string << a_datetime.timezoneHH();
+      a_string << std::setw(2) << std::setfill('0') << a_datetime.timezoneHH();
 
       if (a_datetime.hasTimezoneColon())
 	a_string << ":";
 
       if (a_datetime.timezoneMM() != "")
-	a_string << a_datetime.timezoneMM();
+	a_string << std::setw(2) << std::setfill('0') << a_datetime.timezoneMM();
 
     } else {
 
-      if (a_datetime.timezone() > 0)
+      if (a_datetime.timezone() < 0) {
+	a_string << "-";
+	a_string << std::setw(2) << std::setfill('0') << -a_datetime.timezone();
+
+      } else {
 	a_string << "+";
-      a_string << a_datetime.timezone();
+	a_string << std::setw(2) << std::setfill('0') << a_datetime.timezone();
+      }
 
     }
   }

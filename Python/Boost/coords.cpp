@@ -33,6 +33,8 @@ void (Coords::spherical::*setR)(const double&) = &Coords::spherical::r;
 void (Coords::spherical::*setTheta)(const Coords::angle&) = &Coords::spherical::theta;
 void (Coords::spherical::*setPhi)(const Coords::angle&) = &Coords::spherical::phi;
 
+void (Coords::DateTime::*setTimezone)(const double&) = &Coords::DateTime::setTimezone;
+
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(fromJulianDate_overloads, Coords::DateTime::fromJulianDate, 1, 2)
 
@@ -292,7 +294,12 @@ BOOST_PYTHON_MODULE(coords) {
 
 
     // other methods
-    .def("timezone", &Coords::DateTime::timezone)
+    .def("getTimezone", &Coords::DateTime::getTimezone)
+    .def("setTimezone", &Coords::DateTime::setTimezone)
+    .add_property("timezone", &Coords::DateTime::getTimezone, &Coords::DateTime::setTimezone)
+
+
+
     .def("UT", &Coords::DateTime::UT)
 
     .def("toJulianDate", &Coords::DateTime::toJulianDate)
