@@ -2000,6 +2000,53 @@ namespace {
 
 
 
+  TEST(DateTime, set_timezone_nonzero_1) {
+
+    // non zero timezone
+
+    std::string a_datetime_string("2015-05-21T23:00:00-02");
+    Coords::DateTime a_datetime(a_datetime_string);
+    const double jdate(a_datetime.toJulianDate());
+
+    a_datetime.timezone(1);
+
+    EXPECT_DOUBLE_EQ(jdate, a_datetime.toJulianDate());
+
+  }
+
+
+  TEST(DateTime, set_timezone_nonzero_n1) {
+
+    // non zero timezone
+
+    std::string a_datetime_string("2015-05-21T23:00:00-04");
+    Coords::DateTime a_datetime(a_datetime_string);
+    const double jdate(a_datetime.toJulianDate());
+
+    a_datetime.timezone(-2);
+
+    EXPECT_DOUBLE_EQ(jdate, a_datetime.toJulianDate());
+
+  }
+
+
+
+  TEST(DateTime, set_timezone_zulu_1) {
+
+    // non zero timezone
+
+    std::string a_datetime_string("2015-05-21T23:00:00Z");
+    Coords::DateTime a_datetime(a_datetime_string);
+    const double jdate(a_datetime.toJulianDate());
+
+    a_datetime.timezone(3);
+
+    EXPECT_DOUBLE_EQ(jdate, a_datetime.toJulianDate());
+
+  }
+
+
+
 } // end anonymous namespace
 
 

@@ -239,6 +239,12 @@ double Coords::operator-(const Coords::DateTime& lhs, const Coords::DateTime& rh
 
 void Coords::DateTime::timezone(const double& a_timezone) {
 
+  // TODO compute directly?
+  if (m_timezone != 0) {
+    // throw Coords::Error("TODO converter assumes initial timezone is zero");
+    this->fromJulianDate(this->toJulianDate(), 0);
+  }
+
   if (m_hour - a_timezone < 0) {
 
     // pulled back across date
@@ -346,13 +352,16 @@ void Coords::DateTime::timezone(const double& a_timezone) {
 
   } else { // no day, month or year change
     m_hour -= a_timezone;
-
   }
 
   m_timezone = a_timezone;
+  m_timezone_hh.clear(); // for operator<<()
+  m_has_timezone_colon = false;
+  m_timezone_mm.clear();
 
   std::stringstream current_time;
   current_time << *this;
+
   isValid(current_time.str());
 
 }
@@ -427,6 +436,8 @@ void Coords::DateTime::fromJulianDateWiki(const double& jdays) {
   m_minute = d_minute; // implicit cast to int
 
   m_second = 60.0 * (d_minute - floor(d_minute));
+
+  m_timezone = 0;
 
 }
 
@@ -508,7 +519,9 @@ void Coords::DateTime::fromJulianDateNRC(const double& jdays) {
   if (m_year <= 0)
     --m_year;
 
-  // TODO partial day? and timezone?
+  m_timezone = 0;
+
+  // TODO other timezone stuff?
 
 }
 
@@ -667,6 +680,7 @@ void Coords::DateTime2String(const Coords::DateTime& a_datetime, std::stringstre
       }
 
     }
+
   }
 
   // TODO fall through exception?
