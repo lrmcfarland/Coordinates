@@ -179,7 +179,7 @@ int parse_int_arg(PyObject* arg, int& val) {
       return -1;
 
     } else {
-      PyErr_SetString(sCoordsException, "unsupported arg type");
+      PyErr_SetString(sCoordsException, "arg must be an int or float");
       return -1;
     }
 
@@ -201,7 +201,7 @@ int parse_double_arg(PyObject* arg, double& val) {
       return -1;
 
     } else {
-      PyErr_SetString(sCoordsException, "unsupported arg type");
+      PyErr_SetString(sCoordsException, "arg must be an int or float");
       return -1;
     }
 
@@ -255,7 +255,7 @@ static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
       return -1;
 
     } else {
-      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      PyErr_SetString(sCoordsException, "arg0 must be an angle, int or float");
       return -1;
     }
 
@@ -596,7 +596,7 @@ static PyObject* Angle_nb_inplace_add(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "angle::operator+=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "angle::operator+=() only supports angle types");
   return NULL;
 }
 
@@ -608,7 +608,7 @@ static PyObject* Angle_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "angle::operator-=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "angle::operator-=() only supports angle types");
   return NULL;
 }
 
@@ -620,7 +620,7 @@ static PyObject* Angle_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "angle::operator*=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "angle::operator*=() only supports angle types");
   return NULL;
 }
 
@@ -632,7 +632,7 @@ static PyObject* Angle_nb_inplace_divide(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "angle::operator/=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "angle::operator/=() only supports angle types");
   return NULL;
 }
 
@@ -841,7 +841,7 @@ static int Latitude_init(Latitude* self, PyObject* args, PyObject* kwds) {
       return -1;
 
     } else {
-      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      PyErr_SetString(sCoordsException, "arg0 must be an int or float");
       return -1;
     }
 
@@ -1131,7 +1131,7 @@ static PyObject* Latitude_nb_inplace_add(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "Latitude::operator+=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "Latitude::operator+=() only supports Latitude types");
   return NULL;
 }
 
@@ -1142,7 +1142,7 @@ static PyObject* Latitude_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "Latitude::operator-=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "Latitude::operator-=() only supports Latitude types");
   return NULL;
 }
 
@@ -1153,7 +1153,7 @@ static PyObject* Latitude_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "Latitude::operator*=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "Latitude::operator*=() only supports Latitude types");
   return NULL;
 }
 
@@ -1164,7 +1164,7 @@ static PyObject* Latitude_nb_inplace_divide(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "Latitude::operator/=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "Latitude::operator/=() only supports Latitude types");
   return NULL;
 }
 
@@ -1339,7 +1339,7 @@ static int Declination_init(Declination* self, PyObject* args, PyObject* kwds) {
       return -1;
 
     } else {
-      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      PyErr_SetString(sCoordsException, "arg0 must be an int or float");
       return -1;
     }
 
@@ -1629,7 +1629,7 @@ static PyObject* Declination_nb_inplace_add(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "Declination::operator+=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "Declination::operator+=() only supports Declination types");
   return NULL;
 }
 
@@ -1640,7 +1640,7 @@ static PyObject* Declination_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "Declination::operator-=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "Declination::operator-=() only supports Declination types");
   return NULL;
 }
 
@@ -1651,7 +1651,7 @@ static PyObject* Declination_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "Declination::operator*=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "Declination::operator*=() only supports Declination types");
   return NULL;
 }
 
@@ -1662,7 +1662,7 @@ static PyObject* Declination_nb_inplace_divide(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "Declination::operator/=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "Declination::operator/=() only supports Declination types");
   return NULL;
 }
 
@@ -1846,7 +1846,7 @@ static int Cartesian_init(Cartesian* self, PyObject* args, PyObject* kwds) {
       return -1;
 
     } else {
-      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      PyErr_SetString(sCoordsException, "arg0 must be a coords.Cartesian, coords.spherical, int or float");
       return -1;
     }
 
@@ -2157,7 +2157,7 @@ static PyObject* Cartesian_nb_inplace_add(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "Cartesian::operator+=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "Cartesian::operator+=() only supports Cartesian types");
   return NULL;
 }
 
@@ -2167,7 +2167,7 @@ static PyObject* Cartesian_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "Cartesian::operator-=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "Cartesian::operator-=() only supports Cartesian types");
   return NULL;
 }
 
@@ -2182,7 +2182,7 @@ static PyObject* Cartesian_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
     return o1;
   }
 
-  PyErr_SetString(sCoordsException, "Cartesian::operator*=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "Cartesian::operator*=() only supports Cartesian types");
   return NULL;
 
 }
@@ -2196,7 +2196,7 @@ static PyObject* Cartesian_nb_inplace_divide(PyObject* o1, PyObject* o2) {
     return o1;
   }
 
-  PyErr_SetString(sCoordsException, "Cartesian::operator/=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "Cartesian::operator/=() only supports Cartesian types");
   return NULL;
 
 }
@@ -2393,7 +2393,7 @@ static int rotator_init(rotator* self, PyObject* args, PyObject* kwds) {
       return 0;
 
     } else {
-      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      PyErr_SetString(sCoordsException, "arg0 must be a coords.rotator or coords.Cartesian");
       return -1;
     }
 
@@ -2609,7 +2609,7 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
       return -1;
 
     } else {
-      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      PyErr_SetString(sCoordsException, "arg0 must be a coords.spherical, coords.Cartesian, int or float");
       return -1;
     }
 
@@ -2631,7 +2631,7 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
       return -1;
 
     } else {
-      PyErr_SetString(sCoordsException, "unsupported arg1 type");
+      PyErr_SetString(sCoordsException, "arg1 must be a coords.angle, coords.Latitude or coords.Declination");
       return -1;
     }
 
@@ -2648,7 +2648,7 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
       return -1;
 
     } else {
-      PyErr_SetString(sCoordsException, "unsupported arg2 type");
+      PyErr_SetString(sCoordsException, "arg2 must be an angle");
       return -1;
     }
 
@@ -2968,7 +2968,7 @@ static PyObject* spherical_nb_inplace_add(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "Cartesian::operator+=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "spherical::operator+=() only supports spherical types");
   return NULL;
 }
 
@@ -2978,7 +2978,7 @@ static PyObject* spherical_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "spherical::operator-=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "spherical::operator-=() only supports spherical types");
   return NULL;
 }
 
@@ -2992,7 +2992,7 @@ static PyObject* spherical_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
     return o1;
   }
 
-  PyErr_SetString(sCoordsException, "spherical::operator*=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "spherical::operator*=() only supports spherical types");
   return NULL;
 
 }
@@ -3007,7 +3007,7 @@ static PyObject* spherical_nb_inplace_divide(PyObject* o1, PyObject* o2) {
     return o1;
   }
 
-  PyErr_SetString(sCoordsException, "spherical::operator/=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "spherical::operator/=() only supports spherical types");
   return NULL;
 
 }
@@ -3202,7 +3202,7 @@ static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
 
     } else {
 
-      PyErr_SetString(sCoordsException, "unsupported arg0 type");
+      PyErr_SetString(sCoordsException, "arg0 must be a datetime, int or float");
       return -1;
     }
 
@@ -3413,7 +3413,7 @@ static PyObject* datetime_nb_inplace_add(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "datetime::operator+=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "datetime::operator+=() only supports datetime types");
   return NULL;
 }
 
@@ -3424,7 +3424,7 @@ static PyObject* datetime_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
     Py_INCREF(o1);
     return o1;
   }
-  PyErr_SetString(sCoordsException, "datetime::operator-=() called with unsupported type");
+  PyErr_SetString(sCoordsException, "datetime::operator-=() only supports datetime types");
   return NULL;
 }
 
