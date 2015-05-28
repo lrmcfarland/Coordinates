@@ -41,7 +41,7 @@ endif
 
 ifeq ($(UNAME), Linux)
 
-CXX      = g++-4.9 # TODO back g++ when regex is "normal"
+CXX      = g++
 CXXFLAGS = -g -W -Wall -fPIC -I. -std=c++11
 LINK     = g++
 
