@@ -472,6 +472,23 @@ namespace {
     }
   }
 
+  // string w/o seconds
+  TEST(DateTime, StrigsWOSecondsConstructors) {
+    for (int i(0); i < 60; ++i) {
+      std::stringstream a_datetime_string;
+      a_datetime_string << "2014-01-01T00:" << std::setw(2) << std::setfill('0') << i;
+      Coords::DateTime a_datetime(a_datetime_string.str());
+      std::stringstream out;
+      out << a_datetime;
+
+      std::stringstream result;
+      result << a_datetime_string.str() << ":00"; // TODO make idempotent
+      EXPECT_STREQ(result.str().c_str(), out.str().c_str());
+
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
+    }
+  }
+
   // seconds
 
   TEST(DateTime, GoodSecondConstructors) {

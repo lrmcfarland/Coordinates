@@ -41,10 +41,13 @@ const std::string Coords::DateTime::s_ISO8601_format("(-){0,1}(\\d*)-" // year
 						     "(0[1-9]|1[012])-" // month
 						     "(0[1-9]|1\\d|2\\d|3[01])" // day
 						     "T"
-						     "([01]\\d|2[0-3]):" // hour
-						     "([0-5]\\d):" // minute
+						     "([01]\\d|2[0-3])" // hour
+						     ":"
+						     "([0-5]\\d)" // minute
+						     "(:"
 						     "([0-5]\\d(\\.\\d*){0,1})" // second
 						     "(Z|(\\+|-)(0[0-9]|1[012])(\\:){0,1}([0-5]\\d){0,1}){0,1}" // time zone
+						     "){0,1}"
 						     );
 
 const std::regex Coords::DateTime::s_ISO8601_rx(Coords::DateTime::s_ISO8601_format);
@@ -85,26 +88,26 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
 
   m_hour = Coords::stoi(m[5]);
   m_minute = Coords::stoi(m[6]);
-  m_second = Coords::stod(m[7]);
+  m_second = Coords::stod(m[8]);
 
-  if (m[9] == "Z") {
+  if (m[10] == "Z") {
     m_is_zulu = true;
     m_timezone = 0;
 
   } else {
 
-    m_timezone_hh = m[11];
-    m_timezone_mm = m[13];
+    m_timezone_hh = m[12];
+    m_timezone_mm = m[14];
 
-    m_timezone = Coords::stod(m[11]);
+    m_timezone = Coords::stod(m[12]);
 
-    if (m[12] == ":")
+    if (m[13] == ":")
       m_has_timezone_colon = true;
 
-    if (m[13] != "")
-      m_timezone += Coords::stod(m[13])/60.0;
+    if (m[14] != "")
+      m_timezone += Coords::stod(m[14])/60.0;
 
-    if (m[10] == "-")
+    if (m[11] == "-")
       m_timezone *= -1;
 
   }
@@ -649,7 +652,10 @@ void Coords::DateTime2String(const Coords::DateTime& a_datetime, std::stringstre
 	   << "T"
 	   << std::setw(2) << std::setfill('0') << a_hour << ":"
 	   << std::setw(2) << std::setfill('0') << a_minute << ":"
-	   << std::setw(2) << std::setfill('0') << a_second; // TODO needs to set "1.5" to "01.5"
+	   << std::setw(2) << std::setfill('0') << a_second;
+
+  // TODO seconds needs to set "1.5" to "01.5" and are not quite
+  // idempotent. Times with out seconds get :00 added by operator<<()
 
   if (a_datetime.isZulu())
     a_string << "Z";
