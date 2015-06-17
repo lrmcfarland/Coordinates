@@ -24,11 +24,13 @@ to be in /usr/local. See setup.py for details.
 The Boost Python library must be installed before this build will
 work.
 
-#### from homebrew
+
+
+#### On OS X with brew
 
 The easiest way I found to install and maintain boost on OS X is to
 use [homebrew](http://brew.sh). Open the boost-python bottle. The
-python wrappers are not in the boost bottle.
+python wrappers are not in the "regular" boost bottle.
 
 ```
 
@@ -48,6 +50,14 @@ $ brew install boost-python
 
 ```
 
+#### On Ubuntu with apt-get
+
+
+```
+sudo apt-get install libboost-all-dev
+```
+
+
 #### from source
 
 To built and install from the
@@ -65,7 +75,7 @@ sudo ./b2 install
 
 The boost files are now in /usr/local/include/boost and
 /usr/local/lib/libboost_*.  python/Boost/setup.py sets BOOST_ROOT to
-point there.  brew doctor will notice and complain about this.
+point there. On OS X brew doctor will notice and complain about this.
 
 
 ## The Test Environment
@@ -73,14 +83,20 @@ point there.  brew doctor will notice and complain about this.
 The runtime environment expects ../../libCoords to be built.
 
 On OS X, this needs to be on the DYLD_LIBRARY_PATH.
+On Linux, this needs to be on the LD_LIBRARY_PATH.
+
 The PYTHONPATH must contain the boost coords.so.
 
-setenv.sh will use COORDS_ROOT to find these or assume they are
-relative to this directory.
+setenv.sh will detect the platform using uname and set the appropriate
+library path and use COORDS_ORIGIN environment variable to find
+coords.so. If COORDS_ORIGIN is not set, it will assume it is relative
+to this directory.
 
-pylaunch.sh will use setenv.sh to bring up a Python interpreter.
+pylaunch.sh will use setenv.sh to bring up a Python interpreter in
+this environment.
 
-test_coords.sh will run the angle, Cartesian and spherical unit tests.
+test_coords.sh will run the angle, Cartesian, datetime and spherical
+unit tests.
 
 
 ### To test a component

@@ -151,228 +151,32 @@ distance 11.3235 km
 ### Python
 
 
-```
-
-#!/usr/bin/env python
-
-"""Calculates the position of the sun for the given datetime.
-
-http://en.wikipedia.org/wiki/Position_of_the_Sun
-
-
-to calculate:
-    http://www.nrel.gov/docs/fy08osti/34302.pdf
-
-to validate:
-
-    http://www.esrl.noaa.gov/gmd/grad/solcalc/
-
-to run:
-
-$ ./pylaunch.sh SunPosition.py -v -- 37:24 -122:04:57 2015-03-21T12:57:00-08
-
-
-Note: use -- to end options and allow for negative coordinates.
-
-"""
-
-import math
-
-import coords
-
-from Transforms import EclipticEquatorial
-from Transforms import EquatorialHorizon
-from Transforms import GMST
-from Transforms import utils
-
-
-class Error(Exception):
-    pass
-
-
-def SolarLongitude(a_datetime):
-    """Calculate the longitude of the sun for the given date
-
-    from http://en.wikipedia.org/wiki/Position_of_the_Sun
-
-    Args:
-
-    a_datetime: The time of the observation (coords.datetime).
-
-    Returns: the sun's longitude and distance in AU
-    """
-
-    n = a_datetime.toJulianDate() - a_datetime.J2000
-
-    # mean longitude
-    L = coords.angle(280.460 + 0.9856474*n)
-    L.normalize(0, 360)
-
-    # ecliptic longitude
-    g = coords.angle(357.528 + 0.9856003*n)
-    g.normalize(0, 360)
-
-    # ecliptic longitude
-    ecliptic_longitude = coords.angle(L.value + 1.915*math.sin(g.radians) + 0.020*math.sin(2.0*g.radians))
-
-    # distance to sun in AU
-    R = 1.00014 - 0.01671*math.cos(g.radians) - 0.00014*math.cos(2.0*g.radians)
-
-    return ecliptic_longitude, R
-
-
-def SunPosition(a_datetime, an_observer):
-    """Calculate the location of the sun relaive to an observer
-
-    Args:
-
-    a_datetime: The time of the observation (coords.datetime).
-
-    an_observer: The observers location (coords.spherical).
-
-    Returns: the position of the sun (coords.spherical).
-    """
-
-    ecliptic_longitude, R = SolarLongitude(a_datetime)
-
-    sun_ec = coords.spherical(R, coords.angle(90), ecliptic_longitude)
-    sun_eq = EclipticEquatorial.toEquatorial(sun_ec, a_datetime)
-    sun_hz = EquatorialHorizon.toHorizon(sun_eq, an_observer, a_datetime)
-
-    return sun_hz
-
-
-def EquationOfTime(a_datetime):
-    """Calcuate the equation of time
-
-    from http://en.wikipedia.org/wiki/Equation_of_time
-
-    TODO: Only valid at for noon. Rounds to nearest half day.
-
-    Args:
-
-    a_datetime: The time of the observation (coords.datetime).
-
-    Returns: equation of time as a coords angle in degrees. *60 for minutes.
-    """
-
-    noon = coords.datetime()
-    noon.fromJulianDate(math.floor(a_datetime.toJulianDate()))
-    gast = GMST.USNO_C163.GAST(noon)
-
-    ecliptic_longitude, R = SolarLongitude(noon)
-
-    sun_ec = coords.spherical(R, coords.angle(90), ecliptic_longitude)
-    sun_eq = EclipticEquatorial.toEquatorial(sun_ec, noon)
-
-    eot = coords.angle()
-
-    sun_ra = utils.get_RA(sun_eq)
-
-    if gast.value - sun_ra.value < 12:
-        eot.value = gast.value - sun_ra.value
-
-    elif gast.value - sun_ra.value >= 12:
-        eot.value = gast.value - sun_ra.value - 24
-
-    else:
-        raise Error('unsupported EoT case')
-
-    return eot
-
-
-# ================
-# ===== main =====
-# ================
-
-
-if __name__ == '__main__':
-
-    # -------------------------
-    # ----- parse options -----
-    # -------------------------
-
-    import optparse
-
-    defaults = {'isVerbose': False}
-
-    usage = '%prog [options] <latitude> <longitude> <datetime>'
-
-    parser = optparse.OptionParser(usage=usage)
-
-    parser.add_option('-v', '--verbose',
-                      action='store_true', dest='verbose',
-                      default=defaults['isVerbose'],
-                      help='verbose [%default]')
-
-    options, args = parser.parse_args()
-
-    # ----- validate -----
-
-    if len(args) < 3:
-        parser.error('missing object and/or datetime.')
-
-    an_observer = utils.latlon2spherical(a_latitude=utils.parse_angle_arg(args[0]),
-                                         a_longitude=utils.parse_angle_arg(args[1]))
-
-    a_datetime = coords.datetime(args[2])
-
-    # ----------------------------------
-    # ----- calculate sun position -----
-    # ----------------------------------
-
-    # azimuth, altitude
-
-    print 'A datetime: ', a_datetime
-    print 'An observer:', an_observer
-
-    ecliptic_longitude, R = SolarLongitude(a_datetime)
-    print 'Ecliptic longitude:', ecliptic_longitude
-    print 'Distance in AU:', R
-
-    sun_ec = coords.spherical(R, coords.angle(90), ecliptic_longitude)
-    print 'Sun in ecliptic coordinates:\n\t', sun_ec
-
-    sun_eq = EclipticEquatorial.toEquatorial(sun_ec, a_datetime)
-    print 'Sun in equatorial coordinates:\n\t', sun_eq
-
-    sun_hz = EquatorialHorizon.toHorizon(sun_eq, an_observer, a_datetime)
-    print 'Sun in horizon coordinates:\n\t', sun_hz
-
-    print 'Azimuth (degrees):', utils.get_azimuth(sun_hz),
-    print ''.join(('(', str(utils.get_azimuth(sun_hz).value), ')'))
-    print 'Altitude (degrees):', utils.get_altitude(sun_hz),
-    print ''.join(('(', str(utils.get_altitude(sun_hz).value), ')'))
-
-    eot = EquationOfTime(a_datetime)
-
-    print 'Equation of time (minutes):', eot.value * 60
-
-```
+see [SunPosition.py](https://github.com/lrmcfarland/Astronomy/blob/master/Bodies/SunPosition.py)
 
 To run
 
 ```
 
-$ ./pylaunch.sh SunPosition.py -v -- 37:24 -122:04:57 2015-04-24T10:00:00-07
+$ ./pylaunch.sh SunPosition.py -v -- 37:24 -122:04:57 2015-06-20T09:00:00-07
 # COORDS_ROOT not set. Using ..
 # coords.so: ../Coordinates/Python/Manual/build/lib.macosx-10.10-intel-2.7/coords.so
 # DYLD_LIBRARY_PATH :../Coordinates/libCoords
 # PYTHONPATH :../Coordinates/Python/Manual/build/lib.macosx-10.10-intel-2.7:..
 
-A datetime:  2015-04-24T10:00:00-07
+A datetime:  2015-06-20T09:00:00-07 (2457193.58333)
 An observer: <spherical><r>1</r><theta>52.6</theta><phi>-122.0825</phi></spherical>
-Ecliptic longitude: 33:37:59.2735
-Distance in AU: 1.00559097002
-Sun in ecliptic coordinates:
-	<spherical><r>1.00559097002</r><theta>90</theta><phi>33.6331315168</phi></spherical>
-Sun in equatorial coordinates:
-	<spherical><r>1.00559097002</r><theta>77.2733216974</theta><phi>31.3977138404</phi></spherical>
-Sun in horizon coordinates:
-	<spherical><r>1</r><theta>48.2602377782</theta><phi>108.089661148</phi></spherical>
-Azimuth (degrees): 108:05:22.7801 (108.089661148)
-Altitude (degrees): 41:44:23.144 (41.7397622218)
-Equation of time (minutes): 1.61885019052
-
+Ecliptic longitude: 88:27:51.4396
+Distance in AU: 1.01614270588
+Obliquity of the ecliptic: 23:26:14.2101
+Sun in ecliptic coordinates: <spherical><r>1.01614270588</r><theta>90</theta><phi>88.4642887862</phi></spherical>
+Sun in equatorial coordinates: <spherical><r>1.01614270588</r><theta>66.5716406896</theta><phi>88.3262683622</phi></spherical>
+Sun in horizon coordinates: <spherical><r>1</r><theta>54.6345463459</theta><phi>85.9229363769</phi></spherical>
+Solar Declination: 23:25:42.0935 (23.4283593104)
+Equation of time (minutes): -1.28859183158
+Azimuth (degrees): 85:55:22.571 (85.9229363769)
+Altitude (degrees): 35:21:55.6332 (35.3654536541)
+Rising : 2015-06-20T05:47:49.1767-07
+Transit: 2015-06-20T13:10:4.5581-07
+Setting: 2015-06-20T20:32:19.9395-07
 
 ```

@@ -10,6 +10,13 @@ There are some differences from the [Boost](../Boost) version that
 I am looking into as I learn more about extending Python.
 
 
+## TODO
+
+There is a problem with coords.cpp on Ubuntu I am working on.  The
+compiler complains about a closure error and there is a segmentation
+violation in the datetime unittest.
+
+
 ## To Build
 
 The build is done using make on the command line. There are targets
@@ -24,15 +31,22 @@ setup.py expects to find libCoords.dylib in ../../libCoords
 
 The runtime environment expects ../../libCoords to be built.
 
+
 On OS X, this needs to be on the DYLD_LIBRARY_PATH.
+On Linux, this needs to be on the LD_LIBRARY_PATH.
+
 The PYTHONPATH must contain the boost coords.so.
 
-setenv.sh will use COORDS_ROOT to find these or assume they are
-relative to this directory.
+setenv.sh will detect the platform using uname and set the appropriate
+library path and use COORDS_ORIGIN environment variable to find
+coords.so. If COORDS_ORIGIN is not set, it will assume it is relative
+to this directory.
 
-pylaunch.sh will use setenv.sh to bring up a Python interpreter.
+pylaunch.sh will use setenv.sh to bring up a Python interpreter in
+this environment.
 
-test_coords.sh will run the angle, Cartesian and spherical unit tests.
+test_coords.sh will run the angle, Cartesian, datetime and spherical
+unit tests.
 
 
 ### To test a component
