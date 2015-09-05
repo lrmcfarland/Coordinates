@@ -22,7 +22,11 @@ To build the test suite you will need gtest.
 ### [googletest](https://code.google.com/p/googletest/)
 
 The C++ library uses [googletest](https://code.google.com/p/googletest/) to
-run the unit tests. I have downloaded and built it in /usr/local using
+run the unit tests.
+
+There is a yum package for Linux installs.
+
+On OS X I have downloaded and built it in /usr/local using
 these instructions from the gtest README:
 
 ```
@@ -54,6 +58,15 @@ After adding Xcode and gtest (as above) I was able to build libCoords
 on Mavericks and Yosemite with out any additional tools.
 
 ### On Linux
+
+There are some issues with std::regex and the g++4.8 compilers that
+come with CentOS 6.5. To work around this for now, I have options
+to use the boost library in the Makefile and python setup.py files.
+
+Use yum to install boost-devel.
+
+
+#### std::regex
 
 At this time (2014-12-21), to build on ubuntu I needed to upgrade to
 the g++-4.9 to get the regex library for datetime.

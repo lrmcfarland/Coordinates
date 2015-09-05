@@ -1,18 +1,40 @@
-"""Creats python wrappers from boost macro
+"""Creates python wrappers from boost macro
 
-ASSUMES: ../../libCoords exists and /usr/local/[include,lib] has boost installed.
+from http://docs.python.org/extending/building.html
+
+ASSUMES: ../../libCoords exists and has boost installed (in
+/usr/local/[include,lib] on OS X and in /usr/lib64 for Linux)
+
 """
+
+import platform
+import sys
 
 from distutils.core import setup, Extension
 
 name = 'coords'
 version = '1.0'
-BOOST_ROOT = '/usr/local'
+description = 'coords package'
 
-include_dirs=['../../libCoords', BOOST_ROOT + '/include']
-library_dirs=['../../libCoords', BOOST_ROOT + '/lib']
-libraries = ['boost_python', 'Coords']
-sources = ['coords.cpp']
+if platform.system() == 'Darwin':
+
+    BOOST_ROOT = '/usr/local'
+    include_dirs = ['../../libCoords', BOOST_ROOT + '/include']
+    library_dirs = ['../../libCoords', BOOST_ROOT + '/lib']
+    libraries = ['boost_python', 'Coords']
+    sources = ['coords.cpp']
+
+elif platform.system() == 'Linux':
+    # TODO more Linux specific, e.g. CentOS vs. Ubuntu?
+
+    include_dirs = ['../../libCoords']
+    library_dirs = ['../../libCoords', '/usr/lib64']
+    libraries = ['boost_python', 'boost_regex', 'Coords']
+    sources = ['coords.cpp']
+
+else:
+    print 'unsupported platform:', platform.system()
+    sys.exit(1)
 
 coords_module = Extension(name,
                           include_dirs=include_dirs,
@@ -22,5 +44,5 @@ coords_module = Extension(name,
 
 setup (name=name,
        version=version,
-       description='coords package',
+       description=description,
        ext_modules=[coords_module])

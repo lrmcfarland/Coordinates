@@ -25,6 +25,7 @@ libCoords/spherical_unittest
 
 libCoords/example1
 libCoords/mepsilon
+libCoords/regex_test
 
 # Boost
 Python/Boost/build

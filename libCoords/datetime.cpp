@@ -49,8 +49,11 @@ const std::string Coords::DateTime::s_ISO8601_format("(-){0,1}(\\d*)-" // year
 						     "(Z|(\\+|-)(0[0-9]|1[012])(\\:){0,1}([0-5]\\d){0,1}){0,1}" // time zone
 						     "){0,1}"
 						     );
-
+#if BOOST_REGEX
+const boost::regex Coords::DateTime::s_ISO8601_rx(Coords::DateTime::s_ISO8601_format);
+#else
 const std::regex Coords::DateTime::s_ISO8601_rx(Coords::DateTime::s_ISO8601_format);
+#endif
 
 const long int Coords::DateTime::s_gDateNRC(15+31L*(10+12L*1582));
 const double Coords::DateTime::s_LilianDate(2299160.5);
@@ -64,9 +67,14 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
     m_is_zulu(false), m_has_timezone_colon(false), m_timezone(0), m_is_leap_year(false)
 {
 
-  std::smatch m;
 
-  if (!regex_match(an_iso8601_time, m, s_ISO8601_rx)) {
+#if BOOST_REGEX
+  boost::smatch m;
+  if (!boost::regex_match(an_iso8601_time, m, s_ISO8601_rx)) {
+#else
+  std::smatch m;
+  if (!std::regex_match(an_iso8601_time, m, s_ISO8601_rx)) {
+#endif
     std::stringstream emsg;
     emsg << an_iso8601_time << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
     throw Coords::Error(emsg.str());

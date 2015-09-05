@@ -24,7 +24,9 @@ CXX      = clang++
 CXXFLAGS = -g -W -Wall -fPIC -I. -std=c++11
 LINK     = clang++
 
+LDFLAGS  = -L. -lCoords
 GTEST_LIBS = -L$(GTEST_DIR) -lgtest
+
 
 DYLFLAGS  = -headerpad_max_install_names -single_module -dynamiclib -compatibility_version 1.0 -current_version 1.0.0 -install_name libCoords.1.dylib
 
@@ -42,8 +44,9 @@ endif
 ifeq ($(UNAME), Linux)
 
 CXX      = g++
-CXXFLAGS = -g -W -Wall -fPIC -I. -std=c++11
+CXXFLAGS = -g -W -Wall -fPIC -I. -D BOOST_REGEX
 LINK     = g++
+LDFLAGS  = -L. -lCoords -lboost_regex
 
 GTEST_LIBS = -L$(GTEST_DIR) -lgtest -lpthread
 
@@ -93,35 +96,44 @@ test: angle_unittest Cartesian_unittest datetime_unittest spherical_unittest
 
 
 angle_unittest: angle_unittest.o $(TARGET_A) $(TARGET_D)
-	$(CXX) angle_unittest.o -L. -lCoords $(GTEST_LIBS) -o angle_unittest
+	$(CXX) angle_unittest.o -o angle_unittest $(LDFLAGS) $(GTEST_LIBS)
 
 angle_unittest.o: angle_unittest.cpp
 	$(CXX) -I$(GTEST_DIR)/include -I. -g -c angle_unittest.cpp
 
+
 Cartesian_unittest: Cartesian_unittest.o $(TARGET_A) $(TARGET_D)
-	$(CXX) Cartesian_unittest.o -L. -lCoords $(GTEST_LIBS) -o Cartesian_unittest
+	$(CXX) Cartesian_unittest.o -o Cartesian_unittest $(LDFLAGS) $(GTEST_LIBS)
 
 Cartesian_unittest.o: Cartesian_unittest.cpp
 	$(CXX) -std=c++11 -I$(GTEST_DIR)/include -I. -g -c Cartesian_unittest.cpp
 
+
 datetime_unittest: datetime_unittest.o $(TARGET_A) $(TARGET_D)
-	$(CXX) datetime_unittest.o -L. -lCoords $(GTEST_LIBS) -o datetime_unittest
+	$(CXX) datetime_unittest.o -o datetime_unittest $(LDFLAGS) $(GTEST_LIBS)
 
 datetime_unittest.o: datetime_unittest.cpp
 	$(CXX) -std=c++11 -I$(GTEST_DIR)/include -I. -g -c datetime_unittest.cpp
 
+
 spherical_unittest: spherical_unittest.o $(TARGET_A) $(TARGET_D)
-	$(CXX) spherical_unittest.o -L. -lCoords $(GTEST_LIBS) -o spherical_unittest
+	$(CXX) spherical_unittest.o -o spherical_unittest $(LDFLAGS) $(GTEST_LIBS)
 
 spherical_unittest.o: spherical_unittest.cpp
 	$(CXX) -std=c++11 -I$(GTEST_DIR)/include -I . -g -c spherical_unittest.cpp
 
 
 example1: example1.o $(TARGET_A) $(TARGET_D)
-	$(CXX) example1.o -o example1 -L. -lCoords
+	$(CXX) example1.o -o example1 $(LDFLAGS)
+
 
 mepsilon: mepsilon.c
 	gcc mepsilon.c -o mepsilon
+
+
+regex_test: regex_test.o
+	$(CXX) regex_test.o -o regex_test $(LDFLAGS)
+
 
 clean:
 	-$(RM) angle_unittest
@@ -134,6 +146,8 @@ clean:
 	-$(RM) spherical_unittest.o
 	-$(RM) mepsilon
 	-$(RM) mepsilon.o
+	-$(RM) regex_test
+	-$(RM) regex_test.o
 	-$(RM) example1
 	-$(RM) example1.o
 	-$(RM) $(OBJECTS)
