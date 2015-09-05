@@ -4,8 +4,10 @@ This directory contains the Boost generated Python wrappers for the C++
 classes in ../../libCoords. coords.cpp contains the Boost macros that
 are used to generate the wrappers. setup.py builds them.
 
-There are some differences from the [Manual](../Manual) version that
-I am looking into as I learn more about Boost.
+There are some differences from the [Boost](../Boost) version,
+like not having a __repr__ and being able to create conversion
+constructors. The latter are not typical in python, but I was
+able to make it work in coords.cpp with the Manual wrappers.
 
 
 ## To Build
@@ -23,7 +25,6 @@ to be in /usr/local. See setup.py for details.
 
 The Boost Python library must be installed before this build will
 work.
-
 
 
 #### On OS X with brew
@@ -49,6 +50,14 @@ $ brew install boost-python
 
 
 ```
+
+#### On CentOS with yum
+
+```
+sudo yum install boost-devel
+```
+
+
 
 #### On Ubuntu with apt-get
 

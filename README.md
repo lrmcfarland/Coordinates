@@ -49,17 +49,24 @@ in [Python/Boost](Python/Boost/README.md).
 
 ### OS X
 
-I built this on my iMac using the g++ compiler that comes with
-[Xcode](https://developer.apple.com/xcode/).
+I built this on my iMac using the [LLVM](http://llvm.org) compiler
+that comes with [Xcode](https://developer.apple.com/xcode/).
+Since this has an implementation of std::regex, I used that first.
+I only used boost for the boost python wrappers.
+Later, I added boost regex to support Linux with GCC 4.8 compilers.
+
+After installing Xcode from Apple, use [homebrew](http://brew.sh)
+to install boost.
 
 ### Linux
 
-On ubuntu I needed to upgrade to the g++-4.9 to get the regex library
-for datetime. Details on this can be found
-[libCoords/README.md](libCoords/README.md)
+The current (2015) CentOS and other Linux releases are using GCC 4.8
+which has the prototype std::regex that throws regex_error on
+my std::regex tests. I experimented with upgrading to GCC 4.9, but
+had linking problems later on. To work around this I use the boost
+regex libraries.
 
-TODO: I am still working on how to make the Boost and Manual Python setup.py
-use this instead of the default g++ compiler.
+Use yum to install boost-devel.
 
 
 ## To Build

@@ -4,23 +4,18 @@ This directory contains my "manually" [extended Python
 wrappers](http://docs.python.org/extending/newtypes.html) for the C++
 classes in ../../libCoords. coords.cpp contains the [Python/C
 API](http://docs.python.org/c-api) calls that make up the
-Python wrappers.
+Python wrappers. setup.py builds them.
 
-There are some differences from the [Boost](../Boost) version that
-I am looking into as I learn more about extending Python.
-
-
-## TODO
-
-There is a problem with coords.cpp on Ubuntu I am working on.  The
-compiler complains about a closure error and there is a segmentation
-violation in the datetime unittest.
+There are some differences from the [Boost](../Boost) version,
+like not having a __repr__ and being able to create conversion
+constructors. The latter are not typical in python, but I was
+able to make it work in coords.cpp with the Manual wrappers.
 
 
 ## To Build
 
 The build is done using make on the command line. There are targets
-for clean and test. See the Makefile for details.
+for clean and test. See the [Makefile](Makefile) for details.
 
 This Makefile will not build ../../libCoords. That must be done before this.
 
@@ -30,7 +25,6 @@ setup.py expects to find libCoords.dylib in ../../libCoords
 ## The Test Environment
 
 The runtime environment expects ../../libCoords to be built.
-
 
 On OS X, this needs to be on the DYLD_LIBRARY_PATH.
 On Linux, this needs to be on the LD_LIBRARY_PATH.
