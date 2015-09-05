@@ -42,8 +42,9 @@ endif
 ifeq ($(UNAME), Linux)
 
 CXX      = g++
-CXXFLAGS = -g -W -Wall -fPIC -I. -std=c++11
+CXXFLAGS = -g -W -Wall -fPIC -I. -D BOOST_REGEX
 LINK     = g++
+LDFLAGS  = -lboost_regex
 
 GTEST_LIBS = -L$(GTEST_DIR) -lgtest -lpthread
 
@@ -120,8 +121,14 @@ spherical_unittest.o: spherical_unittest.cpp
 example1: example1.o $(TARGET_A) $(TARGET_D)
 	$(CXX) example1.o -o example1 -L. -lCoords
 
+
 mepsilon: mepsilon.c
 	gcc mepsilon.c -o mepsilon
+
+
+regex_test: regex_test.o
+	$(CXX) regex_test.o -o regex_test $(LDFLAGS)
+
 
 clean:
 	-$(RM) angle_unittest
@@ -134,6 +141,8 @@ clean:
 	-$(RM) spherical_unittest.o
 	-$(RM) mepsilon
 	-$(RM) mepsilon.o
+	-$(RM) regex_test
+	-$(RM) regex_test.o
 	-$(RM) example1
 	-$(RM) example1.o
 	-$(RM) $(OBJECTS)
