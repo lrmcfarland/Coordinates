@@ -25,7 +25,12 @@
 
 #pragma once
 
+
+#if BOOST_REGEX
+#include <boost/regex.hpp>
+#else
 #include <regex>
+#endif
 
 #include <utils.h>
 
@@ -40,7 +45,12 @@ namespace Coords {
   public:
 
     static const std::string s_ISO8601_format;
+
+#if BOOST_REGEX
+    static const boost::regex  s_ISO8601_rx;
+#else
     static const std::regex  s_ISO8601_rx;
+#endif
 
     static const long int s_gDateNRC; // used in NRC Julian Date calculations.
 
