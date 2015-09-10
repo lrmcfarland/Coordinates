@@ -223,7 +223,7 @@ class TestAngle(unittest.TestCase):
             an_angle = coords.angle()
             an_angle.value = 'foo'
             self.assertRaises(False) # correct behavior skips this
-        except RuntimeError, err:
+        except RuntimeError as err:
             self.assertTrue(RuntimeError == type(err))
 
 
@@ -241,7 +241,7 @@ class TestAngle(unittest.TestCase):
             an_angle = coords.angle()
             an_angle.radians = 'foo'
             self.assertRaises(False) # correct behavior skips this
-        except RuntimeError, err:
+        except RuntimeError as err:
             self.assertTrue(RuntimeError == type(err))
 
     # operators
@@ -407,7 +407,7 @@ class TestLatitude(unittest.TestCase):
         try:
             a_latitude = coords.latitude(100)
             self.assertRaises(False) # correct behavior skips this
-        except RuntimeError, err:
+        except RuntimeError as err:
             self.assertTrue(RuntimeError == type(err))
 
 
@@ -416,7 +416,7 @@ class TestLatitude(unittest.TestCase):
         try:
             a_latitude = coords.latitude(-100)
             self.assertRaises(False) # correct behavior skips this
-        except RuntimeError, err:
+        except RuntimeError as err:
             self.assertTrue(RuntimeError == type(err))
 
 
@@ -472,7 +472,7 @@ class TestDeclination(unittest.TestCase):
         try:
             a_declination = coords.declination(100)
             self.assertRaises(False) # correct behavior skips this
-        except RuntimeError, err:
+        except RuntimeError as err:
             self.assertTrue(RuntimeError == type(err))
 
 
@@ -481,7 +481,7 @@ class TestDeclination(unittest.TestCase):
         try:
             a_declination = coords.declination(-100)
             self.assertRaises(False) # correct behavior skips this
-        except RuntimeError, err:
+        except RuntimeError as err:
             self.assertTrue(RuntimeError == type(err))
 
 

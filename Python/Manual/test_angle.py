@@ -217,7 +217,7 @@ class TestAngle(unittest.TestCase):
             an_angle = coords.angle()
             an_angle.value = 'foo'
             self.assertRaises(False) # correct behavior skips this
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
 
@@ -234,7 +234,7 @@ class TestAngle(unittest.TestCase):
             an_angle = coords.angle()
             an_angle.radians = 'foo'
             self.assertRaises(False) # correct behavior skips this
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     # operators
@@ -253,7 +253,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a1 += 'asdf'
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_inplace_plus_exception_double(self):
@@ -261,7 +261,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a1 += 30.0
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_angle_plus_angle(self):
@@ -276,7 +276,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = a1 + 'asdf'
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     def test_string_plus_angle_exception(self):
@@ -284,7 +284,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = 'asdf' + a1
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     def test_angle_plus_double_exception(self):
@@ -292,7 +292,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = a1 + 24.5
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     def test_double_plus_angle_exception(self):
@@ -300,7 +300,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = 24.5 + a1
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     # subtract
@@ -317,7 +317,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a1 -= 'asdf'
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_inplace_minus_exception_double(self):
@@ -325,7 +325,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a1 -= 30.0
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_angle_minus_angle(self):
@@ -341,7 +341,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = a1 - 'asdf'
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     def test_string_minus_angle_exception(self):
@@ -349,7 +349,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = 'asdf' - a1
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     def test_angle_minus_double_exception(self):
@@ -357,7 +357,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = a1 - 24.5
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     def test_double_minus_angle_exception(self):
@@ -365,7 +365,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = 24.5 - a1
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     # unary minus
@@ -390,7 +390,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a1 *= 'asdf'
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_inplace_multiply_exception_double(self):
@@ -398,7 +398,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a1 *= 30.0
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_angle_multiply_angle(self):
@@ -413,7 +413,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = a1 * 'asdf'
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     def test_string_multiply_angle_exception(self):
@@ -421,7 +421,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = 'asdf' * a1
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     def test_angle_multiply_double_exception(self):
@@ -429,7 +429,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = a1 * 24.5
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     def test_double_multiply_angle_exception(self):
@@ -437,7 +437,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = 24.5 * a1
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     # divide
@@ -454,7 +454,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a1 /= 'asdf'
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_inplace_divide_exception_double(self):
@@ -462,7 +462,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a1 /= 30.0
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_angle_divide_angle(self):
@@ -477,7 +477,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = a1 / 'asdf'
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     def test_string_divide_angle_exception(self):
@@ -485,7 +485,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = 'asdf' / a1
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     def test_angle_divide_double_exception(self):
@@ -493,7 +493,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = a1 / 24.5
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     def test_double_divide_angle_exception(self):
@@ -501,7 +501,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a3 = 24.5 / a1
-        except TypeError, err:
+        except TypeError as err:
             self.assertTrue(TypeError == type(err))
 
     # divide by zero
@@ -586,7 +586,7 @@ class TestLatitude(unittest.TestCase):
         try:
             a_latitude = coords.latitude(100)
             self.assertRaises(False) # correct behavior skips this
-        except RuntimeError, err:
+        except RuntimeError as err:
             self.assertTrue(RuntimeError == type(err))
 
 
@@ -595,7 +595,7 @@ class TestLatitude(unittest.TestCase):
         try:
             a_latitude = coords.latitude(-100)
             self.assertRaises(False) # correct behavior skips this
-        except RuntimeError, err:
+        except RuntimeError as err:
             self.assertTrue(RuntimeError == type(err))
 
 
@@ -653,7 +653,7 @@ class TestDeclination(unittest.TestCase):
         try:
             a_declination = coords.declination(100)
             self.assertRaises(False) # correct behavior skips this
-        except RuntimeError, err:
+        except RuntimeError as err:
             self.assertTrue(RuntimeError == type(err))
 
 
@@ -662,7 +662,7 @@ class TestDeclination(unittest.TestCase):
         try:
             a_declination = coords.declination(-100)
             self.assertRaises(False) # correct behavior skips this
-        except RuntimeError, err:
+        except RuntimeError as err:
             self.assertTrue(RuntimeError == type(err))
 
 

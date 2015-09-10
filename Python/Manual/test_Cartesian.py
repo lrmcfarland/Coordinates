@@ -252,7 +252,7 @@ class TestCartesian(unittest.TestCase):
         a1 = coords.Cartesian()
         try:
             a1 += 'asdf'
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
 
@@ -286,7 +286,7 @@ class TestCartesian(unittest.TestCase):
         a1 = coords.Cartesian()
         try:
             a1 -= 'asdf'
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_space_minus_space(self):
@@ -329,7 +329,7 @@ class TestCartesian(unittest.TestCase):
         a = self.p1
         try:
             a *= self.p2
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_inplace_multiply_by_string_exception(self):
@@ -338,7 +338,7 @@ class TestCartesian(unittest.TestCase):
         a = self.p1
         try:
             a *= 'asdf'
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
 
@@ -383,7 +383,7 @@ class TestCartesian(unittest.TestCase):
         a = self.p1
         try:
             a /= self.p2
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_inplace_divide_by_string_exception(self):
@@ -392,7 +392,7 @@ class TestCartesian(unittest.TestCase):
         a = self.p1
         try:
             a /= 'asdf'
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_divide(self):

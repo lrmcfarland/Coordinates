@@ -179,7 +179,7 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime('1962-07-10T07:30:00+05:00')
         try:
             a += 'asdf'
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_operator_inplace_plus_exception_datetime(self):
@@ -188,7 +188,7 @@ class TestDateTime(unittest.TestCase):
         b = coords.datetime('1962-07-10T07:30:00+05:00')
         try:
             a += b
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_datetime_plus_datetime_1(self):
@@ -219,7 +219,7 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime(a_date_string)
         try:
             a -= 'asdf'
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_operator_inplace_minus_exception_datetime(self):
@@ -228,7 +228,7 @@ class TestDateTime(unittest.TestCase):
         b = coords.datetime('1962-07-10T07:30:00+05:00')
         try:
             a -= b
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_datetime_minus_datetime_1(self):

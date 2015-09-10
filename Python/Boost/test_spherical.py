@@ -135,7 +135,7 @@ class TestSpherical(unittest.TestCase):
             a1 = coords.spherical()
             a1.theta = 1.23
             self.assertTrue(False) # correct behavior skips this line
-        except Boost.Python.ArgumentError, err:
+        except Boost.Python.ArgumentError as err:
             self.assertTrue(RuntimeError == type(err))
 
 
@@ -147,7 +147,7 @@ class TestSpherical(unittest.TestCase):
             a1 = coords.spherical()
             a1.phi = 1.23
             self.assertTrue(False) # correct behavior skips this line
-        except ArgumentError, err:
+        except ArgumentError as err:
             self.assertTrue(RuntimeError == type(err))
 
 

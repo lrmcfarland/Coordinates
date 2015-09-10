@@ -133,7 +133,7 @@ class TestSpherical(unittest.TestCase):
             a1 = coords.spherical()
             a1.theta = 1.23
             self.assertTrue(False) # correct behavior skips this line
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
 
@@ -144,7 +144,7 @@ class TestSpherical(unittest.TestCase):
             a1 = coords.spherical()
             a1.phi = 1.23
             self.assertTrue(False) # correct behavior skips this line
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
 
@@ -262,7 +262,7 @@ class TestSpherical(unittest.TestCase):
         a1 = coords.spherical()
         try:
             a1 += 'asdf'
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
 
@@ -301,7 +301,7 @@ class TestSpherical(unittest.TestCase):
         a1 = coords.spherical()
         try:
             a1 -= 'asdf'
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_space_minus_space(self):
@@ -346,7 +346,7 @@ class TestSpherical(unittest.TestCase):
         a = coords.spherical(0.5, coords.angle(1), coords.angle(1))
         try:
             a *= self.p2
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
 
@@ -356,7 +356,7 @@ class TestSpherical(unittest.TestCase):
         a = coords.spherical(0.5, coords.angle(1), coords.angle(1))
         try:
             a *= 'asdf'
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_space_multiply_by_double(self):
@@ -390,7 +390,7 @@ class TestSpherical(unittest.TestCase):
         """Test inplace divide (scale)"""
         try:
             self.p1 /= self.p2
-        except coords.Error, err:
+        except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
     def test_divide(self):
