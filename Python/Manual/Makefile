@@ -8,6 +8,8 @@
 # Detect operating system flavor.
 UNAME   := $(shell uname)
 
+# VERBOSE="-v"
+
 # ----------------
 # ----- OS X -----
 # ----------------
@@ -47,8 +49,20 @@ build: coords.cpp setup.py
 
 # this fails on with a datetime seg fault. datetime compile warnings about closure?
 
-test: build test_angle.py # test_Cartesian.py test_spherical.py
-	./test_coords.sh -v
+test: build test_angle test_Cartesian test_datetime test_spherical
+
+test_angle: test_angle.py
+	. ./setenv.sh; python ./test_angle.py $(VERBOSE)
+
+test_Cartesian: test_Cartesian.py
+	. ./setenv.sh; python ./test_Cartesian.py $(VERBOSE)
+
+test_datetime: test_datetime.py
+	. ./setenv.sh; python ./test_datetime.py $(VERBOSE)
+
+test_spherical: test_spherical.py
+	. ./setenv.sh; python ./test_spherical.py $(VERBOSE)
+
 
 clean:
 	-$(RM) -r build

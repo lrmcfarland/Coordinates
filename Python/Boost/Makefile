@@ -1,12 +1,14 @@
 # ===============================================================
 # Filename:    Makefile
-# Description: Makefile to run build, test commands
+# Description: makefile to run build, test commands
 # Author:      L.R. McFarland
-# Created:     2014 Nov 13
+# Created:     2014 Nov 21
 # ===============================================================
 
 # Detect operating system flavor.
 UNAME   := $(shell uname)
+
+# VERBOSE="-v"
 
 # ----------------
 # ----- OS X -----
@@ -42,11 +44,25 @@ RM = rm -f
 
 all: build
 
-build: setup.py coords.cpp
+build: coords.cpp setup.py
 	${OSFLAGS} python setup.py build
 
-test: build test_angle.py test_Cartesian.py test_spherical.py
-	./test_coords.sh -v
+# this fails on with a datetime seg fault. datetime compile warnings about closure?
+
+test: build test_angle test_Cartesian test_datetime test_spherical
+
+test_angle: test_angle.py
+	. ./setenv.sh; python ./test_angle.py $(VERBOSE)
+
+test_Cartesian: test_Cartesian.py
+	. ./setenv.sh; python ./test_Cartesian.py $(VERBOSE)
+
+test_datetime: test_datetime.py
+	. ./setenv.sh; python ./test_datetime.py $(VERBOSE)
+
+test_spherical: test_spherical.py
+	. ./setenv.sh; python ./test_spherical.py $(VERBOSE)
+
 
 clean:
 	-$(RM) -r build

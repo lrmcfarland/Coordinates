@@ -25,8 +25,9 @@ CXXFLAGS = -g -W -Wall -fPIC -I. -std=c++11
 LINK     = clang++
 
 LDFLAGS  = -L. -lCoords
-GTEST_LIBS = -L$(GTEST_DIR) -lgtest
 
+GTEST_LIBS = -L$(GTEST_DIR) -lgtest
+GTEST_FLAGS = -std=c++11 -I$(GTEST_DIR)/include -I. -g -c
 
 DYLFLAGS  = -headerpad_max_install_names -single_module -dynamiclib -compatibility_version 1.0 -current_version 1.0.0 -install_name libCoords.1.dylib
 
@@ -48,7 +49,8 @@ CXXFLAGS = -g -W -Wall -fPIC -I. -D BOOST_REGEX
 LINK     = g++
 LDFLAGS  = -L. -lCoords -lboost_regex
 
-GTEST_LIBS = -L$(GTEST_DIR) -lgtest -lpthread
+GTEST_LIBS = -lgtest -lpthread
+GTEST_FLAGS = -std=c++11 -I. -g -c
 
 endif
 
@@ -98,29 +100,30 @@ test: angle_unittest Cartesian_unittest datetime_unittest spherical_unittest
 angle_unittest: angle_unittest.o $(TARGET_A) $(TARGET_D)
 	$(CXX) angle_unittest.o -o angle_unittest $(LDFLAGS) $(GTEST_LIBS)
 
+# TODO: make rule for this?
 angle_unittest.o: angle_unittest.cpp
-	$(CXX) -I$(GTEST_DIR)/include -I. -g -c angle_unittest.cpp
+	$(CXX) $(GTEST_FLAGS) angle_unittest.cpp
 
 
 Cartesian_unittest: Cartesian_unittest.o $(TARGET_A) $(TARGET_D)
 	$(CXX) Cartesian_unittest.o -o Cartesian_unittest $(LDFLAGS) $(GTEST_LIBS)
 
 Cartesian_unittest.o: Cartesian_unittest.cpp
-	$(CXX) -std=c++11 -I$(GTEST_DIR)/include -I. -g -c Cartesian_unittest.cpp
+	$(CXX) $(GTEST_FLAGS) Cartesian_unittest.cpp
 
 
 datetime_unittest: datetime_unittest.o $(TARGET_A) $(TARGET_D)
 	$(CXX) datetime_unittest.o -o datetime_unittest $(LDFLAGS) $(GTEST_LIBS)
 
 datetime_unittest.o: datetime_unittest.cpp
-	$(CXX) -std=c++11 -I$(GTEST_DIR)/include -I. -g -c datetime_unittest.cpp
+	$(CXX) $(GTEST_FLAGS) datetime_unittest.cpp
 
 
 spherical_unittest: spherical_unittest.o $(TARGET_A) $(TARGET_D)
 	$(CXX) spherical_unittest.o -o spherical_unittest $(LDFLAGS) $(GTEST_LIBS)
 
 spherical_unittest.o: spherical_unittest.cpp
-	$(CXX) -std=c++11 -I$(GTEST_DIR)/include -I . -g -c spherical_unittest.cpp
+	$(CXX) $(GTEST_FLAGS) spherical_unittest.cpp
 
 
 example1: example1.o $(TARGET_A) $(TARGET_D)

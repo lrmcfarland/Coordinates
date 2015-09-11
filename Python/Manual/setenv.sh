@@ -1,35 +1,38 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #
-# Shell wrapper to set up OS X python environment
+# This is a shell wrapper to set up the Manual Python environment.
 #
-# TODO: add linux support
 #
 
-# -----------------------
-# ----- Coords root -----
-# -----------------------
+. ../../bin/utils.sh
 
-if [ -n "$COORDS_ROOT" ]; then
-    echo "# COORDS_ROOT is" $COORDS_ROOT
-else
-    COORDS_ROOT=../..
-    echo "# COORDS_ROOT not set. Using" $COORDS_ROOT
-fi
+COORDS_ROOT=$(find_coords_root ../.. )
+COORDS_LIBRARY_PATH=${COORDS_ROOT}/libCoords
 
 # ----------------------------
 # ----- set library path -----
 # ----------------------------
 
-CARTESIAN_LIBRARY_PATH=${COORDS_ROOT}/libCoords
-export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${CARTESIAN_LIBRARY_PATH}
+platform=`uname`
+
+if [[ "$platform" == 'Darwin' ]]; then
+
+    export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${COORDS_LIBRARY_PATH}
+
+elif [[ "$platform" == 'Linux' ]]; then
+
+    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${COORDS_LIBRARY_PATH}
+
+else
+    echo "unsupported platform"
+    exit 1
+fi
 
 # ---------------------------
 # ----- set python path -----
 # ---------------------------
 
-COORDS_PYTHON_ROOT=Python/Manual # TODO remove duplication with Boost
-
-COORDS_SO=`find ${COORDS_ROOT}/${COORDS_PYTHON_ROOT} -name coords.so`
+COORDS_SO=`find . -name coords.so`
 
 if [ -n "$COORDS_SO" ]; then
     echo "# coords.so:" $COORDS_SO
@@ -43,8 +46,4 @@ fi
 # ----- echo result -----
 # -----------------------
 
-echo '# DYLD_LIBRARY_PATH' ${DYLD_LIBRARY_PATH}
 echo '# PYTHONPATH' ${PYTHONPATH}
-echo  # linefeed
-
-# EoF
