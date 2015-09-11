@@ -5,10 +5,9 @@ classes in ../../libCoords. coords.cpp contains the Boost macros that
 are used to generate the wrappers. setup.py builds them.
 
 There are some differences from the [Boost](../Boost) version,
-like not having a __repr__ and being able to create conversion
-constructors. The latter are not typical in python, but I was
-able to make it work in coords.cpp with the Manual wrappers.
-
+like not having a coords.Error exception but using RuntimeError
+instead. The static unit vectors have also moved from coords.Ux
+to coords.Cartesian.Ux. Similarly for Uy, Uz, and Uo.
 
 ## To Build
 
