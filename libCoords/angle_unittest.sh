@@ -1,8 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #
 # Shell wrapper to set up gtest environment
 #
-# TODO: add linux support
 #
 
 . ./setenv.sh

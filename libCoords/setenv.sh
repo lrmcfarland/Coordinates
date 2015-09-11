@@ -1,49 +1,34 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #
-# Shell wrapper to set up the python environment
+# Shell wrapper for libCoords
+#
 #
 
-# -------------------------
-# ----- Coords origin -----
-# -------------------------
 
-if [ -n "$COORD_ORIGIN" ]; then
-    echo "# COORD_ORIGIN is" $COORD_ORIGIN
-else
-    COORD_ORIGIN=..
-    echo "# COORD_ORIGIN not set. Using" $COORD_ORIGIN
-fi
+. ../bin/utils.sh
 
-# ----------------------
-# ----- gtest root -----
-# ----------------------
-
-if [ -n "$GTEST_DIR" ]; then
-    echo "# GTEST_DIR is" $COORD_ORIGIN
-else
-    GTEST_DIR=/usr/local/gtest-1.7.0
-    echo "# GTEST_DIR not set. Using" $GTEST_DIR
-fi
-
+COORDS_ROOT=$(find_coords_root .. )
+COORDS_LIBRARY_PATH=${COORDS_ROOT}/libCoords
 
 # ----------------------------
 # ----- set library path -----
 # ----------------------------
 
-COORD_LIBRARY_PATH=${COORD_ORIGIN}/libCoords
-GTEST_LIBRARY_PATH=${GTEST_DIR}
-
 platform=`uname`
 
 if [[ "$platform" == 'Darwin' ]]; then
-    export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${COORD_LIBRARY_PATH}:${GTEST_LIBRARY_PATH}
-    echo '# DYLD_LIBRARY_PATH' ${DYLD_LIBRARY_PATH}
-    echo  # linefeed
+
+    # assumes built in /usr/local like in the readme
+    GTEST_DIR=$( find_gtest /usr/local gtest-all.o)
+    echo '# GTEST_DIR found. Using:' ${GTEST_DIR}
+    export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${COORDS_LIBRARY_PATH}:${GTEST_DIR}
 
 elif [[ "$platform" == 'Linux' ]]; then
-    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${COORD_LIBRARY_PATH}:${GTEST_LIBRARY_PATH}
-    echo '# LD_LIBRARY_PATH' ${LD_LIBRARY_PATH}
-    echo  # linefeed
+
+    # assumes installed in /usr/lib64 by yum
+    GTEST_DIR=$( find_gtest /usr/ libgtest.so)
+    echo '# GTEST_DIR found. Using:' ${GTEST_DIR}
+    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${COORDS_LIBRARY_PATH}:${GTEST_DIR}
 
 else
     echo "unsupported platform"
@@ -54,5 +39,5 @@ fi
 # ----- echo result -----
 # -----------------------
 
-
-# EoF
+echo '# DYLD_LIBRARY_PATH is' ${DYLD_LIBRARY_PATH}
+echo '# LD_LIBRARY_PATH is' ${LD_LIBRARY_PATH}
