@@ -3,8 +3,24 @@
 # Takes make target from command line and walks source directories in
 # order, i.e. libs before pys.
 
-libs="./libCoords"
+
+platform=`uname`
+
+if [[ "$platform" == 'Darwin' ]]; then
+
 pys="./Python/Manual ./Python/Boost" # TODO ./python/SWIG"
+
+elif [[ "$platform" == 'Linux' ]]; then
+
+pys="./Python/Boost" # TODO skip manual build on Linux for now.
+
+else
+    echo "unsupported platform"
+    exit 1
+fi
+
+
+libs="./libCoords"
 
 # ---------------------
 # ----- Utilities -----
