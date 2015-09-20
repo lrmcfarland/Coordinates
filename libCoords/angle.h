@@ -155,6 +155,34 @@ namespace Coords {
 
   };
 
-  typedef Latitude Declination;
+
+  // -----------------------
+  // ----- Declination -----
+  // -----------------------
+
+  // Boost doesn't like this as just a typedef of Latitude:
+  // RuntimeWarning: to-Python converter for Coords::Latitude already
+  // registered; second conversion method ignored. import coords
+
+
+  class Declination : public angle {
+
+  public:
+    static const double g_north_pole;
+    static const double g_south_pole;
+
+    explicit Declination(const double& a_deg = 0.0,
+			 const double& a_min = 0.0,
+			 const double& a_sec = 0.0);
+
+    explicit Declination(const std::string& a_deg,
+			 const std::string& a_min = "0.0",
+			 const std::string& a_sec = "0.0");
+
+    virtual ~Declination() {};
+
+  };
+
+
 
 } // end namespace Coords

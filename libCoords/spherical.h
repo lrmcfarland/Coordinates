@@ -55,6 +55,11 @@ namespace Coords {
 		       const angle& phi = angle(0.0))
       : m_r(r), m_theta(90.0 - lat.value()), m_phi(phi) {};
 
+    explicit spherical(const double& r,
+		       const Declination& lat,
+		       const angle& phi = angle(0.0))
+      : m_r(r), m_theta(90.0 - lat.value()), m_phi(phi) {};
+
     ~spherical() {};
 
     spherical(const spherical& a);
