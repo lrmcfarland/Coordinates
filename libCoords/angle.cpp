@@ -179,3 +179,36 @@ Coords::Latitude::Latitude(const std::string& a_deg,
   if (value() < g_south_pole)
     throw Coords::Error("minimum exceeded");
 }
+
+// =======================
+// ===== Declination =====
+// =======================
+
+const double Coords::Declination::g_north_pole(90);
+const double Coords::Declination::g_south_pole(-90);
+
+// ----- constructors -----
+
+Coords::Declination::Declination(const double& a_deg,
+				 const double& a_min,
+				 const double& a_sec)
+  : angle(a_deg, a_min, a_sec) {
+
+  if (value() > g_north_pole)
+    throw Coords::Error("maximum exceeded");
+
+  if (value() < g_south_pole)
+    throw Coords::Error("minimum exceeded");
+}
+
+Coords::Declination::Declination(const std::string& a_deg,
+				 const std::string& a_min,
+				 const std::string& a_sec)
+  : angle(a_deg, a_min, a_sec) {
+
+  if (value() > g_north_pole)
+    throw Coords::Error("maximum exceeded");
+
+  if (value() < g_south_pole)
+    throw Coords::Error("minimum exceeded");
+}
