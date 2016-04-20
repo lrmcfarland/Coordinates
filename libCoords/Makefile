@@ -8,6 +8,8 @@
 # where to find google's gtest code
 # built as in README or TOOD: build gtest with "./configure; make" on OS X and Linux?
 
+# install_name now includes CURDIR for rpath error: unsafe use of relative rpath libCoords.1.dylib
+
 GTEST_DIR = /usr/local/gtest-1.7.0
 
 # Detect operating system flavor.
@@ -29,7 +31,7 @@ LDFLAGS  = -L. -lCoords
 GTEST_LIBS = -L$(GTEST_DIR) -lgtest
 GTEST_FLAGS = -std=c++11 -I$(GTEST_DIR)/include -I. -g -c
 
-DYLFLAGS  = -headerpad_max_install_names -single_module -dynamiclib -compatibility_version 1.0 -current_version 1.0.0 -install_name libCoords.1.dylib
+DYLFLAGS  = -headerpad_max_install_names -single_module -dynamiclib -compatibility_version 1.0 -current_version 1.0.0 -install_name $(CURDIR)/libCoords.1.dylib
 
 TARGET_D = libCoords.1.0.0.dylib
 TARGET_D0 = libCoords.dylib
