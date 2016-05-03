@@ -163,6 +163,36 @@ class TestDateTime(unittest.TestCase):
         a.timezone = -8
         self.assertEqual('1962-07-10T15:30:00-08', str(a))
 
+    def test_year_accessor(self):
+        """Test get year accessor"""
+        a = coords.datetime('2016-04-02T21:34:45')
+        self.assertEqual(2016, a.year)
+
+    def test_month_accessor(self):
+        """Test get month accessor"""
+        a = coords.datetime('2016-04-02T21:34:45')
+        self.assertEqual(04, a.month)
+
+    def test_day_accessor(self):
+        """Test get day accessor"""
+        a = coords.datetime('2016-04-02T21:34:45')
+        self.assertEqual(02, a.day)
+
+    def test_hour_accessor(self):
+        """Test get hour accessor"""
+        a = coords.datetime('2016-04-02T21:34:45')
+        self.assertEqual(21, a.hour)
+
+    def test_minute_accessor(self):
+        """Test get minute accessor"""
+        a = coords.datetime('2016-04-02T21:34:45')
+        self.assertEqual(34, a.minute)
+
+    def test_second_accessor(self):
+        """Test get second accessor"""
+        a = coords.datetime('2016-04-02T21:34:45.67')
+        self.assertEqual(45.67, a.second)
+
 
 if __name__ == '__main__':
     random.seed(time.time())

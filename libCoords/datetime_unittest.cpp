@@ -1367,6 +1367,24 @@ namespace {
     EXPECT_STREQ("2014-12-10T00:00:00", out.str().c_str());
   }
 
+
+
+  TEST(DateTime, operator_plus_eq_hour) {
+    std::string a_datetime_string("2014-12-09T00:00:00");
+
+    Coords::DateTime a_datetime(a_datetime_string);
+
+    a_datetime += 1.0/24.0;
+
+    EXPECT_DOUBLE_EQ(2457000.5 + 1.0/24.0, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << a_datetime;
+
+    EXPECT_STREQ("2014-12-09T01:00:00", out.str().c_str());
+  }
+
+
   // on edge of day transition
   TEST(DateTime, operator_plus_eq_00_tz1) {
     std::string a_datetime_string("2014-12-09T00:00:00+0100");
@@ -2087,6 +2105,29 @@ namespace {
 
 
   }
+
+
+
+  // ----------------------------------
+  // ----- time element accessors -----
+  // ----------------------------------
+
+  TEST(DateTime, time_element_accessor_1) {
+    std::string a_datetime_string("2016-04-02T12:30:05.4");
+
+    Coords::DateTime a_datetime(a_datetime_string);
+
+    EXPECT_EQ(2016, a_datetime.year());
+    EXPECT_EQ(04, a_datetime.month());
+    EXPECT_EQ(02, a_datetime.day());
+    EXPECT_EQ(12, a_datetime.hour());
+    EXPECT_EQ(30, a_datetime.minute());
+    EXPECT_DOUBLE_EQ(5.4, a_datetime.second());
+
+  }
+
+
+
 
 
 } // end anonymous namespace
