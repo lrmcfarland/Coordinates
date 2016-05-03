@@ -83,12 +83,26 @@ namespace Coords {
     void isValid(const std::string& an_iso8601_time = "") throw (Error);
     void throwError(const std::string& a_datetime, const std::string msg) throw (Error);
 
+    // there are no set value accessors to force the use of the constructor isValid check
+    // i.e. do time component arithmatic in the constructor.
+
     const int& year() const {return m_year;}
+    int     getYear() const {return m_year;} // for boost python wrappers
+
     const int& month() const {return m_month;}
+    int     getMonth() const {return m_month;} // for boost python wrappers
+
     const int& day() const {return m_day;}
+    int     getDay() const {return m_day;}  // for boost python wrappers
+
     const int& hour() const {return m_hour;}
+    int     getHour() const {return m_hour;} // for boost python wrappers
+
     const int& minute() const {return m_minute;}
+    int     getMinute() const {return m_minute;} // for boost python wrappers
+
     const double& second() const {return m_second;}
+    double     getSecond() const {return m_second;} // for boost python wrappers
 
     const bool& isZulu() const {return m_is_zulu;}
     const std::string& timezoneHH() const {return m_timezone_hh;}

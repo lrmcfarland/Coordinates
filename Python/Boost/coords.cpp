@@ -282,6 +282,14 @@ BOOST_PYTHON_MODULE(coords) {
 
     .def(init<Coords::DateTime>()) // copy
 
+    // accessors
+    .add_property("year", &Coords::DateTime::getYear)
+    .add_property("month", &Coords::DateTime::getMonth)
+    .add_property("day", &Coords::DateTime::getDay)
+    .add_property("hour", &Coords::DateTime::getHour)
+    .add_property("minute", &Coords::DateTime::getMinute)
+    .add_property("second", &Coords::DateTime::getSecond)
+
     // operator<<(), str not repr
     .def(self_ns::str(self_ns::self))
 
