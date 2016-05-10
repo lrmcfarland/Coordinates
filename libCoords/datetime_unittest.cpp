@@ -1721,6 +1721,147 @@ namespace {
 
   }
 
+
+
+
+
+  TEST(DateTime, set_timezone_2016may09_overday) {
+
+    // day change with timezone
+
+    std::string a_datetime_string("2016-05-09T00:00:00-03");
+    Coords::DateTime a_datetime(a_datetime_string);
+    const double jdate(a_datetime.toJulianDate());
+
+    Coords::DateTime another_datetime;
+
+    another_datetime.fromJulianDate(a_datetime.toJulianDate());
+    another_datetime.timezone(a_datetime.timezone());
+
+    another_datetime += a_datetime.timezone() * 1.0/24; // to center plot at noon
+
+    another_datetime += 1.0/24;
+    another_datetime += 1.0/24;
+    another_datetime += 1.0/24;
+    another_datetime += 1.0/24; // check not 25:00 on the previous day
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("2016-05-09T01:00:00-03", out.str().c_str());
+  }
+
+  TEST(DateTime, set_timezone_2016may31_overmonth) {
+
+    // month change with timezone
+
+    std::string a_datetime_string("2016-05-31T00:00:00-03");
+    Coords::DateTime a_datetime(a_datetime_string);
+    const double jdate(a_datetime.toJulianDate());
+
+    Coords::DateTime another_datetime;
+
+    another_datetime.fromJulianDate(a_datetime.toJulianDate());
+    another_datetime.timezone(a_datetime.timezone());
+
+    another_datetime += a_datetime.timezone() * 1.0/24; // to center plot at noon
+
+    another_datetime += 1.0/24;
+    another_datetime += 1.0/24;
+    another_datetime += 1.0/24;
+    another_datetime += 1.0/24; // check not 25:00 on the previous day
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("2016-06-01T01:00:00-03", out.str().c_str());
+  }
+
+  TEST(DateTime, set_timezone_2016may31_overyear) {
+
+    // year change with timezone
+
+    std::string a_datetime_string("2016-12-31T00:00:00-03");
+    Coords::DateTime a_datetime(a_datetime_string);
+    const double jdate(a_datetime.toJulianDate());
+
+    Coords::DateTime another_datetime;
+
+    another_datetime.fromJulianDate(a_datetime.toJulianDate());
+    another_datetime.timezone(a_datetime.timezone());
+
+    another_datetime += a_datetime.timezone() * 1.0/24; // to center plot at noon
+
+    another_datetime += 1.0/24;
+    another_datetime += 1.0/24;
+    another_datetime += 1.0/24;
+    another_datetime += 1.0/24; // check not 25:00 on the previous day
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("2017-01-01T01:00:00-03", out.str().c_str());
+  }
+
+
+  TEST(DateTime, set_timezone_2016may09_underday) {
+
+    // day change with timezone
+
+    std::string a_datetime_string("2016-05-09T23:00:00+03");
+    Coords::DateTime a_datetime(a_datetime_string);
+    const double jdate(a_datetime.toJulianDate());
+
+    Coords::DateTime another_datetime;
+
+    another_datetime.fromJulianDate(a_datetime.toJulianDate());
+    another_datetime.timezone(a_datetime.timezone());
+
+    another_datetime += a_datetime.timezone() * 1.0/24; // to center plot at noon
+
+    another_datetime -= 1.0/24;
+    another_datetime -= 1.0/24;
+    another_datetime -= 1.0/24;
+    another_datetime -= 1.0/24; // check not -2:00 on the next day
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("2016-05-10T02:00:00+03", out.str().c_str());
+  }
+
+
+  TEST(DateTime, set_timezone_2016may09_undermonth) {
+
+    // day change with timezone
+
+    std::string a_datetime_string("2016-04-30T23:00:00+03");
+    Coords::DateTime a_datetime(a_datetime_string);
+    const double jdate(a_datetime.toJulianDate());
+
+    Coords::DateTime another_datetime;
+
+    another_datetime.fromJulianDate(a_datetime.toJulianDate());
+    another_datetime.timezone(a_datetime.timezone());
+
+    another_datetime += a_datetime.timezone() * 1.0/24; // to center plot at noon
+
+    another_datetime -= 1.0/24;
+    another_datetime -= 1.0/24;
+    another_datetime -= 1.0/24;
+    another_datetime -= 1.0/24; // check not -2:00 on the next day
+
+    std::stringstream out;
+    out << another_datetime;
+
+    EXPECT_STREQ("2016-05-01T01:00:00+03", out.str().c_str());
+  }
+
+
+  // todo month, year transitions too
+
+
+
   // -------------------------
   // ----- set time zone -----
   // -------------------------
