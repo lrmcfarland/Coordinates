@@ -59,6 +59,14 @@ namespace Coords {
     static const double   s_TruncatedJulianDate; // 1968-05-24T00:00:00
     static const double   s_J2000; // 2000-01-01T12:00:00Z
 
+    static const double   s_resolution; // for rounding seconds
+
+    static void adjustForTimezone(int& a_year, int& a_month, int& a_day,
+				  int& a_hour, int& a_minute, double& a_second,
+				  const double& a_timezone);
+
+    // ----- constructors -----
+
     explicit DateTime(const std::string& an_iso8601_time);
 
     explicit DateTime(const int& a_year = 1970, // Unix epoch

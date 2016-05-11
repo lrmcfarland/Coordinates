@@ -37,17 +37,18 @@
 
 // ----- static data members -----
 
-const std::string Coords::DateTime::s_ISO8601_format("(-){0,1}(\\d*)-" // year
-						     "(0[1-9]|1[012])-" // month
-						     "(0[1-9]|1\\d|2\\d|3[01])" // day
-						     "T"
-						     "([01]\\d|2[0-3])" // hour
-						     ":"
-						     "([0-5]\\d)" // minute
-						     "(:"
-						     "([0-5]\\d(\\.\\d*){0,1})" // second
-						     "(Z|(\\+|-)(0[0-9]|1[012])(\\:){0,1}([0-5]\\d){0,1}){0,1}" // time zone
-						     "){0,1}"
+const std::string Coords::DateTime::s_ISO8601_format(
+	   "(-){0,1}(\\d*)-" // year
+	   "(0[1-9]|1[012])-" // month
+	   "(0[1-9]|1\\d|2\\d|3[01])" // day
+	   "T"
+	   "([01]\\d|2[0-3])" // hour
+	   ":"
+	   "([0-5]\\d)" // minute
+	   "(:"
+	   "([0-5]\\d(\\.\\d*){0,1})" // second
+	   "(Z|(\\+|-)(0[0-9]|1[012])(\\:){0,1}([0-5]\\d){0,1}){0,1}" // time zone
+	   "){0,1}"
 						     );
 #if BOOST_REGEX
 const boost::regex Coords::DateTime::s_ISO8601_rx(Coords::DateTime::s_ISO8601_format);
@@ -60,6 +61,7 @@ const double Coords::DateTime::s_LilianDate(2299160.5);
 const double Coords::DateTime::s_ModifiedJulianDate(2400000.5);
 const double Coords::DateTime::s_TruncatedJulianDate(2440000.5);
 const double Coords::DateTime::s_J2000(2451545.0);
+const double Coords::DateTime::s_resolution(0.0001);
 
 Coords::DateTime::DateTime(const std::string& an_iso8601_time)
   : m_year(1970), m_month(1), m_day(1),
@@ -76,7 +78,8 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
   if (!std::regex_match(an_iso8601_time, m, s_ISO8601_rx)) {
 #endif
     std::stringstream emsg;
-    emsg << an_iso8601_time << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+    emsg << an_iso8601_time
+	 << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
     throw Coords::Error(emsg.str());
   }
 
@@ -88,11 +91,10 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
   m_month = Coords::stoi(m[3]);
   m_day = Coords::stoi(m[4]);
 
-  if (m_year % 4 == 0 && m_year % 100 != 0)
+  if ((m_year % 4 == 0 && m_year % 100 != 0) || m_year % 400 == 0)
     m_is_leap_year = true;
-
-  if (m_year % 4 == 0 && m_year % 100 == 0 && m_year % 400 == 0)
-    m_is_leap_year = true;
+  else
+    m_is_leap_year = false;
 
   m_hour = Coords::stoi(m[5]);
   m_minute = Coords::stoi(m[6]);
@@ -246,126 +248,166 @@ double Coords::operator-(const Coords::DateTime& lhs, const Coords::DateTime& rh
 
 // ----- timezone -----
 
-void Coords::DateTime::timezone(const double& a_timezone) {
+
+void Coords::DateTime::adjustForTimezone(int& a_year, int& a_month, int& a_day,
+					 int& a_hour, int& a_minute, double& a_second,
+					 const double& a_timezone) {
+  // for use with date arithmetic to adjust for changes in timezone
+  // e.g. hour + timezone = 26 hrs
+
+  // ASSUMES timezone set in member method
 
   if (a_timezone < -12 || a_timezone > 12)
     throw Coords::Error("timezone out of range");
 
-  // TODO compute directly?
-  if (m_timezone != 0) {
-    this->fromJulianDate(this->toJulianDate(), 0);
+  bool is_leap_year(false);
+
+  if ((a_year % 4 == 0 && a_year % 100 != 0) || a_year % 400 == 0)
+    is_leap_year = true;
+  else
+    is_leap_year = false;
+
+
+  while (a_second >= 60 - s_resolution) {
+    a_second -= 60;
+    a_minute += 1;
   }
 
-  if (m_hour - a_timezone < 0) {
+  if (fabs(a_second) < s_resolution)
+    a_second = 0.0;
 
-    // pulled back across date
 
-    if (m_month == 1) {
+  while (a_minute >= 60) {
+    a_minute -= 60;
+    a_hour += 1;
+  }
 
-      if (m_day == 1) {
 
-	m_year -= 1;
-	m_month = 12;
-	m_day = 31;
+  a_hour -= a_timezone;
+
+
+  if (a_hour >= 24) {
+
+    // pushed to next day
+    a_hour -= 24; // ASSUMES timezone is in -12 to 12 range, i.e. only one day at most
+
+    if (a_month == 2) { // February
+
+      if (is_leap_year) {
+	if (a_day == 29) {
+	  a_month += 1; // March
+	  a_day = 1;
+	}
+      } else {
+	if (a_day == 28) {
+	  a_month += 1; // March
+	  a_day = 1;
+	}
+
+      }
+
+    } else if (a_month == 12) { // December
+
+      // pushed to next year
+      if (a_day == 31) {
+
+	a_year += 1;
+	a_month = 1;
+	a_day = 1;
 
       } else {
 
-	m_day -= 1;
+	a_day += 1;
+
+      }
+
+    } else if (a_month == 9 || a_month == 4 || a_month == 6 || a_month == 11) {
+
+      // 30 day months
+
+      if (a_day == 30) {
+	a_month += 1;
+	a_day = 1;
+      } else {
+	a_day += 1;
+      }
+
+    } else { // 31 day months. December is a special case handled above.
+
+      if (a_day == 31) {
+	a_month += 1;
+	a_day = 1;
+      } else {
+	a_day += 1;
+      }
+
+    }
+
+  }
+
+  // pulled back across date
+  if (a_hour < 0) {
+
+    a_hour += 24; // ASSUMES timezone is in -12 to 12 range, i.e. only one day at most
+
+    if (a_month == 1) { // January
+
+      if (a_day == 1) {
+
+	a_year -= 1;
+	a_month = 12;
+	a_day = 31;
+
+      } else {
+
+	a_day -= 1;
 
       }
 
     } else { // Not Jan
 
-      if (m_day == 1) {
+      if (a_day == 1) {
 
-	m_month -= 1;
+	a_month -= 1;
 
-	if (m_month == 2) {
-
-	  if (m_is_leap_year)
-	    m_day = 29;
+	if (a_month == 2) { // Feburary
+	  if (is_leap_year)
+	    a_day = 29;
 	  else
-	    m_day = 28;
+	    a_day = 28;
 
-	} else if (m_month == 9 || m_month == 4 || m_month == 6 || m_month == 11) {
-	  // 30 day month
+	} else if (a_month == 9 || a_month == 4 || a_month == 6 || a_month == 11) {
+	  a_day = 30;	// 30 day months
 
-	  m_day = 30;
-
-	} else { // 31 day month
-
-	  m_day = 31;
-
+	} else {
+	  a_day = 31; // 31 day months
 	}
 
       } else { // Not first of month
 
-	m_day -= 1;
+	a_day -= 1;
 
       }
 
     }
 
-    m_hour = m_hour - a_timezone + 24;
+  }
+
+}
 
 
-  } else if (m_hour - a_timezone > 24) {
+void Coords::DateTime::timezone(const double& a_timezone) {
 
-    // pushed to next day
+  if (a_timezone < -12 || a_timezone > 12)
+    throw Coords::Error("timezone out of range");
 
-    if (m_month == 2) {
-
-      if (m_is_leap_year) {
-
-	if (m_day == 29) {
-	  m_month += 1;
-	  m_day = 1;
-	}
-
-      } else {
-
-	if (m_day == 28) {
-	  m_month += 1;
-	  m_day = 1;
-	}
-
-      }
-
-    } else if (m_month == 12) {
-
-      m_year += 1;
-      m_month = 1;
-      m_day = 1;
-
-    } else if (m_month == 9 || m_month == 4 || m_month == 6 || m_month == 11) {
-
-      // 30 day months
-
-      if (m_day == 30) {
-	m_month += 1;
-	m_day = 1;
-      } else {
-	m_day += 1;
-      }
-
-    } else { // 31 day months. December is a special case handled above.
-
-      if (m_day == 31) {
-	m_month += 1;
-	m_day = 1;
-      } else {
-	m_day += 1;
-      }
-
-    }
-
-    m_hour = m_hour - a_timezone - 24;
-
-  } else { // no day, month or year change
-    m_hour -= a_timezone;
+  if (m_timezone != 0) {
+    this->fromJulianDate(this->toJulianDate(), 0); // in the 0-th timezone
   }
 
   m_timezone = a_timezone;
+  this->adjustForTimezone(m_year, m_month, m_day, m_hour, m_minute, m_second, m_timezone);
+
   m_timezone_hh.clear(); // for operator<<()
   m_has_timezone_colon = false;
   m_timezone_mm.clear();
@@ -376,7 +418,6 @@ void Coords::DateTime::timezone(const double& a_timezone) {
   isValid(current_time.str());
 
 }
-
 
 
 // ----- as Julian Date -----
@@ -581,8 +622,6 @@ void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays, const doub
 
   // ASSUMES: jdays are Modified Julian Days
 
-  m_timezone = a_timezone;
-
   long int a(0);
   long int b(0);
   long int c(0);
@@ -610,12 +649,14 @@ void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays, const doub
 
   double d_hour = 24.0 * (jdays - floor(jdays));
   m_hour = d_hour; // implicit cast to int
-  m_hour -= timezone();
 
   double d_minute = 60.0 * (d_hour - floor(d_hour));
   m_minute = d_minute; // implicit cast to int
 
   m_second = 60.0 * (d_minute - floor(d_minute));
+
+  m_timezone = a_timezone;
+  this->adjustForTimezone(m_year, m_month, m_day, m_hour, m_minute, m_second, m_timezone);
 
 }
 
@@ -633,10 +674,10 @@ void Coords::DateTime2String(const Coords::DateTime& a_datetime, std::stringstre
 
   // Round seconds (operator<<() output only) to cover rounding issues in calculation.
 
-  if (fabs(a_second) < 0.0001)
+  if (fabs(a_second) < DateTime::s_resolution)
     a_second = 0.0;
 
-  if (60 - a_second < 0.0001 && a_second > 0.0) {
+  if (60 - a_second < DateTime::s_resolution && a_second > 0.0) {
     a_second = 0.0;
     a_minute += 1;
   }
