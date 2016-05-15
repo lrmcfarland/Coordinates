@@ -33,5 +33,10 @@ Python/Boost/build
 # Manual
 Python/Manual/build
 
+# SWIG
+_coords.so
+coords.py
+coords_wrap.cxx
+
 # Notes
 Notes
