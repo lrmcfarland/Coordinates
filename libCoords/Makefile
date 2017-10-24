@@ -49,8 +49,8 @@ CXXFLAGS = -g -W -Wall -fPIC -I. -I$(GTEST_INC_DIR) -D BOOST_REGEX
 LINK     = g++
 LDFLAGS  = -L. -lCoords -L$(GTEST_LIB_DIR) -lgtest -lboost_python -lboost_regex
 
-GTEST_LIBS = -lgtest -lpthread
-GTEST_FLAGS = -std=c++11 -I. -g -c
+GTEST_LIBS = -L$(GTEST_LIB_DIR) -lgtest -lpthread
+GTEST_FLAGS = -std=c++11 -I$(GTEST_INC_DIR) -I. -g -c
 
 endif
 
