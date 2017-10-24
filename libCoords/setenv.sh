@@ -9,6 +9,7 @@
 
 COORDS_ROOT=$(find_coords_root .. )
 COORDS_LIBRARY_PATH=${COORDS_ROOT}/libCoords
+GTEST_LIBRARY_PATH=${COORDS_ROOT}/googletest/googlemock/gtest/
 
 # ----------------------------
 # ----- set library path -----
@@ -18,17 +19,11 @@ platform=`uname`
 
 if [[ "$platform" == 'Darwin' ]]; then
 
-    # assumes built in /usr/local like in the readme
-    GTEST_DIR=$( find_gtest /usr/local gtest-all.o)
-    echo '# GTEST_DIR found. Using:' ${GTEST_DIR}
-    export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${COORDS_LIBRARY_PATH}:${GTEST_DIR}
+    export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${COORDS_LIBRARY_PATH}:${GTEST_LIBRARY_PATH}
 
 elif [[ "$platform" == 'Linux' ]]; then
 
-    # assumes installed in /usr/lib64 by yum
-    GTEST_DIR=$( find_gtest /usr/ libgtest.so)
-    echo '# GTEST_DIR found. Using:' ${GTEST_DIR}
-    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${COORDS_LIBRARY_PATH}:${GTEST_DIR}
+    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${COORDS_LIBRARY_PATH}:${GTEST_LIBRARY_PATH}
 
 else
     echo "unsupported platform"

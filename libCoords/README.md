@@ -17,54 +17,14 @@ $ cd libCoords/
 
 See the [Makefile](Makefile) for details.
 
-To build the test suite you will need gtest.
 
-### [googletest](https://code.google.com/p/googletest/)
+#### gtest
 
-The C++ library uses [googletest](https://code.google.com/p/googletest/) to
-run the unit tests.
-
-There is a yum package for Linux installs.
-
-On OS X I have downloaded and built it in /usr/local using
-these instructions from the gtest README:
-
-```
-[root gtest-1.7.0]# export GTEST_DIR=/usr/local/gtest-1.7.0
-[root gtest-1.7.0]# g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
-
-[root gtest-1.7.0]# ar -rv libgtest.a gtest-all.o
-ar: creating archive libgtest.a
-a - gtest-all.o
-```
-
-libCoords/Makefile sets its GTEST_DIR to /usr/local/gtest-1.7.0 and picks
-up libgtest.a from there.
-
-You can also build gtest using
-
-```
-# cd /usr/local/gtest-1.7.0
-# ./configure
-# make
-```
-
-and it will create the libraries in lib/.libs. Install to taste.
-
-
-### On OS X
-
-After adding Xcode and gtest (as above) I was able to build libCoords
-on Mavericks and Yosemite with out any additional tools.
-
-### On Linux
-
-There are some issues with std::regex and the g++4.8 compilers that
-come with CentOS 6.5. To work around this for now, I have options
-to use the boost library in the Makefile and python setup.py files.
-
-Use yum to install boost-devel.
-
+This uses the [googletest](https://github.com/google/googletest)
+framework for the c++ unittests.  It is included as a git submodule
+and built by the build.sh script. It is only needed to run the c++
+unit tests in libCoords. The python unit tests will implicitly run
+most of the same tests.
 
 #### std::regex
 

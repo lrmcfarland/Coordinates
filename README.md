@@ -34,11 +34,13 @@ At first this seems little weird in English, but then
 
 ## To Install
 
+TODO: Dockerfile
+
 While libCoords and the "manual" python extension can be built with
 out additional packages, a complete build of Coordinates uses gtest
 and Boost.
 
-Coordinates uses [gtest](https://code.google.com/p/googletest/) to
+Coordinates uses [gtest](https://github.com/google/googletest) to
 validate the C++ library libCoords. Details on this can be found
 in [libCoords](libCoords/README.md).
 

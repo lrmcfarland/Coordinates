@@ -3,14 +3,12 @@
 # Description: makes libCoords and runs test scripts
 # Author:      L.R. McFarland, lrm@starbug.com
 # Created:     2014 Jun 19
+# install_name now includes CURDIR for rpath error: unsafe use of relative rpath libCoords.1.dylib
 # ===============================================================
 
-# where to find google's gtest code
-# built as in README or TOOD: build gtest with "./configure; make" on OS X and Linux?
-
-# install_name now includes CURDIR for rpath error: unsafe use of relative rpath libCoords.1.dylib
-
-GTEST_DIR = /usr/local/gtest-1.7.0
+# assumes googletest is a submodule of Coordinates and built first
+GTEST_INC_DIR = ../googletest/googletest/include # TODO default if not set in env?
+GTEST_LIB_DIR = ../googletest/googlemock/gtest # TODO default if not set in env?
 
 # Detect operating system flavor.
 UNAME   := $(shell uname)
@@ -28,8 +26,8 @@ LINK     = clang++
 
 LDFLAGS  = -L. -lCoords
 
-GTEST_LIBS = -L$(GTEST_DIR) -lgtest
-GTEST_FLAGS = -std=c++11 -I$(GTEST_DIR)/include -I. -g -c
+GTEST_LIBS = -L$(GTEST_LIB_DIR) -lgtest
+GTEST_FLAGS = -std=c++11 -I$(GTEST_INC_DIR) -I. -g -c
 
 DYLFLAGS  = -headerpad_max_install_names -single_module -dynamiclib -compatibility_version 1.0 -current_version 1.0.0 -install_name $(CURDIR)/libCoords.1.dylib
 
