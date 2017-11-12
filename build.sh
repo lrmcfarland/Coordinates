@@ -50,14 +50,14 @@ make_me() {
 # ----- always build googletest first -----
 # -----------------------------------------
 
-echo "======================================================================"
-echo "building googletest"
-cd googletest
-cmake .
-make
-cd ..
-
-# TODO make clean?
+build_googletest() {
+    echo "======================================================================"
+    echo "building googletest"
+    cd googletest
+    cmake .
+    make
+    cd ..
+}
 
 # -----------------------------------------
 # -----process command line arguments -----
@@ -69,6 +69,12 @@ then
 else
     TARGET=$1
 fi
+
+
+if [ $TARGET == "test" ]; then
+    build_googletest
+fi
+
 
 make_me $TARGET $libs
 make_me $TARGET $pys
