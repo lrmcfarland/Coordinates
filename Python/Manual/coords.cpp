@@ -742,8 +742,7 @@ static PyNumberMethods Angle_as_number = {
 
 
 PyTypeObject AngleType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                 /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)
   "angle",                           /* tp_name */
   sizeof(Angle),                     /* tp_basicsize */
   0,                                 /* tp_itemsize */
@@ -1238,8 +1237,7 @@ static PyNumberMethods Latitude_as_number = {
 
 
 PyTypeObject LatitudeType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                 /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)
   "Latitude",                           /* tp_name */
   sizeof(Latitude),                     /* tp_basicsize */
   0,                                 /* tp_itemsize */
@@ -1736,8 +1734,7 @@ static PyNumberMethods Declination_as_number = {
 
 
 PyTypeObject DeclinationType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                 /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)
   "Declination",                           /* tp_name */
   sizeof(Declination),                     /* tp_basicsize */
   0,                                 /* tp_itemsize */
@@ -2287,8 +2284,7 @@ static PyNumberMethods Cartesian_as_number = {
 
 
 PyTypeObject CartesianType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                        /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)
   "Cartesian",                              /* tp_name */
   sizeof(Cartesian),                        /* tp_basicsize */
   0,                                        /* tp_itemsize */
@@ -2499,8 +2495,7 @@ static PyGetSetDef rotator_getseters[] = {
 
 
 PyTypeObject rotatorType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                 /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)
   "rotator",                         /* tp_name */
   sizeof(rotator),                   /* tp_basicsize */
   0,                                 /* tp_itemsize */
@@ -3084,8 +3079,7 @@ static PyNumberMethods spherical_as_number = {
 
 
 PyTypeObject sphericalType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                        /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)
   "spherical",                              /* tp_name */
   sizeof(spherical),                        /* tp_basicsize */
   0,                                        /* tp_itemsize */
@@ -3530,8 +3524,7 @@ static PyNumberMethods datetime_as_number = {
 
 
 PyTypeObject datetimeType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                 /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)
   "datetime",                        /* tp_name */
   sizeof(datetime),                  /* tp_basicsize */
   0,                                 /* tp_itemsize */
