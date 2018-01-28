@@ -25,6 +25,9 @@ LDFLAGS  = -lpython -dynamiclib
 # TODO meh
 PYINCS = /System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7
 
+# PYINCS = /Users/lrm/src/starbug/Coordinates/py3env/include/python3.6m/
+
+
 endif
 
 # -----------------
