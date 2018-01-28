@@ -53,6 +53,9 @@ make_me() {
 build_googletest() {
     echo "======================================================================"
     echo "building googletest"
+
+    git submodule update --init --recursive
+
     cd googletest
     cmake .
     make

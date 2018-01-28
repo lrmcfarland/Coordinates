@@ -32,7 +32,7 @@ fi
 # ----- set python path -----
 # ---------------------------
 
-COORDS_SO=`find . -name coords.so`
+COORDS_SO=`find . -name coords*.so`
 
 if [ -n "$COORDS_SO" ]; then
     echo "# coords.so:" $COORDS_SO

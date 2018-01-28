@@ -33,7 +33,7 @@ elif platform.system() == 'Linux':
     sources = ['coords.cpp']
 
 else:
-    print 'unsupported platform:', platform.system()
+    print('unsupported platform:', platform.system())
     sys.exit(1)
 
 coords_module = Extension(name,
