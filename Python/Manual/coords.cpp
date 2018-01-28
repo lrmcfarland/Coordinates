@@ -22,6 +22,20 @@
 #include <datetime.h>
 #include <spherical.h>
 
+
+#if PY_MAJOR_VERSION >= 3
+
+#define COORDS_INT_CHECK PyLong_Check
+
+#else
+
+#define COORDS_INT_CHECK PyInt_Check
+
+
+#endif
+
+
+
 // ===================
 // ===== statics =====
 // ===================
@@ -170,7 +184,7 @@ int parse_int_arg(PyObject* arg, int& val) {
 
   if (arg) {
 
-    if (PyFloat_Check(arg) || PyInt_Check(arg)) {
+    if (PyFloat_Check(arg) || COORDS_INT_CHECK(arg)) {
       val = PyFloat_AsDouble(arg);
       return 0;
 
@@ -192,7 +206,7 @@ int parse_double_arg(PyObject* arg, double& val) {
 
   if (arg) {
 
-    if (PyFloat_Check(arg) || PyInt_Check(arg)) {
+    if (PyFloat_Check(arg) || COORDS_INT_CHECK(arg)) {
       val = PyFloat_AsDouble(arg);
       return 0;
 
@@ -247,7 +261,7 @@ static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
       self->m_angle.value(((Angle*)arg0)->m_angle.value());
       return 0;
 
-    } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
+    } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
       degrees = PyFloat_AsDouble(arg0);
 
     } else if (PyString_Check(arg0)) {
@@ -314,7 +328,7 @@ static int Angle_setValue(Angle* self, PyObject* value, void* closure) {
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "value must be a float or int");
     return -1;
   }
@@ -337,7 +351,7 @@ static int Angle_setRadians(Angle* self, PyObject* radians, void* closure) {
     return -1;
   }
 
-  if (!PyFloat_Check(radians) && !PyInt_Check(radians)) {
+  if (!PyFloat_Check(radians) && !COORDS_INT_CHECK(radians)) {
     PyErr_SetString(sCoordsException, "radians must be a float or int");
     return -1;
   }
@@ -832,7 +846,7 @@ static int Latitude_init(Latitude* self, PyObject* args, PyObject* kwds) {
       self->m_angle.value(((Latitude*)arg0)->m_angle.value());
       return 0;
 
-    } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
+    } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
       degrees = PyFloat_AsDouble(arg0);
 
     } else if (PyString_Check(arg0)) {
@@ -899,7 +913,7 @@ static int Latitude_setValue(Latitude* self, PyObject* value, void* closure) {
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "value must be a float or int");
     return -1;
   }
@@ -922,7 +936,7 @@ static int Latitude_setRadians(Latitude* self, PyObject* radians, void* closure)
     return -1;
   }
 
-  if (!PyFloat_Check(radians) && !PyInt_Check(radians)) {
+  if (!PyFloat_Check(radians) && !COORDS_INT_CHECK(radians)) {
     PyErr_SetString(sCoordsException, "radians must be a float or int");
     return -1;
   }
@@ -1329,7 +1343,7 @@ static int Declination_init(Declination* self, PyObject* args, PyObject* kwds) {
       self->m_angle.value(((Declination*)arg0)->m_angle.value());
       return 0;
 
-    } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
+    } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
       degrees = PyFloat_AsDouble(arg0);
 
     } else if (PyString_Check(arg0)) {
@@ -1396,7 +1410,7 @@ static int Declination_setValue(Declination* self, PyObject* value, void* closur
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "value must be a float or int");
     return -1;
   }
@@ -1419,7 +1433,7 @@ static int Declination_setRadians(Declination* self, PyObject* radians, void* cl
     return -1;
   }
 
-  if (!PyFloat_Check(radians) && !PyInt_Check(radians)) {
+  if (!PyFloat_Check(radians) && !COORDS_INT_CHECK(radians)) {
     PyErr_SetString(sCoordsException, "radians must be a float or int");
     return -1;
   }
@@ -1835,7 +1849,7 @@ static int Cartesian_init(Cartesian* self, PyObject* args, PyObject* kwds) {
       self->m_Cartesian.z(from_spherical.z());
       return 0;
 
-    } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
+    } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
       x = PyFloat_AsDouble(arg0);
 
     } else if (PyString_Check(arg0)) {
@@ -1908,7 +1922,7 @@ static int Cartesian_setx(Cartesian* self, PyObject* value, void* closure) {
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "x must be a float or int");
     return -1;
   }
@@ -1931,7 +1945,7 @@ static int Cartesian_sety(Cartesian* self, PyObject* value, void* closure) {
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "y must be a float or int");
     return -1;
   }
@@ -1954,7 +1968,7 @@ static int Cartesian_setz(Cartesian* self, PyObject* value, void* closure) {
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "z must be a float or int");
     return -1;
   }
@@ -2064,12 +2078,12 @@ static PyObject* Cartesian_nb_multiply(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  if (is_CartesianType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_CartesianType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     result_Cartesian->m_Cartesian = ((Cartesian*)o1)->m_Cartesian * PyFloat_AsDouble(o2);
     return (PyObject*) result_Cartesian;
   }
 
-  if ((PyFloat_Check(o1) || PyInt_Check(o1)) && is_CartesianType(o2)) {
+  if ((PyFloat_Check(o1) || COORDS_INT_CHECK(o1)) && is_CartesianType(o2)) {
     result_Cartesian->m_Cartesian = PyFloat_AsDouble(o1) * ((Cartesian*)o2)->m_Cartesian;
     return (PyObject*) result_Cartesian;
 
@@ -2094,7 +2108,7 @@ static PyObject* Cartesian_nb_divide(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  if (is_CartesianType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_CartesianType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
 
     try {
       result_Cartesian->m_Cartesian = ((Cartesian*)o1)->m_Cartesian / PyFloat_AsDouble(o2);
@@ -2173,7 +2187,7 @@ static PyObject* Cartesian_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
   // This only scales the vector. If it returned the dot product, it
   // would switch the object to type double.
 
-  if (is_CartesianType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_CartesianType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     ((Cartesian*)o1)->m_Cartesian.operator*=(PyFloat_AsDouble(o2));
     Py_INCREF(o1);
     return o1;
@@ -2187,7 +2201,7 @@ static PyObject* Cartesian_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
 static PyObject* Cartesian_nb_inplace_divide(PyObject* o1, PyObject* o2) {
   // This only scales the vector.
 
-  if (is_CartesianType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_CartesianType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     ((Cartesian*)o1)->m_Cartesian.operator/=(PyFloat_AsDouble(o2));
     Py_INCREF(o1);
     return o1;
@@ -2596,7 +2610,7 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
       self->m_spherical.phi(from_cartesian.phi());
       return 0;
 
-    } else if ((PyFloat_Check(arg0) || PyInt_Check(arg0))) {
+    } else if ((PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0))) {
       r = PyFloat_AsDouble(arg0);
 
     } else if (PyString_Check(arg0)) {
@@ -2700,7 +2714,7 @@ static int spherical_setR(spherical* self, PyObject* value, void* closure) {
     return 0;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "r must be a float or int");
     return 0;
   }
@@ -2873,12 +2887,12 @@ static PyObject* spherical_nb_multiply(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  if (is_sphericalType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_sphericalType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     result_spherical->m_spherical = ((spherical*)o1)->m_spherical * PyFloat_AsDouble(o2);
     return (PyObject*) result_spherical;
   }
 
-  if ((PyFloat_Check(o1) || PyInt_Check(o1)) && is_sphericalType(o2)) {
+  if ((PyFloat_Check(o1) || COORDS_INT_CHECK(o1)) && is_sphericalType(o2)) {
     result_spherical->m_spherical = PyFloat_AsDouble(o1) * ((spherical*)o2)->m_spherical;
     return (PyObject*) result_spherical;
 
@@ -2903,7 +2917,7 @@ static PyObject* spherical_nb_divide(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  if (is_sphericalType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_sphericalType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
 
     try {
       result_spherical->m_spherical = ((spherical*)o1)->m_spherical / PyFloat_AsDouble(o2);
@@ -2981,7 +2995,7 @@ static PyObject* spherical_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
   // This only scales the vector. If it returned the dot product, it
   // would switch the object to type double.
 
-  if (is_sphericalType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_sphericalType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     ((spherical*)o1)->m_spherical.operator*=(PyFloat_AsDouble(o2));
     Py_INCREF(o1);
     return o1;
@@ -2996,7 +3010,7 @@ static PyObject* spherical_nb_inplace_divide(PyObject* o1, PyObject* o2) {
 
     // This only scales the vector.
 
-  if (is_sphericalType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_sphericalType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     ((spherical*)o1)->m_spherical.operator/=(PyFloat_AsDouble(o2));
     Py_INCREF(o1);
     return o1;
@@ -3191,7 +3205,7 @@ static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
       self->m_datetime = ((datetime*)arg0)->m_datetime;
       return 0;
 
-    } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
+    } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
       year = PyFloat_AsDouble(arg0);
 
     } else {
@@ -3277,7 +3291,7 @@ static int datetime_setJulianDate(datetime* self, PyObject* value, void* closure
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "Julian Date must be float or int");
     return -1;
   }
@@ -3302,7 +3316,7 @@ static int datetime_setTimeZone(datetime* self, PyObject* a_timezone, void* clos
     return -1;
   }
 
-  if (!PyFloat_Check(a_timezone) && !PyInt_Check(a_timezone)) {
+  if (!PyFloat_Check(a_timezone) && !COORDS_INT_CHECK(a_timezone)) {
     PyErr_SetString(sCoordsException, "timezone must be a float or int");
     return -1;
   }
@@ -3354,12 +3368,12 @@ static PyObject* datetime_nb_add(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  if (is_datetimeType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_datetimeType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     result_datetime->m_datetime = ((datetime*)o1)->m_datetime + PyFloat_AsDouble(o2);
     return (PyObject*) result_datetime;
   }
 
-  if ((PyFloat_Check(o1) || PyInt_Check(o1)) && is_datetimeType(o2)) {
+  if ((PyFloat_Check(o1) || COORDS_INT_CHECK(o1)) && is_datetimeType(o2)) {
     result_datetime->m_datetime = PyFloat_AsDouble(o1) + ((datetime*)o2)->m_datetime;
     return (PyObject*) result_datetime;
   }
@@ -3380,7 +3394,7 @@ static PyObject* datetime_nb_subtract(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  if (is_datetimeType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_datetimeType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     result_datetime->m_datetime = ((datetime*)o1)->m_datetime - PyFloat_AsDouble(o2);
     return (PyObject*) result_datetime;
   }
@@ -3401,7 +3415,7 @@ static PyObject* datetime_nb_subtract(PyObject* o1, PyObject* o2) {
 // ---------------------------
 
 static PyObject* datetime_nb_inplace_add(PyObject* o1, PyObject* o2) {
-  if (is_datetimeType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_datetimeType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     double jdate = PyFloat_AsDouble(o2);
     ((datetime*)o1)->m_datetime.operator+=(jdate);
     Py_INCREF(o1);
@@ -3412,7 +3426,7 @@ static PyObject* datetime_nb_inplace_add(PyObject* o1, PyObject* o2) {
 }
 
 static PyObject* datetime_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
-  if (is_datetimeType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_datetimeType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     double jdate = PyFloat_AsDouble(o2);
     ((datetime*)o1)->m_datetime.operator-=(jdate);
     Py_INCREF(o1);
