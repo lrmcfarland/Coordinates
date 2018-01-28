@@ -1,7 +1,5 @@
 # Ignore these files 
 
-*.gignore
-
 # emacs backups
 *~
 
@@ -16,6 +14,10 @@
 
 # python cruft
 *.pyc
+__pycache__
+pyenv
+py3env
+
 
 # executables
 libCoords/angle_unittest
