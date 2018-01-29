@@ -33,6 +33,15 @@
 
 #define COORDS_STR_AS_STR(arg) PyBytes_AS_STRING(PyUnicode_AsEncodedString(arg, "utf-8", "Error encoding string"))
 
+
+#define MOD_ERROR_VAL NULL
+#define MOD_SUCCESS_VAL(val) val
+#define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
+#define MOD_DEF(ob, name, doc, methods) \
+  static struct PyModuleDef moduledef = {PyModuleDef_HEAD_INIT, name, doc, -1, methods, }; \
+  ob = PyModule_Create(&moduledef);
+
+
 #else
 
 #define COORDS_INT_CHECK PyInt_Check
@@ -42,6 +51,13 @@
 #define COORDS_TPFLAGS Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES
 
 #define COORDS_STR_AS_STR(arg) PyString_AsString(arg)
+
+#define MOD_ERROR_VAL
+#define MOD_SUCCESS_VAL(val)
+#define MOD_INIT(name) PyMODINIT_FUNC init##name(void)
+#define MOD_DEF(ob, name, doc, methods) ob = Py_InitModule3(name, methods, doc);
+
+// PyMODINIT_FUNC declares extern "C" too.
 
 #endif
 
@@ -4034,10 +4050,11 @@ PyObject* Cartesian_create(const Coords::Cartesian& a_Cartesian) {
 // ----- init coords module -----
 // ------------------------------
 
-// PyMODINIT_FUNC declares extern "C" too.
-PyMODINIT_FUNC initcoords(void) {
+MOD_INIT(coords) {
 
-  PyObject* m(Py_InitModule3("coords", coords_module_methods, "python wrappers for coords objects."));
+  PyObject* m;
+
+  MOD_DEF(m, "coords", "python wrappers for coords objects.", coords_module_methods);
 
   // error
   char eMsgStr[] = "coords.Error";
@@ -4049,21 +4066,21 @@ PyMODINIT_FUNC initcoords(void) {
   // Angle
   AngleType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&AngleType) < 0)
-    return;
+    return MOD_ERROR_VAL;
   Py_INCREF(&AngleType);
   PyModule_AddObject(m, "angle", (PyObject *)&AngleType);
 
   // Latitude
   LatitudeType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&LatitudeType) < 0)
-    return;
+    return MOD_ERROR_VAL;
   Py_INCREF(&LatitudeType);
   PyModule_AddObject(m, "latitude", (PyObject *)&LatitudeType);
 
   // Declination
   DeclinationType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&DeclinationType) < 0)
-    return;
+    return MOD_ERROR_VAL;
   Py_INCREF(&DeclinationType);
   PyModule_AddObject(m, "declination", (PyObject *)&DeclinationType);
 
@@ -4071,7 +4088,7 @@ PyMODINIT_FUNC initcoords(void) {
   // Cartesian
   CartesianType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&CartesianType) < 0)
-    return;
+    return MOD_ERROR_VAL;
 
   Py_INCREF(&CartesianType);
   PyModule_AddObject(m, "Cartesian", (PyObject *)&CartesianType);
@@ -4079,7 +4096,7 @@ PyMODINIT_FUNC initcoords(void) {
   // rotator
   rotatorType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&rotatorType) < 0)
-    return;
+    return MOD_ERROR_VAL;
 
   Py_INCREF(&rotatorType);
   PyModule_AddObject(m, "rotator", (PyObject *)&rotatorType);
@@ -4087,7 +4104,7 @@ PyMODINIT_FUNC initcoords(void) {
   // spherical
   sphericalType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&sphericalType) < 0)
-    return;
+    return MOD_ERROR_VAL;
 
   Py_INCREF(&sphericalType);
   PyModule_AddObject(m, "spherical", (PyObject *)&sphericalType);
@@ -4095,7 +4112,7 @@ PyMODINIT_FUNC initcoords(void) {
   // datetime
   datetimeType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&datetimeType) < 0)
-    return;
+    return MOD_ERROR_VAL;
   Py_INCREF(&datetimeType);
   PyModule_AddObject(m, "datetime", (PyObject *)&datetimeType);
 
@@ -4121,4 +4138,5 @@ PyMODINIT_FUNC initcoords(void) {
   Py_INCREF(Cartesian_Uz);
   PyModule_AddObject(m, "Uz", (PyObject*)Cartesian_Uz);
 
+  return MOD_SUCCESS_VAL(m);
 }
