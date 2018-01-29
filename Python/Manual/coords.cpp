@@ -292,7 +292,7 @@ static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
 
 
 static void Angle_dealloc(Angle* self) {
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 // -----------------
@@ -877,7 +877,7 @@ static int Latitude_init(Latitude* self, PyObject* args, PyObject* kwds) {
 
 
 static void Latitude_dealloc(Latitude* self) {
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 // -----------------
@@ -1374,7 +1374,7 @@ static int Declination_init(Declination* self, PyObject* args, PyObject* kwds) {
 
 
 static void Declination_dealloc(Declination* self) {
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 // -----------------
@@ -1881,7 +1881,7 @@ static int Cartesian_init(Cartesian* self, PyObject* args, PyObject* kwds) {
 }
 
 static void Cartesian_dealloc(Cartesian* self) {
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 // -----------------
@@ -2418,7 +2418,7 @@ static int rotator_init(rotator* self, PyObject* args, PyObject* kwds) {
 
 
 static void rotator_dealloc(rotator* self) {
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 // -----------------
@@ -2675,7 +2675,7 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
 }
 
 static void spherical_dealloc(spherical* self) {
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 // -----------------
@@ -3255,7 +3255,7 @@ static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
 
 
 static void datetime_dealloc(datetime* self) {
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 // -----------------
