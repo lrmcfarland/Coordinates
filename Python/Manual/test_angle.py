@@ -216,7 +216,7 @@ class TestAngle(unittest.TestCase):
         try:
             an_angle = coords.angle()
             an_angle.value = 'foo'
-            self.assertRaises(False) # correct behavior skips this
+            self.assertRaises(Exception) # correct behavior skips this
         except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
@@ -233,7 +233,7 @@ class TestAngle(unittest.TestCase):
         try:
             an_angle = coords.angle()
             an_angle.radians = 'foo'
-            self.assertRaises(False) # correct behavior skips this
+            self.assertRaises(Exception) # correct behavior skips this
         except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
 
@@ -585,7 +585,7 @@ class TestLatitude(unittest.TestCase):
         """Test constructor_exception north"""
         try:
             a_latitude = coords.latitude(100)
-            self.assertRaises(False) # correct behavior skips this
+            self.assertRaises(Exception) # correct behavior skips this
         except RuntimeError as err:
             self.assertTrue(RuntimeError == type(err))
 
@@ -594,7 +594,7 @@ class TestLatitude(unittest.TestCase):
         """Test constructor_exception south"""
         try:
             a_latitude = coords.latitude(-100)
-            self.assertRaises(False) # correct behavior skips this
+            self.assertRaises(Exception) # correct behavior skips this
         except RuntimeError as err:
             self.assertTrue(RuntimeError == type(err))
 
@@ -652,7 +652,7 @@ class TestDeclination(unittest.TestCase):
         """Test constructor_exception north"""
         try:
             a_declination = coords.declination(100)
-            self.assertRaises(False) # correct behavior skips this
+            self.assertRaises(Exception) # correct behavior skips this
         except RuntimeError as err:
             self.assertTrue(RuntimeError == type(err))
 
@@ -661,7 +661,7 @@ class TestDeclination(unittest.TestCase):
         """Test constructor_exception south"""
         try:
             a_declination = coords.declination(-100)
-            self.assertRaises(False) # correct behavior skips this
+            self.assertRaises(Exception) # correct behavior skips this
         except RuntimeError as err:
             self.assertTrue(RuntimeError == type(err))
 
