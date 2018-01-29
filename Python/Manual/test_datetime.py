@@ -249,9 +249,6 @@ class TestDateTime(unittest.TestCase):
     def test_set_timezone_method(self):
         """Test set time zone method"""
         a = coords.datetime('1962-07-10T07:30:00')
-
-        print a.getTimezone() # TODO rm
-
         a.setTimezone(-8)
         self.assertEqual('1962-07-10T15:30:00-08', str(a))
 
