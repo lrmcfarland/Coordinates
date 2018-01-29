@@ -741,7 +741,7 @@ static PyNumberMethods Angle_as_number = {
   (binaryfunc) Angle_nb_add,
   (binaryfunc) Angle_nb_subtract,
   (binaryfunc) Angle_nb_multiply,
-  (binaryfunc) Angle_nb_divide, // nb_remainder TODO where is divide?
+  (binaryfunc) 0,   // nb_remainder
   (binaryfunc) 0,  // nb_divmod
   (ternaryfunc) 0, // nb_power
   (unaryfunc) Angle_nb_negative,
@@ -762,7 +762,7 @@ static PyNumberMethods Angle_as_number = {
   (binaryfunc) Angle_nb_inplace_add,
   (binaryfunc) Angle_nb_inplace_subtract,
   (binaryfunc) Angle_nb_inplace_multiply,
-  (binaryfunc) Angle_nb_inplace_divide,  // nb_inplace_remainder TODO divide?
+  (binaryfunc) Angle_nb_inplace_divide,
   (ternaryfunc) 0, // nb_inplace_power
   (binaryfunc) 0,  // nb_inplace_lshift
   (binaryfunc) 0,  // nb_inplace_rshift
@@ -771,7 +771,7 @@ static PyNumberMethods Angle_as_number = {
   (binaryfunc) 0,  // nb_inplace_or
 
   (binaryfunc) 0,  // nb_floor_divide
-  (binaryfunc) 0, // Angle_nb_divide,  TODO nb_true_divide?
+  (binaryfunc) Angle_nb_divide, // nb_true_divide
   (binaryfunc) 0,  // nb_inplace_floor_divide
   (binaryfunc) 0,  // nb_inplace_true_divide
 
@@ -1289,7 +1289,7 @@ static PyNumberMethods Latitude_as_number = {
   (binaryfunc) Latitude_nb_add,
   (binaryfunc) Latitude_nb_subtract,
   (binaryfunc) Latitude_nb_multiply,
-  (binaryfunc) Latitude_nb_divide,  // nb_remainder. TODO real divide?
+  (binaryfunc) 0, // nb_remainder
   (binaryfunc) 0,  // nb_divmod
   (ternaryfunc) 0, // nb_power
   (unaryfunc) Latitude_nb_negative,
@@ -1310,7 +1310,7 @@ static PyNumberMethods Latitude_as_number = {
   (binaryfunc) Latitude_nb_inplace_add,
   (binaryfunc) Latitude_nb_inplace_subtract,
   (binaryfunc) Latitude_nb_inplace_multiply,
-  (binaryfunc) Latitude_nb_inplace_divide, // nb_inplace_remainder TODO divide?
+  (binaryfunc) Latitude_nb_inplace_divide,
   (ternaryfunc) 0, // nb_inplace_power
   (binaryfunc) 0,  // nb_inplace_lshift
   (binaryfunc) 0,  // nb_inplace_rshift
@@ -1319,7 +1319,7 @@ static PyNumberMethods Latitude_as_number = {
   (binaryfunc) 0,  // nb_inplace_or
 
   (binaryfunc) 0,  // nb_floor_divide
-  (binaryfunc) 0,  // nb_true_divide TODO true?
+  (binaryfunc) Latitude_nb_divide, // nb_true_divide
   (binaryfunc) 0,  // nb_inplace_floor_divide
   (binaryfunc) 0,  // nb_inplace_true_divide
 
@@ -1840,7 +1840,7 @@ static PyNumberMethods Declination_as_number = {
   (binaryfunc) Declination_nb_add,
   (binaryfunc) Declination_nb_subtract,
   (binaryfunc) Declination_nb_multiply,
-  (binaryfunc) Declination_nb_divide, // nb_remainder TODO where is divide?
+  (binaryfunc) 0,  // nb_remainder
   (binaryfunc) 0,  // nb_divmod
   (ternaryfunc) 0, // nb_power
   (unaryfunc) Declination_nb_negative,
@@ -1861,7 +1861,7 @@ static PyNumberMethods Declination_as_number = {
   (binaryfunc) Declination_nb_inplace_add,
   (binaryfunc) Declination_nb_inplace_subtract,
   (binaryfunc) Declination_nb_inplace_multiply,
-  (binaryfunc) Declination_nb_inplace_divide,  // nb_inplace_remainder TODO divide?
+  (binaryfunc) Declination_nb_inplace_divide,  // nb_inplace_remainder
   (ternaryfunc) 0, // nb_inplace_power
   (binaryfunc) 0,  // nb_inplace_lshift
   (binaryfunc) 0,  // nb_inplace_rshift
@@ -1870,7 +1870,7 @@ static PyNumberMethods Declination_as_number = {
   (binaryfunc) 0,  // nb_inplace_or
 
   (binaryfunc) 0,  // nb_floor_divide
-  (binaryfunc) 0,  // nb_true_divide,  TODO nb_true_divide?
+  (binaryfunc) Declination_nb_divide, // nb_true_divide
   (binaryfunc) 0,  // nb_inplace_floor_divide
   (binaryfunc) 0,  // nb_inplace_true_divide
 
@@ -2445,7 +2445,7 @@ static PyNumberMethods Cartesian_as_number = {
   (binaryfunc) Cartesian_nb_add,
   (binaryfunc) Cartesian_nb_subtract,
   (binaryfunc) Cartesian_nb_multiply,
-  (binaryfunc) Cartesian_nb_divide,  // nb_remainder. TODO real divide?
+  (binaryfunc) 0,  // nb_remainder
   (binaryfunc) 0,  // nb_divmod
   (ternaryfunc) 0, // nb_power
   (unaryfunc) Cartesian_nb_negative,
@@ -2467,7 +2467,7 @@ static PyNumberMethods Cartesian_as_number = {
   (binaryfunc) Cartesian_nb_inplace_add,
   (binaryfunc) Cartesian_nb_inplace_subtract,
   (binaryfunc) Cartesian_nb_inplace_multiply,
-  (binaryfunc) Cartesian_nb_inplace_divide, // nb_inplace_remainder TODO divide?
+  (binaryfunc) Cartesian_nb_inplace_divide, // nb_inplace_remainder
   (ternaryfunc) 0, // nb_inplace_power
   (binaryfunc) 0,  // nb_inplace_lshift
   (binaryfunc) 0,  // nb_inplace_rshift
@@ -2476,7 +2476,7 @@ static PyNumberMethods Cartesian_as_number = {
   (binaryfunc) 0,  // nb_inplace_or
 
   (binaryfunc) 0,  // nb_floor_divide
-  (binaryfunc) 0,  // nb_true_divide
+  (binaryfunc) Cartesian_nb_divide, // nb_true_divide
   (binaryfunc) 0,  // nb_inplace_floor_divide
   (binaryfunc) 0,  // nb_inplace_true_divide
 
@@ -3297,7 +3297,7 @@ static PyNumberMethods spherical_as_number = {
   (binaryfunc) spherical_nb_add,
   (binaryfunc) spherical_nb_subtract,
   (binaryfunc) spherical_nb_multiply,
-  (binaryfunc) spherical_nb_divide,  // nb_remainder. TODO real divide?
+  (binaryfunc) 0,  // nb_remainder
   (binaryfunc) 0,  // nb_divmod
   (ternaryfunc) 0, // nb_power
   (unaryfunc) spherical_nb_negative,
@@ -3318,7 +3318,7 @@ static PyNumberMethods spherical_as_number = {
   (binaryfunc) spherical_nb_inplace_add,
   (binaryfunc) spherical_nb_inplace_subtract,
   (binaryfunc) spherical_nb_inplace_multiply,
-  (binaryfunc) spherical_nb_inplace_divide, // nb_inplace_remainder TODO divide?
+  (binaryfunc) spherical_nb_inplace_divide, // nb_inplace_remainder
   (ternaryfunc) 0, // nb_inplace_power
   (binaryfunc) 0,  // nb_inplace_lshift
   (binaryfunc) 0,  // nb_inplace_rshift
@@ -3327,7 +3327,7 @@ static PyNumberMethods spherical_as_number = {
   (binaryfunc) 0,  // nb_inplace_or
 
   (binaryfunc) 0,  // nb_floor_divide
-  (binaryfunc) 0,  // nb_true_divide
+  (binaryfunc) spherical_nb_divide,  // nb_true_divide
   (binaryfunc) 0,  // nb_inplace_floor_divide
   (binaryfunc) 0,  // nb_inplace_true_divide
 
