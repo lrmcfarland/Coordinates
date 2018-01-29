@@ -713,7 +713,59 @@ static PyGetSetDef Angle_getseters[] = {
 };
 
 
+#if PY_MAJOR_VERSION >= 3
+
+// https://docs.python.org/3/c-api/typeobj.html
+
+static PyNumberMethods Angle_as_number = {
+  (binaryfunc) Angle_nb_add,
+  (binaryfunc) Angle_nb_subtract,
+  (binaryfunc) Angle_nb_multiply,
+  (binaryfunc) Angle_nb_divide, // nb_remainder TODO where is divide?
+  (binaryfunc) 0,  // nb_divmod
+  (ternaryfunc) 0, // nb_power
+  (unaryfunc) Angle_nb_negative,
+  (unaryfunc) 0,   // nb_positive
+  (unaryfunc) 0,   // nb_absolute
+  (inquiry) 0,     // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,   // nb_invert
+  (binaryfunc) 0,  // nb_lshift
+  (binaryfunc) 0,  // nb_rshift
+  (binaryfunc) 0,  // nb_and
+  (binaryfunc) 0,  // nb_xor
+  (binaryfunc) 0,  // nb_or
+
+  (unaryfunc) 0,   // nb_int
+  (void*) 0,       // nb_reserved
+  (unaryfunc) 0,   // nb_float
+
+  (binaryfunc) Angle_nb_inplace_add,
+  (binaryfunc) Angle_nb_inplace_subtract,
+  (binaryfunc) Angle_nb_inplace_multiply,
+  (binaryfunc) Angle_nb_inplace_divide,  // nb_inplace_remainder TODO divide?
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) 0, // Angle_nb_divide,  TODO nb_true_divide?
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+  (unaryfunc) 0, // nb_index
+
+  (binaryfunc) 0, // nb_matrix_multiply;
+  (binaryfunc) 0 // nb_inplace_matrix_multiply;
+
+};
+
+#else
+
 // see http://docs.python.org/c-api/typeobj.html
+
 static PyNumberMethods Angle_as_number = {
   (binaryfunc) Angle_nb_add,
   (binaryfunc) Angle_nb_subtract,
@@ -760,6 +812,8 @@ static PyNumberMethods Angle_as_number = {
   (binaryfunc) 0,  // nb_inplace_true_divide
 
 };
+
+#endif
 
 
 PyTypeObject AngleType = {
@@ -1207,6 +1261,57 @@ static PyGetSetDef Latitude_getseters[] = {
   {NULL}  /* Sentinel */
 };
 
+#if PY_MAJOR_VERSION >= 3
+
+// https://docs.python.org/3/c-api/typeobj.html
+
+static PyNumberMethods Latitude_as_number = {
+  (binaryfunc) Latitude_nb_add,
+  (binaryfunc) Latitude_nb_subtract,
+  (binaryfunc) Latitude_nb_multiply,
+  (binaryfunc) Latitude_nb_divide,  // nb_remainder. TODO real divide?
+  (binaryfunc) 0,  // nb_divmod
+  (ternaryfunc) 0, // nb_power
+  (unaryfunc) Latitude_nb_negative,
+  (unaryfunc) 0,   // nb_positive
+  (unaryfunc) 0,   // nb_absolute
+  (inquiry) 0,     // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,   // nb_invert
+  (binaryfunc) 0,  // nb_lshift
+  (binaryfunc) 0,  // nb_rshift
+  (binaryfunc) 0,  // nb_and
+  (binaryfunc) 0,  // nb_xor
+  (binaryfunc) 0,  // nb_or
+
+  (unaryfunc) 0,   // nb_int
+  (void*) 0,       // nb_reserved
+  (unaryfunc) 0,   // nb_float
+
+  (binaryfunc) Latitude_nb_inplace_add,
+  (binaryfunc) Latitude_nb_inplace_subtract,
+  (binaryfunc) Latitude_nb_inplace_multiply,
+  (binaryfunc) Latitude_nb_inplace_divide, // nb_inplace_remainder TODO divide?
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) 0,  // nb_true_divide TODO true?
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+  (unaryfunc) 0, // nb_index
+
+  (binaryfunc) 0, // nb_matrix_multiply;
+  (binaryfunc) 0 // nb_inplace_matrix_multiply;
+
+};
+
+
+#else
 
 // see http://docs.python.org/c-api/typeobj.html
 static PyNumberMethods Latitude_as_number = {
@@ -1255,6 +1360,8 @@ static PyNumberMethods Latitude_as_number = {
   (binaryfunc) 0,  // nb_inplace_true_divide
 
 };
+
+#endif
 
 
 PyTypeObject LatitudeType = {
@@ -1705,7 +1812,59 @@ static PyGetSetDef Declination_getseters[] = {
 };
 
 
+#if PY_MAJOR_VERSION >= 3
+
+// https://docs.python.org/3/c-api/typeobj.html
+
+static PyNumberMethods Declination_as_number = {
+  (binaryfunc) Declination_nb_add,
+  (binaryfunc) Declination_nb_subtract,
+  (binaryfunc) Declination_nb_multiply,
+  (binaryfunc) Declination_nb_divide, // nb_remainder TODO where is divide?
+  (binaryfunc) 0,  // nb_divmod
+  (ternaryfunc) 0, // nb_power
+  (unaryfunc) Declination_nb_negative,
+  (unaryfunc) 0,   // nb_positive
+  (unaryfunc) 0,   // nb_absolute
+  (inquiry) 0,     // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,   // nb_invert
+  (binaryfunc) 0,  // nb_lshift
+  (binaryfunc) 0,  // nb_rshift
+  (binaryfunc) 0,  // nb_and
+  (binaryfunc) 0,  // nb_xor
+  (binaryfunc) 0,  // nb_or
+
+  (unaryfunc) 0,   // nb_int
+  (void*) 0,       // nb_reserved
+  (unaryfunc) 0,   // nb_float
+
+  (binaryfunc) Declination_nb_inplace_add,
+  (binaryfunc) Declination_nb_inplace_subtract,
+  (binaryfunc) Declination_nb_inplace_multiply,
+  (binaryfunc) Declination_nb_inplace_divide,  // nb_inplace_remainder TODO divide?
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) 0,  // nb_true_divide,  TODO nb_true_divide?
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+  (unaryfunc) 0, // nb_index
+
+  (binaryfunc) 0, // nb_matrix_multiply;
+  (binaryfunc) 0 // nb_inplace_matrix_multiply;
+
+};
+
+#else
+
 // see http://docs.python.org/c-api/typeobj.html
+
 static PyNumberMethods Declination_as_number = {
   (binaryfunc) Declination_nb_add,
   (binaryfunc) Declination_nb_subtract,
@@ -1752,6 +1911,8 @@ static PyNumberMethods Declination_as_number = {
   (binaryfunc) 0,  // nb_inplace_true_divide
 
 };
+
+#endif
 
 
 PyTypeObject DeclinationType = {
@@ -2255,7 +2416,62 @@ static PyGetSetDef Cartesian_getseters[] = {
   {NULL}  /* Sentinel */
 };
 
+
+#if PY_MAJOR_VERSION >= 3
+
+// https://docs.python.org/3/c-api/typeobj.html
+
+static PyNumberMethods Cartesian_as_number = {
+  (binaryfunc) Cartesian_nb_add,
+  (binaryfunc) Cartesian_nb_subtract,
+  (binaryfunc) Cartesian_nb_multiply,
+  (binaryfunc) Cartesian_nb_divide,  // nb_remainder. TODO real divide?
+  (binaryfunc) 0,  // nb_divmod
+  (ternaryfunc) 0, // nb_power
+  (unaryfunc) Cartesian_nb_negative,
+  (unaryfunc) 0,   // nb_positive
+  (unaryfunc) 0,   // nb_absolute
+  (inquiry) 0,     // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,   // nb_invert
+  (binaryfunc) 0,  // nb_lshift
+  (binaryfunc) 0,  // nb_rshift
+  (binaryfunc) 0,  // nb_and
+  (binaryfunc) 0,  // nb_xor
+  (binaryfunc) 0,  // nb_or
+
+  (unaryfunc) 0,   // nb_int
+  (void*) 0,       // nb_reserved
+  (unaryfunc) 0,   // nb_float
+
+
+  (binaryfunc) Cartesian_nb_inplace_add,
+  (binaryfunc) Cartesian_nb_inplace_subtract,
+  (binaryfunc) Cartesian_nb_inplace_multiply,
+  (binaryfunc) Cartesian_nb_inplace_divide, // nb_inplace_remainder TODO divide?
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) 0,  // nb_true_divide
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+  (unaryfunc) 0, // nb_index
+
+  (binaryfunc) 0, // nb_matrix_multiply;
+  (binaryfunc) 0 // nb_inplace_matrix_multiply;
+
+};
+
+
+#else
+
 // see http://docs.python.org/c-api/typeobj.html
+
 static PyNumberMethods Cartesian_as_number = {
   (binaryfunc) Cartesian_nb_add,
   (binaryfunc) Cartesian_nb_subtract,
@@ -2302,6 +2518,8 @@ static PyNumberMethods Cartesian_as_number = {
   (binaryfunc) 0,  // nb_inplace_true_divide
 
 };
+
+#endif
 
 
 PyTypeObject CartesianType = {
@@ -3050,7 +3268,60 @@ static PyGetSetDef spherical_getseters[] = {
   {NULL}  /* Sentinel */
 };
 
+
+#if PY_MAJOR_VERSION >= 3
+
+// https://docs.python.org/3/c-api/typeobj.html
+
+static PyNumberMethods spherical_as_number = {
+  (binaryfunc) spherical_nb_add,
+  (binaryfunc) spherical_nb_subtract,
+  (binaryfunc) spherical_nb_multiply,
+  (binaryfunc) spherical_nb_divide,  // nb_remainder. TODO real divide?
+  (binaryfunc) 0,  // nb_divmod
+  (ternaryfunc) 0, // nb_power
+  (unaryfunc) spherical_nb_negative,
+  (unaryfunc) 0,   // nb_positive
+  (unaryfunc) 0,   // nb_absolute
+  (inquiry) 0,     // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,   // nb_invert
+  (binaryfunc) 0,  // nb_lshift
+  (binaryfunc) 0,  // nb_rshift
+  (binaryfunc) 0,  // nb_and
+  (binaryfunc) 0,  // nb_xor
+  (binaryfunc) 0,  // nb_or
+
+  (unaryfunc) 0,   // nb_int
+  (void*) 0,       // nb_reserved
+  (unaryfunc) 0,   // nb_float
+
+  (binaryfunc) spherical_nb_inplace_add,
+  (binaryfunc) spherical_nb_inplace_subtract,
+  (binaryfunc) spherical_nb_inplace_multiply,
+  (binaryfunc) spherical_nb_inplace_divide, // nb_inplace_remainder TODO divide?
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) 0,  // nb_true_divide
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+  (unaryfunc) 0, // nb_index
+
+  (binaryfunc) 0, // nb_matrix_multiply;
+  (binaryfunc) 0 // nb_inplace_matrix_multiply;
+
+};
+
+#else
+
 // see http://docs.python.org/c-api/typeobj.html
+
 static PyNumberMethods spherical_as_number = {
   (binaryfunc) spherical_nb_add,
   (binaryfunc) spherical_nb_subtract,
@@ -3097,6 +3368,9 @@ static PyNumberMethods spherical_as_number = {
   (binaryfunc) 0,  // nb_inplace_true_divide
 
 };
+
+
+#endif
 
 
 PyTypeObject sphericalType = {
@@ -3494,8 +3768,61 @@ static PyGetSetDef datetime_getseters[] = {
   {NULL}  /* Sentinel */
 };
 
+#if PY_MAJOR_VERSION >= 3
+
+// https://docs.python.org/3/c-api/typeobj.html
+
+static PyNumberMethods datetime_as_number = {
+  (binaryfunc) datetime_nb_add,
+  (binaryfunc) datetime_nb_subtract,
+  (binaryfunc) 0,   // nb_multiply,
+  (binaryfunc) 0,   // nb_remainder
+  (binaryfunc) 0,   // nb_divmod
+  (ternaryfunc) 0,  // nb_power
+  (unaryfunc) 0,    // nb_negative,
+  (unaryfunc) 0,    // nb_positive
+  (unaryfunc) 0,    // nb_absolute
+  (inquiry) 0,      // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,    // nb_invert
+  (binaryfunc) 0,   // nb_lshift
+  (binaryfunc) 0,   // nb_rshift
+  (binaryfunc) 0,   // nb_and
+  (binaryfunc) 0,   // nb_xor
+  (binaryfunc) 0,   // nb_or
+
+  (unaryfunc) 0,    // nb_int
+  (void*) 0,       // nb_reserved
+  (unaryfunc) 0,    // nb_float
+
+
+  (binaryfunc) datetime_nb_inplace_add,
+  (binaryfunc) datetime_nb_inplace_subtract,
+  (binaryfunc) 0,  // nb_inplace_multiply,
+  (binaryfunc) 0,  // nb_inplace_remainder
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) 0,  // nb_true_divide
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+  (unaryfunc) 0, // nb_index
+
+  (binaryfunc) 0, // nb_matrix_multiply;
+  (binaryfunc) 0 // nb_inplace_matrix_multiply;
+
+};
+
+
+#else
 
 // see http://docs.python.org/c-api/typeobj.html
+
 static PyNumberMethods datetime_as_number = {
   (binaryfunc) datetime_nb_add,
   (binaryfunc) datetime_nb_subtract,
@@ -3542,6 +3869,9 @@ static PyNumberMethods datetime_as_number = {
   (binaryfunc) 0,  // nb_inplace_true_divide
 
 };
+
+
+#endif
 
 
 PyTypeObject datetimeType = {
