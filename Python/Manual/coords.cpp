@@ -29,11 +29,15 @@
 #define COORDS_STR_CHECK PyMapping_Check
 #define COORDS_STR_FROM_STR PyUnicode_FromString
 
+#define COORDS_TPFLAGS Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE // coersion implicit in python3?
+
 #else
 
 #define COORDS_INT_CHECK PyInt_Check
 #define COORDS_STR_CHECK PyString_Check
 #define COORDS_STR_FROM_STR PyString_FromString
+
+#define COORDS_TPFLAGS Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES
 
 #endif
 
@@ -778,7 +782,7 @@ PyTypeObject AngleType = {
   0,                                 /* tp_getattro */
   0,                                 /* tp_setattro */
   0,                                 /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  COORDS_TPFLAGS, /* tp_flags */
   "angle objects",                   /* tp_doc */
   0,                                 /* tp_traverse */
   0,                                 /* tp_clear */
@@ -1273,7 +1277,7 @@ PyTypeObject LatitudeType = {
   0,                                 /* tp_getattro */
   0,                                 /* tp_setattro */
   0,                                 /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  COORDS_TPFLAGS, /* tp_flags */
   "Latitude objects",                   /* tp_doc */
   0,                                 /* tp_traverse */
   0,                                 /* tp_clear */
@@ -1770,7 +1774,7 @@ PyTypeObject DeclinationType = {
   0,                                 /* tp_getattro */
   0,                                 /* tp_setattro */
   0,                                 /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  COORDS_TPFLAGS, /* tp_flags */
   "Declination objects",                   /* tp_doc */
   0,                                 /* tp_traverse */
   0,                                 /* tp_clear */
@@ -2320,7 +2324,7 @@ PyTypeObject CartesianType = {
   0,                                        /* tp_getattro */
   0,                                        /* tp_setattro */
   0,                                        /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  COORDS_TPFLAGS, /* tp_flags */
   "Cartesian objects",                      /* tp_doc */
   0,                                        /* tp_traverse */
   0,                                        /* tp_clear */
@@ -2531,7 +2535,7 @@ PyTypeObject rotatorType = {
   0,                                 /* tp_getattro */
   0,                                 /* tp_setattro */
   0,                                 /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  COORDS_TPFLAGS, /* tp_flags */
   "rotator objects",                   /* tp_doc */
   0,                                 /* tp_traverse */
   0,                                 /* tp_clear */
@@ -3115,7 +3119,7 @@ PyTypeObject sphericalType = {
   0,                                        /* tp_getattro */
   0,                                        /* tp_setattro */
   0,                                        /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  COORDS_TPFLAGS, /* tp_flags */
   "spherical objects",                      /* tp_doc */
   0,                                        /* tp_traverse */
   0,                                        /* tp_clear */
@@ -3560,7 +3564,7 @@ PyTypeObject datetimeType = {
   0,                                 /* tp_getattro */
   0,                                 /* tp_setattro */
   0,                                 /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  COORDS_TPFLAGS, /* tp_flags */
   "datetime objects",                /* tp_doc */
   0,                                 /* tp_traverse */
   0,                                 /* tp_clear */
