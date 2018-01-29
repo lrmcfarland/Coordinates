@@ -26,11 +26,14 @@
 #if PY_MAJOR_VERSION >= 3
 
 #define COORDS_INT_CHECK PyLong_Check
+#define COORDS_STR_CHECK PyMapping_Check
+#define COORDS_STR_FROM_STR PyUnicode_FromString
 
 #else
 
 #define COORDS_INT_CHECK PyInt_Check
-
+#define COORDS_STR_CHECK PyString_Check
+#define COORDS_STR_FROM_STR PyString_FromString
 
 #endif
 
@@ -188,7 +191,7 @@ int parse_int_arg(PyObject* arg, int& val) {
       val = PyFloat_AsDouble(arg);
       return 0;
 
-    } else if (PyString_Check(arg)) {
+    } else if (COORDS_STR_CHECK(arg)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -210,7 +213,7 @@ int parse_double_arg(PyObject* arg, double& val) {
       val = PyFloat_AsDouble(arg);
       return 0;
 
-    } else if (PyString_Check(arg)) {
+    } else if (COORDS_STR_CHECK(arg)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -264,7 +267,7 @@ static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
     } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
       degrees = PyFloat_AsDouble(arg0);
 
-    } else if (PyString_Check(arg0)) {
+    } else if (COORDS_STR_CHECK(arg0)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -300,7 +303,7 @@ PyObject* Angle_str(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((Angle*)self)->m_angle;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // TODO a different repr? for constructor?
@@ -308,7 +311,7 @@ PyObject* Angle_repr(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((Angle*)self)->m_angle;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // -------------------------------
@@ -849,7 +852,7 @@ static int Latitude_init(Latitude* self, PyObject* args, PyObject* kwds) {
     } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
       degrees = PyFloat_AsDouble(arg0);
 
-    } else if (PyString_Check(arg0)) {
+    } else if (COORDS_STR_CHECK(arg0)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -885,7 +888,7 @@ PyObject* Latitude_str(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((Latitude*)self)->m_angle;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // TODO a different repr? for constructor?
@@ -893,7 +896,7 @@ PyObject* Latitude_repr(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((Latitude*)self)->m_angle;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // -------------------------------
@@ -1346,7 +1349,7 @@ static int Declination_init(Declination* self, PyObject* args, PyObject* kwds) {
     } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
       degrees = PyFloat_AsDouble(arg0);
 
-    } else if (PyString_Check(arg0)) {
+    } else if (COORDS_STR_CHECK(arg0)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -1382,7 +1385,7 @@ PyObject* Declination_str(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((Declination*)self)->m_angle;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // TODO a different repr? for constructor?
@@ -1390,7 +1393,7 @@ PyObject* Declination_repr(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((Declination*)self)->m_angle;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // -------------------------------
@@ -1852,7 +1855,7 @@ static int Cartesian_init(Cartesian* self, PyObject* args, PyObject* kwds) {
     } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
       x = PyFloat_AsDouble(arg0);
 
-    } else if (PyString_Check(arg0)) {
+    } else if (COORDS_STR_CHECK(arg0)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -1891,7 +1894,7 @@ PyObject* Cartesian_str(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((Cartesian*)self)->m_Cartesian;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 PyObject* Cartesian_repr(PyObject* self) {
@@ -1902,7 +1905,7 @@ PyObject* Cartesian_repr(PyObject* self) {
 	 << a_Cartesian.x() << ", "
 	 << a_Cartesian.y() << ", "
 	 << a_Cartesian.z() << ")";
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // -------------------------------
@@ -2426,7 +2429,7 @@ PyObject* rotator_str(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((rotator*)self)->m_rotator.axis();
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // TODO a different repr? for constructor?
@@ -2434,7 +2437,7 @@ PyObject* rotator_repr(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((rotator*)self)->m_rotator.axis();
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // -------------------
@@ -2613,7 +2616,7 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
     } else if ((PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0))) {
       r = PyFloat_AsDouble(arg0);
 
-    } else if (PyString_Check(arg0)) {
+    } else if (COORDS_STR_CHECK(arg0)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -2635,7 +2638,7 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
     } else if (is_DeclinationType(arg1)) {
       theta = Coords::angle(90.0) - ((Declination*)arg1)->m_angle;
 
-    } else if (PyString_Check(arg1)) {
+    } else if (COORDS_STR_CHECK(arg1)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -2652,7 +2655,7 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
     if (is_AngleType(arg2)) {
       phi = ((Angle*)arg2)->m_angle;
 
-    } else if (PyString_Check(arg2)) {
+    } else if (COORDS_STR_CHECK(arg2)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -2683,7 +2686,7 @@ PyObject* spherical_str(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((spherical*)self)->m_spherical;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 PyObject* spherical_repr(PyObject* self) {
@@ -2694,7 +2697,7 @@ PyObject* spherical_repr(PyObject* self) {
 	 << a_spherical.r() << ", "
 	 << a_spherical.theta() << ", "
 	 << a_spherical.phi() << ")";
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // -------------------------------
@@ -3184,7 +3187,7 @@ static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
 
   if (arg0) {
 
-    if (PyString_Check(arg0)) {
+    if (COORDS_STR_CHECK(arg0)) {
 
       // ISO-8601 string constructor
       try {
@@ -3263,7 +3266,7 @@ PyObject* datetime_str(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((datetime*)self)->m_datetime;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // TODO a different repr? for constructor?
@@ -3271,7 +3274,7 @@ PyObject* datetime_repr(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((datetime*)self)->m_datetime;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // -------------------------------
