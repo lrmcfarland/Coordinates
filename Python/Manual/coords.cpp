@@ -31,6 +31,8 @@
 
 #define COORDS_TPFLAGS Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE // coersion implicit in python3?
 
+#define COORDS_STR_AS_STR(arg) PyBytes_AS_STRING(PyUnicode_AsEncodedString(arg, "utf-8", "Error encoding string"))
+
 #else
 
 #define COORDS_INT_CHECK PyInt_Check
@@ -38,6 +40,8 @@
 #define COORDS_STR_FROM_STR PyString_FromString
 
 #define COORDS_TPFLAGS Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES
+
+#define COORDS_STR_AS_STR(arg) PyString_AsString(arg)
 
 #endif
 
@@ -3470,7 +3474,7 @@ static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
       // ISO-8601 string constructor
       try {
 
-	Coords::DateTime a_datetime(PyString_AsString(arg0));
+	Coords::DateTime a_datetime(COORDS_STR_AS_STR(arg0));
 	self->m_datetime = a_datetime;
 
       } catch (Coords::Error err) {
