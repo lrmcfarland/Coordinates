@@ -454,16 +454,26 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         try:
             a1 /= 'asdf'
+
         except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
+
+        except TypeError as err:
+            # python3
+            self.assertTrue(TypeError == type(err))
 
     def test_inplace_divide_exception_double(self):
         """Test angle /= double exception"""
         a1 = coords.angle(self.rd1)
         try:
             a1 /= 30.0
+
         except coords.Error as err:
             self.assertTrue(coords.Error == type(err))
+
+        except TypeError as err:
+            # python3
+            self.assertTrue(TypeError == type(err))
 
     def test_angle_divide_angle(self):
         """Test angle / angle"""

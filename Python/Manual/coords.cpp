@@ -762,7 +762,7 @@ static PyNumberMethods Angle_as_number = {
   (binaryfunc) Angle_nb_inplace_add,
   (binaryfunc) Angle_nb_inplace_subtract,
   (binaryfunc) Angle_nb_inplace_multiply,
-  (binaryfunc) Angle_nb_inplace_divide,
+  (binaryfunc) Angle_nb_inplace_divide, // nb_inplace_remainder
   (ternaryfunc) 0, // nb_inplace_power
   (binaryfunc) 0,  // nb_inplace_lshift
   (binaryfunc) 0,  // nb_inplace_rshift
