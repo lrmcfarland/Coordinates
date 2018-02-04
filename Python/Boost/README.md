@@ -32,20 +32,11 @@ The easiest way I found to install and maintain boost on OS X is to
 use [homebrew](http://brew.sh). Open the boost-python bottle. The
 python wrappers are not in the "regular" boost bottle.
 
+
 ```
 
-$ brew install boost-python
-==> Installing boost-python dependency: boost
-==> Downloading https://downloads.sf.net/project/machomebrew/Bottles/boost-1.56.0.mavericks.bottle.1.tar.gz
-######################################################################## 100.0%
-==> Pouring boost-1.56.0.mavericks.bottle.1.tar.gz
-🍺  /usr/local/Cellar/boost/1.56.0: 10471 files, 438M
-==> Installing boost-python
-==> Downloading https://downloads.sourceforge.net/project/boost/boost/1.56.0/boost_1_56_0.tar.bz2
-######################################################################## 100.0%
-==> ./bootstrap.sh --prefix=/usr/local/Cellar/boost-python/1.56.0 --libdir=/usr/local/Cellar/boost-python/1.56.0/lib --with-librar
-==> ./b2 --build-dir=build-python --stagedir=stage-python python=2.7 --prefix=/usr/local/Cellar/boost-python/1.56.0 --libdir=/usr/
-🍺  /usr/local/Cellar/boost-python/1.56.0: 5 files, 11M, built in 3.1 minutes
+$ brew install boost-python  --with-python3
+
 
 
 ```

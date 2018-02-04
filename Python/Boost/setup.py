@@ -16,20 +16,25 @@ name = 'coords'
 version = '1.0'
 description = 'coords package'
 
+if sys.version_info.major == 3:
+    boost_pylib = 'boost_python3'
+else:
+    boost_pylib = 'boost_python'
+
+
 if platform.system() == 'Darwin':
 
     BOOST_ROOT = '/usr/local'
     include_dirs = ['../../libCoords', BOOST_ROOT + '/include']
     library_dirs = ['../../libCoords', BOOST_ROOT + '/lib']
-    libraries = ['boost_python', 'Coords']
+    libraries = [boost_pylib, 'Coords']
     sources = ['coords.cpp']
 
 elif platform.system() == 'Linux':
-    # TODO more Linux specific, e.g. CentOS vs. Ubuntu?
 
     include_dirs = ['../../libCoords']
     library_dirs = ['../../libCoords', '/usr/lib64']
-    libraries = ['boost_python', 'boost_regex', 'Coords']
+    libraries = [boost_pylib, 'boost_regex', 'Coords']
     sources = ['coords.cpp']
 
 else:

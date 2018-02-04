@@ -22,6 +22,47 @@
 #include <datetime.h>
 #include <spherical.h>
 
+
+#if PY_MAJOR_VERSION >= 3
+
+#define COORDS_INT_CHECK PyLong_Check
+#define COORDS_STR_CHECK PyMapping_Check
+#define COORDS_STR_FROM_STR PyUnicode_FromString
+
+#define COORDS_TPFLAGS Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE // coersion implicit in python3?
+
+#define COORDS_STR_AS_STR(arg) PyBytes_AS_STRING(PyUnicode_AsEncodedString(arg, "utf-8", "Error encoding string"))
+
+
+#define MOD_ERROR_VAL NULL
+#define MOD_SUCCESS_VAL(val) val
+#define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
+#define MOD_DEF(ob, name, doc, methods) \
+  static struct PyModuleDef moduledef = {PyModuleDef_HEAD_INIT, name, doc, -1, methods, }; \
+  ob = PyModule_Create(&moduledef);
+
+
+#else
+
+#define COORDS_INT_CHECK PyInt_Check
+#define COORDS_STR_CHECK PyString_Check
+#define COORDS_STR_FROM_STR PyString_FromString
+
+#define COORDS_TPFLAGS Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES
+
+#define COORDS_STR_AS_STR(arg) PyString_AsString(arg)
+
+#define MOD_ERROR_VAL
+#define MOD_SUCCESS_VAL(val)
+#define MOD_INIT(name) PyMODINIT_FUNC init##name(void)
+#define MOD_DEF(ob, name, doc, methods) ob = Py_InitModule3(name, methods, doc);
+
+// PyMODINIT_FUNC declares extern "C" too.
+
+#endif
+
+
+
 // ===================
 // ===== statics =====
 // ===================
@@ -170,11 +211,11 @@ int parse_int_arg(PyObject* arg, int& val) {
 
   if (arg) {
 
-    if (PyFloat_Check(arg) || PyInt_Check(arg)) {
+    if (PyFloat_Check(arg) || COORDS_INT_CHECK(arg)) {
       val = PyFloat_AsDouble(arg);
       return 0;
 
-    } else if (PyString_Check(arg)) {
+    } else if (COORDS_STR_CHECK(arg)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -192,11 +233,11 @@ int parse_double_arg(PyObject* arg, double& val) {
 
   if (arg) {
 
-    if (PyFloat_Check(arg) || PyInt_Check(arg)) {
+    if (PyFloat_Check(arg) || COORDS_INT_CHECK(arg)) {
       val = PyFloat_AsDouble(arg);
       return 0;
 
-    } else if (PyString_Check(arg)) {
+    } else if (COORDS_STR_CHECK(arg)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -247,10 +288,10 @@ static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
       self->m_angle.value(((Angle*)arg0)->m_angle.value());
       return 0;
 
-    } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
+    } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
       degrees = PyFloat_AsDouble(arg0);
 
-    } else if (PyString_Check(arg0)) {
+    } else if (COORDS_STR_CHECK(arg0)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -275,7 +316,7 @@ static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
 
 
 static void Angle_dealloc(Angle* self) {
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 // -----------------
@@ -286,7 +327,7 @@ PyObject* Angle_str(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((Angle*)self)->m_angle;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // TODO a different repr? for constructor?
@@ -294,7 +335,7 @@ PyObject* Angle_repr(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((Angle*)self)->m_angle;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // -------------------------------
@@ -314,7 +355,7 @@ static int Angle_setValue(Angle* self, PyObject* value, void* closure) {
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "value must be a float or int");
     return -1;
   }
@@ -337,7 +378,7 @@ static int Angle_setRadians(Angle* self, PyObject* radians, void* closure) {
     return -1;
   }
 
-  if (!PyFloat_Check(radians) && !PyInt_Check(radians)) {
+  if (!PyFloat_Check(radians) && !COORDS_INT_CHECK(radians)) {
     PyErr_SetString(sCoordsException, "radians must be a float or int");
     return -1;
   }
@@ -692,7 +733,59 @@ static PyGetSetDef Angle_getseters[] = {
 };
 
 
+#if PY_MAJOR_VERSION >= 3
+
+// https://docs.python.org/3/c-api/typeobj.html
+
+static PyNumberMethods Angle_as_number = {
+  (binaryfunc) Angle_nb_add,
+  (binaryfunc) Angle_nb_subtract,
+  (binaryfunc) Angle_nb_multiply,
+  (binaryfunc) 0,   // nb_remainder
+  (binaryfunc) 0,  // nb_divmod
+  (ternaryfunc) 0, // nb_power
+  (unaryfunc) Angle_nb_negative,
+  (unaryfunc) 0,   // nb_positive
+  (unaryfunc) 0,   // nb_absolute
+  (inquiry) 0,     // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,   // nb_invert
+  (binaryfunc) 0,  // nb_lshift
+  (binaryfunc) 0,  // nb_rshift
+  (binaryfunc) 0,  // nb_and
+  (binaryfunc) 0,  // nb_xor
+  (binaryfunc) 0,  // nb_or
+
+  (unaryfunc) 0,   // nb_int
+  (void*) 0,       // nb_reserved
+  (unaryfunc) 0,   // nb_float
+
+  (binaryfunc) Angle_nb_inplace_add,
+  (binaryfunc) Angle_nb_inplace_subtract,
+  (binaryfunc) Angle_nb_inplace_multiply,
+  (binaryfunc) Angle_nb_inplace_divide, // nb_inplace_remainder
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) Angle_nb_divide, // nb_true_divide
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+  (unaryfunc) 0, // nb_index
+
+  (binaryfunc) 0, // nb_matrix_multiply;
+  (binaryfunc) 0 // nb_inplace_matrix_multiply;
+
+};
+
+#else
+
 // see http://docs.python.org/c-api/typeobj.html
+
 static PyNumberMethods Angle_as_number = {
   (binaryfunc) Angle_nb_add,
   (binaryfunc) Angle_nb_subtract,
@@ -740,10 +833,11 @@ static PyNumberMethods Angle_as_number = {
 
 };
 
+#endif
+
 
 PyTypeObject AngleType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                 /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)
   "angle",                           /* tp_name */
   sizeof(Angle),                     /* tp_basicsize */
   0,                                 /* tp_itemsize */
@@ -762,7 +856,7 @@ PyTypeObject AngleType = {
   0,                                 /* tp_getattro */
   0,                                 /* tp_setattro */
   0,                                 /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  COORDS_TPFLAGS, /* tp_flags */
   "angle objects",                   /* tp_doc */
   0,                                 /* tp_traverse */
   0,                                 /* tp_clear */
@@ -833,10 +927,10 @@ static int Latitude_init(Latitude* self, PyObject* args, PyObject* kwds) {
       self->m_angle.value(((Latitude*)arg0)->m_angle.value());
       return 0;
 
-    } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
+    } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
       degrees = PyFloat_AsDouble(arg0);
 
-    } else if (PyString_Check(arg0)) {
+    } else if (COORDS_STR_CHECK(arg0)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -861,7 +955,7 @@ static int Latitude_init(Latitude* self, PyObject* args, PyObject* kwds) {
 
 
 static void Latitude_dealloc(Latitude* self) {
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 // -----------------
@@ -872,7 +966,7 @@ PyObject* Latitude_str(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((Latitude*)self)->m_angle;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // TODO a different repr? for constructor?
@@ -880,7 +974,7 @@ PyObject* Latitude_repr(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((Latitude*)self)->m_angle;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // -------------------------------
@@ -900,7 +994,7 @@ static int Latitude_setValue(Latitude* self, PyObject* value, void* closure) {
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "value must be a float or int");
     return -1;
   }
@@ -923,7 +1017,7 @@ static int Latitude_setRadians(Latitude* self, PyObject* radians, void* closure)
     return -1;
   }
 
-  if (!PyFloat_Check(radians) && !PyInt_Check(radians)) {
+  if (!PyFloat_Check(radians) && !COORDS_INT_CHECK(radians)) {
     PyErr_SetString(sCoordsException, "radians must be a float or int");
     return -1;
   }
@@ -1187,6 +1281,57 @@ static PyGetSetDef Latitude_getseters[] = {
   {NULL}  /* Sentinel */
 };
 
+#if PY_MAJOR_VERSION >= 3
+
+// https://docs.python.org/3/c-api/typeobj.html
+
+static PyNumberMethods Latitude_as_number = {
+  (binaryfunc) Latitude_nb_add,
+  (binaryfunc) Latitude_nb_subtract,
+  (binaryfunc) Latitude_nb_multiply,
+  (binaryfunc) 0, // nb_remainder
+  (binaryfunc) 0,  // nb_divmod
+  (ternaryfunc) 0, // nb_power
+  (unaryfunc) Latitude_nb_negative,
+  (unaryfunc) 0,   // nb_positive
+  (unaryfunc) 0,   // nb_absolute
+  (inquiry) 0,     // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,   // nb_invert
+  (binaryfunc) 0,  // nb_lshift
+  (binaryfunc) 0,  // nb_rshift
+  (binaryfunc) 0,  // nb_and
+  (binaryfunc) 0,  // nb_xor
+  (binaryfunc) 0,  // nb_or
+
+  (unaryfunc) 0,   // nb_int
+  (void*) 0,       // nb_reserved
+  (unaryfunc) 0,   // nb_float
+
+  (binaryfunc) Latitude_nb_inplace_add,
+  (binaryfunc) Latitude_nb_inplace_subtract,
+  (binaryfunc) Latitude_nb_inplace_multiply,
+  (binaryfunc) Latitude_nb_inplace_divide,
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) Latitude_nb_divide, // nb_true_divide
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+  (unaryfunc) 0, // nb_index
+
+  (binaryfunc) 0, // nb_matrix_multiply;
+  (binaryfunc) 0 // nb_inplace_matrix_multiply;
+
+};
+
+
+#else
 
 // see http://docs.python.org/c-api/typeobj.html
 static PyNumberMethods Latitude_as_number = {
@@ -1236,10 +1381,11 @@ static PyNumberMethods Latitude_as_number = {
 
 };
 
+#endif
+
 
 PyTypeObject LatitudeType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                 /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)
   "Latitude",                           /* tp_name */
   sizeof(Latitude),                     /* tp_basicsize */
   0,                                 /* tp_itemsize */
@@ -1258,7 +1404,7 @@ PyTypeObject LatitudeType = {
   0,                                 /* tp_getattro */
   0,                                 /* tp_setattro */
   0,                                 /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  COORDS_TPFLAGS, /* tp_flags */
   "Latitude objects",                   /* tp_doc */
   0,                                 /* tp_traverse */
   0,                                 /* tp_clear */
@@ -1331,10 +1477,10 @@ static int Declination_init(Declination* self, PyObject* args, PyObject* kwds) {
       self->m_angle.value(((Declination*)arg0)->m_angle.value());
       return 0;
 
-    } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
+    } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
       degrees = PyFloat_AsDouble(arg0);
 
-    } else if (PyString_Check(arg0)) {
+    } else if (COORDS_STR_CHECK(arg0)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -1359,7 +1505,7 @@ static int Declination_init(Declination* self, PyObject* args, PyObject* kwds) {
 
 
 static void Declination_dealloc(Declination* self) {
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 // -----------------
@@ -1370,7 +1516,7 @@ PyObject* Declination_str(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((Declination*)self)->m_angle;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // TODO a different repr? for constructor?
@@ -1378,7 +1524,7 @@ PyObject* Declination_repr(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((Declination*)self)->m_angle;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // -------------------------------
@@ -1398,7 +1544,7 @@ static int Declination_setValue(Declination* self, PyObject* value, void* closur
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "value must be a float or int");
     return -1;
   }
@@ -1421,7 +1567,7 @@ static int Declination_setRadians(Declination* self, PyObject* radians, void* cl
     return -1;
   }
 
-  if (!PyFloat_Check(radians) && !PyInt_Check(radians)) {
+  if (!PyFloat_Check(radians) && !COORDS_INT_CHECK(radians)) {
     PyErr_SetString(sCoordsException, "radians must be a float or int");
     return -1;
   }
@@ -1686,7 +1832,59 @@ static PyGetSetDef Declination_getseters[] = {
 };
 
 
+#if PY_MAJOR_VERSION >= 3
+
+// https://docs.python.org/3/c-api/typeobj.html
+
+static PyNumberMethods Declination_as_number = {
+  (binaryfunc) Declination_nb_add,
+  (binaryfunc) Declination_nb_subtract,
+  (binaryfunc) Declination_nb_multiply,
+  (binaryfunc) 0,  // nb_remainder
+  (binaryfunc) 0,  // nb_divmod
+  (ternaryfunc) 0, // nb_power
+  (unaryfunc) Declination_nb_negative,
+  (unaryfunc) 0,   // nb_positive
+  (unaryfunc) 0,   // nb_absolute
+  (inquiry) 0,     // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,   // nb_invert
+  (binaryfunc) 0,  // nb_lshift
+  (binaryfunc) 0,  // nb_rshift
+  (binaryfunc) 0,  // nb_and
+  (binaryfunc) 0,  // nb_xor
+  (binaryfunc) 0,  // nb_or
+
+  (unaryfunc) 0,   // nb_int
+  (void*) 0,       // nb_reserved
+  (unaryfunc) 0,   // nb_float
+
+  (binaryfunc) Declination_nb_inplace_add,
+  (binaryfunc) Declination_nb_inplace_subtract,
+  (binaryfunc) Declination_nb_inplace_multiply,
+  (binaryfunc) Declination_nb_inplace_divide,  // nb_inplace_remainder
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) Declination_nb_divide, // nb_true_divide
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+  (unaryfunc) 0, // nb_index
+
+  (binaryfunc) 0, // nb_matrix_multiply;
+  (binaryfunc) 0 // nb_inplace_matrix_multiply;
+
+};
+
+#else
+
 // see http://docs.python.org/c-api/typeobj.html
+
 static PyNumberMethods Declination_as_number = {
   (binaryfunc) Declination_nb_add,
   (binaryfunc) Declination_nb_subtract,
@@ -1734,10 +1932,11 @@ static PyNumberMethods Declination_as_number = {
 
 };
 
+#endif
+
 
 PyTypeObject DeclinationType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                 /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)
   "Declination",                           /* tp_name */
   sizeof(Declination),                     /* tp_basicsize */
   0,                                 /* tp_itemsize */
@@ -1756,7 +1955,7 @@ PyTypeObject DeclinationType = {
   0,                                 /* tp_getattro */
   0,                                 /* tp_setattro */
   0,                                 /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  COORDS_TPFLAGS, /* tp_flags */
   "Declination objects",                   /* tp_doc */
   0,                                 /* tp_traverse */
   0,                                 /* tp_clear */
@@ -1838,10 +2037,10 @@ static int Cartesian_init(Cartesian* self, PyObject* args, PyObject* kwds) {
       self->m_Cartesian.z(from_spherical.z());
       return 0;
 
-    } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
+    } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
       x = PyFloat_AsDouble(arg0);
 
-    } else if (PyString_Check(arg0)) {
+    } else if (COORDS_STR_CHECK(arg0)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -1867,7 +2066,7 @@ static int Cartesian_init(Cartesian* self, PyObject* args, PyObject* kwds) {
 }
 
 static void Cartesian_dealloc(Cartesian* self) {
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 // -----------------
@@ -1880,7 +2079,7 @@ PyObject* Cartesian_str(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((Cartesian*)self)->m_Cartesian;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 PyObject* Cartesian_repr(PyObject* self) {
@@ -1891,7 +2090,7 @@ PyObject* Cartesian_repr(PyObject* self) {
 	 << a_Cartesian.x() << ", "
 	 << a_Cartesian.y() << ", "
 	 << a_Cartesian.z() << ")";
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // -------------------------------
@@ -1911,7 +2110,7 @@ static int Cartesian_setx(Cartesian* self, PyObject* value, void* closure) {
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "x must be a float or int");
     return -1;
   }
@@ -1934,7 +2133,7 @@ static int Cartesian_sety(Cartesian* self, PyObject* value, void* closure) {
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "y must be a float or int");
     return -1;
   }
@@ -1957,7 +2156,7 @@ static int Cartesian_setz(Cartesian* self, PyObject* value, void* closure) {
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "z must be a float or int");
     return -1;
   }
@@ -2067,12 +2266,12 @@ static PyObject* Cartesian_nb_multiply(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  if (is_CartesianType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_CartesianType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     result_Cartesian->m_Cartesian = ((Cartesian*)o1)->m_Cartesian * PyFloat_AsDouble(o2);
     return (PyObject*) result_Cartesian;
   }
 
-  if ((PyFloat_Check(o1) || PyInt_Check(o1)) && is_CartesianType(o2)) {
+  if ((PyFloat_Check(o1) || COORDS_INT_CHECK(o1)) && is_CartesianType(o2)) {
     result_Cartesian->m_Cartesian = PyFloat_AsDouble(o1) * ((Cartesian*)o2)->m_Cartesian;
     return (PyObject*) result_Cartesian;
 
@@ -2097,7 +2296,7 @@ static PyObject* Cartesian_nb_divide(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  if (is_CartesianType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_CartesianType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
 
     try {
       result_Cartesian->m_Cartesian = ((Cartesian*)o1)->m_Cartesian / PyFloat_AsDouble(o2);
@@ -2176,7 +2375,7 @@ static PyObject* Cartesian_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
   // This only scales the vector. If it returned the dot product, it
   // would switch the object to type double.
 
-  if (is_CartesianType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_CartesianType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     ((Cartesian*)o1)->m_Cartesian.operator*=(PyFloat_AsDouble(o2));
     Py_INCREF(o1);
     return o1;
@@ -2190,7 +2389,7 @@ static PyObject* Cartesian_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
 static PyObject* Cartesian_nb_inplace_divide(PyObject* o1, PyObject* o2) {
   // This only scales the vector.
 
-  if (is_CartesianType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_CartesianType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     ((Cartesian*)o1)->m_Cartesian.operator/=(PyFloat_AsDouble(o2));
     Py_INCREF(o1);
     return o1;
@@ -2237,7 +2436,62 @@ static PyGetSetDef Cartesian_getseters[] = {
   {NULL}  /* Sentinel */
 };
 
+
+#if PY_MAJOR_VERSION >= 3
+
+// https://docs.python.org/3/c-api/typeobj.html
+
+static PyNumberMethods Cartesian_as_number = {
+  (binaryfunc) Cartesian_nb_add,
+  (binaryfunc) Cartesian_nb_subtract,
+  (binaryfunc) Cartesian_nb_multiply,
+  (binaryfunc) 0,  // nb_remainder
+  (binaryfunc) 0,  // nb_divmod
+  (ternaryfunc) 0, // nb_power
+  (unaryfunc) Cartesian_nb_negative,
+  (unaryfunc) 0,   // nb_positive
+  (unaryfunc) 0,   // nb_absolute
+  (inquiry) 0,     // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,   // nb_invert
+  (binaryfunc) 0,  // nb_lshift
+  (binaryfunc) 0,  // nb_rshift
+  (binaryfunc) 0,  // nb_and
+  (binaryfunc) 0,  // nb_xor
+  (binaryfunc) 0,  // nb_or
+
+  (unaryfunc) 0,   // nb_int
+  (void*) 0,       // nb_reserved
+  (unaryfunc) 0,   // nb_float
+
+
+  (binaryfunc) Cartesian_nb_inplace_add,
+  (binaryfunc) Cartesian_nb_inplace_subtract,
+  (binaryfunc) Cartesian_nb_inplace_multiply,
+  (binaryfunc) Cartesian_nb_inplace_divide, // nb_inplace_remainder
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) Cartesian_nb_divide, // nb_true_divide
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+  (unaryfunc) 0, // nb_index
+
+  (binaryfunc) 0, // nb_matrix_multiply;
+  (binaryfunc) 0 // nb_inplace_matrix_multiply;
+
+};
+
+
+#else
+
 // see http://docs.python.org/c-api/typeobj.html
+
 static PyNumberMethods Cartesian_as_number = {
   (binaryfunc) Cartesian_nb_add,
   (binaryfunc) Cartesian_nb_subtract,
@@ -2285,10 +2539,11 @@ static PyNumberMethods Cartesian_as_number = {
 
 };
 
+#endif
+
 
 PyTypeObject CartesianType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                        /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)
   "Cartesian",                              /* tp_name */
   sizeof(Cartesian),                        /* tp_basicsize */
   0,                                        /* tp_itemsize */
@@ -2307,7 +2562,7 @@ PyTypeObject CartesianType = {
   0,                                        /* tp_getattro */
   0,                                        /* tp_setattro */
   0,                                        /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  COORDS_TPFLAGS, /* tp_flags */
   "Cartesian objects",                      /* tp_doc */
   0,                                        /* tp_traverse */
   0,                                        /* tp_clear */
@@ -2405,7 +2660,7 @@ static int rotator_init(rotator* self, PyObject* args, PyObject* kwds) {
 
 
 static void rotator_dealloc(rotator* self) {
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 // -----------------
@@ -2416,7 +2671,7 @@ PyObject* rotator_str(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((rotator*)self)->m_rotator.axis();
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // TODO a different repr? for constructor?
@@ -2424,7 +2679,7 @@ PyObject* rotator_repr(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((rotator*)self)->m_rotator.axis();
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // -------------------
@@ -2499,8 +2754,7 @@ static PyGetSetDef rotator_getseters[] = {
 
 
 PyTypeObject rotatorType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                 /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)
   "rotator",                         /* tp_name */
   sizeof(rotator),                   /* tp_basicsize */
   0,                                 /* tp_itemsize */
@@ -2519,7 +2773,7 @@ PyTypeObject rotatorType = {
   0,                                 /* tp_getattro */
   0,                                 /* tp_setattro */
   0,                                 /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  COORDS_TPFLAGS, /* tp_flags */
   "rotator objects",                   /* tp_doc */
   0,                                 /* tp_traverse */
   0,                                 /* tp_clear */
@@ -2601,10 +2855,10 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
       self->m_spherical.phi(from_cartesian.phi());
       return 0;
 
-    } else if ((PyFloat_Check(arg0) || PyInt_Check(arg0))) {
+    } else if ((PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0))) {
       r = PyFloat_AsDouble(arg0);
 
-    } else if (PyString_Check(arg0)) {
+    } else if (COORDS_STR_CHECK(arg0)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -2626,7 +2880,7 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
     } else if (is_DeclinationType(arg1)) {
       theta = Coords::angle(90.0) - ((Declination*)arg1)->m_angle;
 
-    } else if (PyString_Check(arg1)) {
+    } else if (COORDS_STR_CHECK(arg1)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -2643,7 +2897,7 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
     if (is_AngleType(arg2)) {
       phi = ((Angle*)arg2)->m_angle;
 
-    } else if (PyString_Check(arg2)) {
+    } else if (COORDS_STR_CHECK(arg2)) {
       PyErr_SetString(sCoordsException, "Direct conversion from string is not supported. Use float(arg).");
       return -1;
 
@@ -2663,7 +2917,7 @@ static int spherical_init(spherical* self, PyObject* args, PyObject* kwds) {
 }
 
 static void spherical_dealloc(spherical* self) {
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 // -----------------
@@ -2674,7 +2928,7 @@ PyObject* spherical_str(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((spherical*)self)->m_spherical;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 PyObject* spherical_repr(PyObject* self) {
@@ -2685,7 +2939,7 @@ PyObject* spherical_repr(PyObject* self) {
 	 << a_spherical.r() << ", "
 	 << a_spherical.theta() << ", "
 	 << a_spherical.phi() << ")";
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // -------------------------------
@@ -2705,7 +2959,7 @@ static int spherical_setR(spherical* self, PyObject* value, void* closure) {
     return 0;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "r must be a float or int");
     return 0;
   }
@@ -2878,12 +3132,12 @@ static PyObject* spherical_nb_multiply(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  if (is_sphericalType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_sphericalType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     result_spherical->m_spherical = ((spherical*)o1)->m_spherical * PyFloat_AsDouble(o2);
     return (PyObject*) result_spherical;
   }
 
-  if ((PyFloat_Check(o1) || PyInt_Check(o1)) && is_sphericalType(o2)) {
+  if ((PyFloat_Check(o1) || COORDS_INT_CHECK(o1)) && is_sphericalType(o2)) {
     result_spherical->m_spherical = PyFloat_AsDouble(o1) * ((spherical*)o2)->m_spherical;
     return (PyObject*) result_spherical;
 
@@ -2908,7 +3162,7 @@ static PyObject* spherical_nb_divide(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  if (is_sphericalType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_sphericalType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
 
     try {
       result_spherical->m_spherical = ((spherical*)o1)->m_spherical / PyFloat_AsDouble(o2);
@@ -2986,7 +3240,7 @@ static PyObject* spherical_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
   // This only scales the vector. If it returned the dot product, it
   // would switch the object to type double.
 
-  if (is_sphericalType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_sphericalType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     ((spherical*)o1)->m_spherical.operator*=(PyFloat_AsDouble(o2));
     Py_INCREF(o1);
     return o1;
@@ -3001,7 +3255,7 @@ static PyObject* spherical_nb_inplace_divide(PyObject* o1, PyObject* o2) {
 
     // This only scales the vector.
 
-  if (is_sphericalType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_sphericalType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     ((spherical*)o1)->m_spherical.operator/=(PyFloat_AsDouble(o2));
     Py_INCREF(o1);
     return o1;
@@ -3034,7 +3288,60 @@ static PyGetSetDef spherical_getseters[] = {
   {NULL}  /* Sentinel */
 };
 
+
+#if PY_MAJOR_VERSION >= 3
+
+// https://docs.python.org/3/c-api/typeobj.html
+
+static PyNumberMethods spherical_as_number = {
+  (binaryfunc) spherical_nb_add,
+  (binaryfunc) spherical_nb_subtract,
+  (binaryfunc) spherical_nb_multiply,
+  (binaryfunc) 0,  // nb_remainder
+  (binaryfunc) 0,  // nb_divmod
+  (ternaryfunc) 0, // nb_power
+  (unaryfunc) spherical_nb_negative,
+  (unaryfunc) 0,   // nb_positive
+  (unaryfunc) 0,   // nb_absolute
+  (inquiry) 0,     // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,   // nb_invert
+  (binaryfunc) 0,  // nb_lshift
+  (binaryfunc) 0,  // nb_rshift
+  (binaryfunc) 0,  // nb_and
+  (binaryfunc) 0,  // nb_xor
+  (binaryfunc) 0,  // nb_or
+
+  (unaryfunc) 0,   // nb_int
+  (void*) 0,       // nb_reserved
+  (unaryfunc) 0,   // nb_float
+
+  (binaryfunc) spherical_nb_inplace_add,
+  (binaryfunc) spherical_nb_inplace_subtract,
+  (binaryfunc) spherical_nb_inplace_multiply,
+  (binaryfunc) spherical_nb_inplace_divide, // nb_inplace_remainder
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) spherical_nb_divide,  // nb_true_divide
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+  (unaryfunc) 0, // nb_index
+
+  (binaryfunc) 0, // nb_matrix_multiply;
+  (binaryfunc) 0 // nb_inplace_matrix_multiply;
+
+};
+
+#else
+
 // see http://docs.python.org/c-api/typeobj.html
+
 static PyNumberMethods spherical_as_number = {
   (binaryfunc) spherical_nb_add,
   (binaryfunc) spherical_nb_subtract,
@@ -3083,9 +3390,11 @@ static PyNumberMethods spherical_as_number = {
 };
 
 
+#endif
+
+
 PyTypeObject sphericalType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                        /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)
   "spherical",                              /* tp_name */
   sizeof(spherical),                        /* tp_basicsize */
   0,                                        /* tp_itemsize */
@@ -3104,7 +3413,7 @@ PyTypeObject sphericalType = {
   0,                                        /* tp_getattro */
   0,                                        /* tp_setattro */
   0,                                        /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  COORDS_TPFLAGS, /* tp_flags */
   "spherical objects",                      /* tp_doc */
   0,                                        /* tp_traverse */
   0,                                        /* tp_clear */
@@ -3176,12 +3485,12 @@ static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
 
   if (arg0) {
 
-    if (PyString_Check(arg0)) {
+    if (COORDS_STR_CHECK(arg0)) {
 
       // ISO-8601 string constructor
       try {
 
-	Coords::DateTime a_datetime(PyString_AsString(arg0));
+	Coords::DateTime a_datetime(COORDS_STR_AS_STR(arg0));
 	self->m_datetime = a_datetime;
 
       } catch (Coords::Error err) {
@@ -3197,7 +3506,7 @@ static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
       self->m_datetime = ((datetime*)arg0)->m_datetime;
       return 0;
 
-    } else if (PyFloat_Check(arg0) || PyInt_Check(arg0)) {
+    } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
       year = PyFloat_AsDouble(arg0);
 
     } else {
@@ -3244,7 +3553,7 @@ static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
 
 
 static void datetime_dealloc(datetime* self) {
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 // -----------------
@@ -3255,7 +3564,7 @@ PyObject* datetime_str(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((datetime*)self)->m_datetime;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // TODO a different repr? for constructor?
@@ -3263,7 +3572,7 @@ PyObject* datetime_repr(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
   result << ((datetime*)self)->m_datetime;
-  return PyString_FromString(result.str().c_str());
+  return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
 // -------------------------------
@@ -3283,7 +3592,7 @@ static int datetime_setJulianDate(datetime* self, PyObject* value, void* closure
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !PyInt_Check(value)) {
+  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
     PyErr_SetString(sCoordsException, "Julian Date must be float or int");
     return -1;
   }
@@ -3308,7 +3617,7 @@ static int datetime_setTimeZone(datetime* self, PyObject* a_timezone, void* clos
     return -1;
   }
 
-  if (!PyFloat_Check(a_timezone) && !PyInt_Check(a_timezone)) {
+  if (!PyFloat_Check(a_timezone) && !COORDS_INT_CHECK(a_timezone)) {
     PyErr_SetString(sCoordsException, "timezone must be a float or int");
     return -1;
   }
@@ -3360,12 +3669,12 @@ static PyObject* datetime_nb_add(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  if (is_datetimeType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_datetimeType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     result_datetime->m_datetime = ((datetime*)o1)->m_datetime + PyFloat_AsDouble(o2);
     return (PyObject*) result_datetime;
   }
 
-  if ((PyFloat_Check(o1) || PyInt_Check(o1)) && is_datetimeType(o2)) {
+  if ((PyFloat_Check(o1) || COORDS_INT_CHECK(o1)) && is_datetimeType(o2)) {
     result_datetime->m_datetime = PyFloat_AsDouble(o1) + ((datetime*)o2)->m_datetime;
     return (PyObject*) result_datetime;
   }
@@ -3386,7 +3695,7 @@ static PyObject* datetime_nb_subtract(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  if (is_datetimeType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_datetimeType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     result_datetime->m_datetime = ((datetime*)o1)->m_datetime - PyFloat_AsDouble(o2);
     return (PyObject*) result_datetime;
   }
@@ -3407,7 +3716,7 @@ static PyObject* datetime_nb_subtract(PyObject* o1, PyObject* o2) {
 // ---------------------------
 
 static PyObject* datetime_nb_inplace_add(PyObject* o1, PyObject* o2) {
-  if (is_datetimeType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_datetimeType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     double jdate = PyFloat_AsDouble(o2);
     ((datetime*)o1)->m_datetime.operator+=(jdate);
     Py_INCREF(o1);
@@ -3418,7 +3727,7 @@ static PyObject* datetime_nb_inplace_add(PyObject* o1, PyObject* o2) {
 }
 
 static PyObject* datetime_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
-  if (is_datetimeType(o1) && (PyFloat_Check(o2) || PyInt_Check(o2))) {
+  if (is_datetimeType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
     double jdate = PyFloat_AsDouble(o2);
     ((datetime*)o1)->m_datetime.operator-=(jdate);
     Py_INCREF(o1);
@@ -3479,8 +3788,61 @@ static PyGetSetDef datetime_getseters[] = {
   {NULL}  /* Sentinel */
 };
 
+#if PY_MAJOR_VERSION >= 3
+
+// https://docs.python.org/3/c-api/typeobj.html
+
+static PyNumberMethods datetime_as_number = {
+  (binaryfunc) datetime_nb_add,
+  (binaryfunc) datetime_nb_subtract,
+  (binaryfunc) 0,   // nb_multiply,
+  (binaryfunc) 0,   // nb_remainder
+  (binaryfunc) 0,   // nb_divmod
+  (ternaryfunc) 0,  // nb_power
+  (unaryfunc) 0,    // nb_negative,
+  (unaryfunc) 0,    // nb_positive
+  (unaryfunc) 0,    // nb_absolute
+  (inquiry) 0,      // nb_nonzero. Used by PyObject_IsTrue.
+  (unaryfunc) 0,    // nb_invert
+  (binaryfunc) 0,   // nb_lshift
+  (binaryfunc) 0,   // nb_rshift
+  (binaryfunc) 0,   // nb_and
+  (binaryfunc) 0,   // nb_xor
+  (binaryfunc) 0,   // nb_or
+
+  (unaryfunc) 0,    // nb_int
+  (void*) 0,       // nb_reserved
+  (unaryfunc) 0,    // nb_float
+
+
+  (binaryfunc) datetime_nb_inplace_add,
+  (binaryfunc) datetime_nb_inplace_subtract,
+  (binaryfunc) 0,  // nb_inplace_multiply,
+  (binaryfunc) 0,  // nb_inplace_remainder
+  (ternaryfunc) 0, // nb_inplace_power
+  (binaryfunc) 0,  // nb_inplace_lshift
+  (binaryfunc) 0,  // nb_inplace_rshift
+  (binaryfunc) 0,  // nb_inplace_and
+  (binaryfunc) 0,  // nb_inplace_xor
+  (binaryfunc) 0,  // nb_inplace_or
+
+  (binaryfunc) 0,  // nb_floor_divide
+  (binaryfunc) 0,  // nb_true_divide
+  (binaryfunc) 0,  // nb_inplace_floor_divide
+  (binaryfunc) 0,  // nb_inplace_true_divide
+
+  (unaryfunc) 0, // nb_index
+
+  (binaryfunc) 0, // nb_matrix_multiply;
+  (binaryfunc) 0 // nb_inplace_matrix_multiply;
+
+};
+
+
+#else
 
 // see http://docs.python.org/c-api/typeobj.html
+
 static PyNumberMethods datetime_as_number = {
   (binaryfunc) datetime_nb_add,
   (binaryfunc) datetime_nb_subtract,
@@ -3529,9 +3891,11 @@ static PyNumberMethods datetime_as_number = {
 };
 
 
+#endif
+
+
 PyTypeObject datetimeType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                 /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)
   "datetime",                        /* tp_name */
   sizeof(datetime),                  /* tp_basicsize */
   0,                                 /* tp_itemsize */
@@ -3550,7 +3914,7 @@ PyTypeObject datetimeType = {
   0,                                 /* tp_getattro */
   0,                                 /* tp_setattro */
   0,                                 /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+  COORDS_TPFLAGS, /* tp_flags */
   "datetime objects",                /* tp_doc */
   0,                                 /* tp_traverse */
   0,                                 /* tp_clear */
@@ -3686,10 +4050,11 @@ PyObject* Cartesian_create(const Coords::Cartesian& a_Cartesian) {
 // ----- init coords module -----
 // ------------------------------
 
-// PyMODINIT_FUNC declares extern "C" too.
-PyMODINIT_FUNC initcoords(void) {
+MOD_INIT(coords) {
 
-  PyObject* m(Py_InitModule3("coords", coords_module_methods, "python wrappers for coords objects."));
+  PyObject* m;
+
+  MOD_DEF(m, "coords", "python wrappers for coords objects.", coords_module_methods);
 
   // error
   char eMsgStr[] = "coords.Error";
@@ -3701,21 +4066,21 @@ PyMODINIT_FUNC initcoords(void) {
   // Angle
   AngleType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&AngleType) < 0)
-    return;
+    return MOD_ERROR_VAL;
   Py_INCREF(&AngleType);
   PyModule_AddObject(m, "angle", (PyObject *)&AngleType);
 
   // Latitude
   LatitudeType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&LatitudeType) < 0)
-    return;
+    return MOD_ERROR_VAL;
   Py_INCREF(&LatitudeType);
   PyModule_AddObject(m, "latitude", (PyObject *)&LatitudeType);
 
   // Declination
   DeclinationType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&DeclinationType) < 0)
-    return;
+    return MOD_ERROR_VAL;
   Py_INCREF(&DeclinationType);
   PyModule_AddObject(m, "declination", (PyObject *)&DeclinationType);
 
@@ -3723,7 +4088,7 @@ PyMODINIT_FUNC initcoords(void) {
   // Cartesian
   CartesianType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&CartesianType) < 0)
-    return;
+    return MOD_ERROR_VAL;
 
   Py_INCREF(&CartesianType);
   PyModule_AddObject(m, "Cartesian", (PyObject *)&CartesianType);
@@ -3731,7 +4096,7 @@ PyMODINIT_FUNC initcoords(void) {
   // rotator
   rotatorType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&rotatorType) < 0)
-    return;
+    return MOD_ERROR_VAL;
 
   Py_INCREF(&rotatorType);
   PyModule_AddObject(m, "rotator", (PyObject *)&rotatorType);
@@ -3739,7 +4104,7 @@ PyMODINIT_FUNC initcoords(void) {
   // spherical
   sphericalType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&sphericalType) < 0)
-    return;
+    return MOD_ERROR_VAL;
 
   Py_INCREF(&sphericalType);
   PyModule_AddObject(m, "spherical", (PyObject *)&sphericalType);
@@ -3747,7 +4112,7 @@ PyMODINIT_FUNC initcoords(void) {
   // datetime
   datetimeType.tp_new = PyType_GenericNew;
   if (PyType_Ready(&datetimeType) < 0)
-    return;
+    return MOD_ERROR_VAL;
   Py_INCREF(&datetimeType);
   PyModule_AddObject(m, "datetime", (PyObject *)&datetimeType);
 
@@ -3773,4 +4138,5 @@ PyMODINIT_FUNC initcoords(void) {
   Py_INCREF(Cartesian_Uz);
   PyModule_AddObject(m, "Uz", (PyObject*)Cartesian_Uz);
 
+  return MOD_SUCCESS_VAL(m);
 }

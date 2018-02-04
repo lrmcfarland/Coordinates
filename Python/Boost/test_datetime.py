@@ -113,12 +113,12 @@ class TestDateTime(unittest.TestCase):
     def test_month_accessor(self):
         """Test get month accessor"""
         a = coords.datetime('2016-04-02T21:34:45')
-        self.assertEqual(04, a.month)
+        self.assertEqual(4, a.month)
 
     def test_day_accessor(self):
         """Test get day accessor"""
         a = coords.datetime('2016-04-02T21:34:45')
-        self.assertEqual(02, a.day)
+        self.assertEqual(2, a.day)
 
     def test_hour_accessor(self):
         """Test get hour accessor"""

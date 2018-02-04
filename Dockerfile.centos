@@ -1,0 +1,65 @@
+# This will build the starbug.com Coordinates library
+#
+# to build:    docker build -f Dockerfile.centos -t coords .
+#
+# to shell:    docker run -it --rm --entrypoint /bin/bash coords
+#
+# https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-centos-7
+#
+
+
+
+FROM centos
+
+LABEL maintainer "lrm@starbug.com"
+LABEL service "Coordinates"
+
+# packages
+
+RUN yum update -y
+RUN yum install -y gcc gcc-c++ boost boost-devel make cmake git epel-release && yum clean all
+RUN yum install -y python-devel python-pip && yum clean all
+
+RUN yum -y install https://centos7.iuscommunity.org/ius-release.rpm
+RUN yum -y install python36u
+RUN yum -y install python36u-pip
+RUN yum -y install python36u-devel
+
+RUN pip install --upgrade pip
+RUN pip install virtualenv
+
+
+# -----------------------
+# ----- coords home -----
+# -----------------------
+
+ENV COORDS_HOME="/opt/starbug.com" \
+    COORDS_USER="starbug" \
+    COORDS_GRP="starbug"
+
+RUN groupadd ${COORDS_GRP} \
+    && adduser -g ${COORDS_GRP} ${COORDS_USER} \
+    && mkdir -p ${COORDS_HOME}/logs/flask \
+    && chown -R ${COORDS_USER}:${COORDS_GRP} ${COORDS_HOME}
+
+
+USER ${COORDS_USER}:${COORDS_GRP}
+
+
+WORKDIR ${COORDS_HOME}
+
+# built with git
+RUN git clone https://github.com/lrmcfarland/Coordinates.git
+
+# -----------------
+# ----- build -----
+# -----------------
+
+WORKDIR ${COORDS_HOME}/Coordinates/
+
+RUN git submodule update --init --recursive
+
+RUN ./build.sh test
+
+ENTRYPOINT ["bash"]
+
