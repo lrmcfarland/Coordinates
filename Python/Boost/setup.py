@@ -17,9 +17,9 @@ version = '1.0'
 description = 'coords package'
 
 if sys.version_info.major == 3:
-    boost_pylib = 'boost_python3'
+    boost_pylib = 'boost_python37'
 else:
-    boost_pylib = 'boost_python'
+    boost_pylib = 'boost_python27'
 
 
 if platform.system() == 'Darwin':
