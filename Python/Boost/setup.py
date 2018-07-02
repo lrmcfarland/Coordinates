@@ -16,21 +16,14 @@ name = 'coords'
 version = '1.0'
 description = 'coords package'
 
-if sys.platform == 'darwin':
+
+if platform.system() == 'Darwin':
+
     # brew install boost python and python 3
     if sys.version_info.major == 3:
         boost_pylib = 'boost_python37'
     else:
         boost_pylib = 'boost_python27'
-else:
-    # sys.plaform == 'linux2
-    if sys.version_info.major == 3:
-        boost_pylib = 'boost_python3'
-    else:
-        boost_pylib = 'boost_python'
-
-
-if platform.system() == 'Darwin':
 
     BOOST_ROOT = '/usr/local'
     include_dirs = ['../../libCoords', BOOST_ROOT + '/include']
@@ -39,6 +32,11 @@ if platform.system() == 'Darwin':
     sources = ['coords.cpp']
 
 elif platform.system() == 'Linux':
+
+    if sys.version_info.major == 3:
+        boost_pylib = 'boost_python3' # TODO test this
+    else:
+        boost_pylib = 'boost_python'
 
     include_dirs = ['../../libCoords']
     library_dirs = ['../../libCoords', '/usr/lib64']
