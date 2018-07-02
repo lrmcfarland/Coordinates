@@ -16,10 +16,18 @@ name = 'coords'
 version = '1.0'
 description = 'coords package'
 
-if sys.version_info.major == 3:
-    boost_pylib = 'boost_python37'
+if sys.platform == 'darwin':
+    # brew install boost python and python 3
+    if sys.version_info.major == 3:
+        boost_pylib = 'boost_python37'
+    else:
+        boost_pylib = 'boost_python27'
 else:
-    boost_pylib = 'boost_python27'
+    # sys.plaform == 'linux2
+    if sys.version_info.major == 3:
+        boost_pylib = 'boost_python3'
+    else:
+        boost_pylib = 'boost_python'
 
 
 if platform.system() == 'Darwin':
