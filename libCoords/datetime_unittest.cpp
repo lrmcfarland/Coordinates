@@ -312,6 +312,7 @@ namespace {
     }
   }
 
+
   TEST(DateTime, BadDayConstructor_32) {
     std::string a_datetime_string("2014-12-32T12:34:56");
     try {
@@ -323,9 +324,23 @@ namespace {
     }
   }
 
-  TEST(DateTime, BadDayConstructor_leap_year_1) {
-    // leap year
-    Coords::DateTime good_date("2012-02-29T12:34:56");
+
+  TEST(DateTime, ExtraDayConstructor_leap_day_2012) {
+    // leap day
+    std::stringstream a_datetime_string;
+    a_datetime_string << "2012-02-29T12:34:56";
+
+    Coords::DateTime a_leap_day("2012-02-29T12:34:56");
+
+    std::stringstream out;
+    out << a_leap_day;
+    EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
+
+  }
+
+
+  TEST(DateTime, TooExtraDayConstructor_leap_day_2012) {
+    // leap day +1
     std::string bad_date("2012-02-30T12:34:56");
     try {
       Coords::DateTime a_datetime(bad_date);
@@ -336,10 +351,24 @@ namespace {
     }
   }
 
-  TEST(DateTime, BadDayConstructor_leap_year_2) {
+
+  TEST(DateTime, NoExtraConstructor_noleap_day_2014) {
     // not a leap year
-    Coords::DateTime good_date("2014-02-28T12:34:56");
-    std::string bad_date("2014-02-29T12:34:56");
+    std::stringstream a_datetime_string;
+    a_datetime_string << "2014-02-28T01:34:00";
+
+    Coords::DateTime a_good_date("2014-02-28T01:34:00");
+
+    std::stringstream out;
+    out << a_good_date;
+    EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
+
+  }
+
+
+  TEST(DateTime, TooExtraDayConstructor_noleap_day_2014) {
+    // not a leap year
+    std::string bad_date("2014-02-29T13:34");
     try {
       Coords::DateTime a_datetime(bad_date);
     } catch (Coords::Error& err) {
@@ -349,10 +378,23 @@ namespace {
     }
   }
 
-  TEST(DateTime, BadDayConstructor_leap_year_3) {
+
+  TEST(DateTime, ExtraDayConstructor_leap_day_2000) {
     // leap year mod 400 rule
-    Coords::DateTime good_date("2000-02-29T12:34:56");
-    std::string bad_date("2000-02-30T12:34:56");
+    std::stringstream a_datetime_string;
+    a_datetime_string << "2000-02-29T14:00:00";
+
+    Coords::DateTime a_leap_day("2000-02-29T14:00");
+
+    std::stringstream out;
+    out << a_leap_day;
+    EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
+
+  }
+
+  TEST(DateTime, TooExtraDayConstructor_leap_day_2000) {
+    // leap year mod 400 rule
+    std::string bad_date("2000-02-30T15:34");
     try {
       Coords::DateTime a_datetime(bad_date);
     } catch (Coords::Error& err) {
@@ -362,7 +404,8 @@ namespace {
     }
   }
 
-  TEST(DateTime, BadDayConstructor_leap_year_4) {
+
+  TEST(DateTime, BadDayConstructor_leap_year_2100) {
     // not a leap year
     Coords::DateTime good_date("2100-02-28T12:34:56");
     std::string bad_date("2100-02-29T12:34:56");
