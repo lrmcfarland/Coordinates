@@ -1,103 +1,124 @@
 # Coordinates
 
-## Features
-
-This is my repo of Coordinate classes for use in physics and astronomy
-applications. The classes are implemented in C++ and wrapped in
-Python. I make full use of operator overloading to focus on the physics.
-This makes it possible to write a vector equation like:
-
-```
-
-F = m*a;
-
-```
-
-I started with a [C++ implementation](libCoords/Cartesian.h) of the
-[Cartesian coordinate system](http://en.wikipedia.org/wiki/Cartesian_coordinate_system).
-The class
-[overloads](http://en.wikipedia.org/wiki/Operator_overloading) the
-basic arithmetic operators (+, -, * and /) to make working
-with distances, velocities and forces transparent.
-
-I also created an [implementation](libCoords/spherical.h) of a
-[spherical coordinate system](http://en.wikipedia.org/wiki/Spherical_coordinate_system)
-with conversion constructors to convert between it and the Cartesian
-coordinate system. This simplifies the basic astronomy operations
-using Latitude/Longitude,
-[right ascension](http://en.wikipedia.org/wiki/Right_ascension)/[declination](http://en.wikipedia.org/wiki/Declination).
-
+This repo holds my Coordinates library for implementing physics and astronomy applications.
+It is implemented in C++ and has Python wrappers generated with
+[Boost.python](https://wiki.python.org/moin/boost.python/GettingStarted),
+[SWIG](http://www.swig.org/)
+and
+[extensions using just
+Python](https://docs.python.org/3/extending/extending.html).
+The Python extension makes this simple to incorporate into a python
+web framework like [flask](http://flask.pocoo.org/) (See
+[AAI](https://aai.starbug.com/)).
 All objects are in the name space "Coords", e.g. Coords::Cartesian.
-At first this seems little weird in English, but then
-[Descartes](http://en.wikipedia.org/wiki/René_Descartes) was French.
 
 
-## To Install
+# To Install
 
-TODO: Dockerfile
+Clone the repo from here. This has googletest as a sub-module to
+build the unit tests, but it is not necessary to build just the coords
+library.
+The [build.sh](build.sh) script will run
 
-While libCoords and the "manual" python extension can be built with
-out additional packages, a complete build of Coordinates uses gtest
-and Boost.
+```
+    git submodule update --init --recursive
 
-Coordinates uses [gtest](https://github.com/google/googletest) to
-validate the C++ library libCoords. Details on this can be found
-in [libCoords](libCoords/README.md).
-
-To build the Boost wrappers you will, of course, need to install
-[Boost](http://www.boost.org) with python. Details on this can be found
-in [Python/Boost](Python/Boost/README.md).
+```
 
 
-### OS X
+## cmake
 
-I built this on my iMac using the [LLVM](http://llvm.org) compiler
-that comes with [Xcode](https://developer.apple.com/xcode/).
-Since this has an implementation of std::regex, I used that first.
-I only used boost for the boost python wrappers.
-Later, I added boost regex to support Linux with GCC 4.8 compilers.
+googletest will also need cmake installed, e.g.
 
-After installing Xcode from Apple, use [homebrew](http://brew.sh)
-to install boost.
+### On OS X
 
-### Linux
+```
+    brew install cmake
+```
 
-The current (2015) CentOS and other Linux releases are using GCC 4.8
-which has the prototype std::regex that throws regex_error on
-my std::regex tests. I experimented with upgrading to GCC 4.9, but
-had linking problems later on. To work around this I use the boost
-regex libraries.
+## Boost
 
-Use yum to install boost-devel.
+Boost is needed to build the Python Boost wrappers.
+
+### On OS X
+
+```
+    brew install boost --with-python
+    brew install boost-python
+    brew install boost-python3
+```
+
+## swig
+
+### On OS X
+
+```
+    brew install swig
+```
 
 
-## To Build
+# To build
 
 The top level [build.sh](build.sh) script will build all libraries.
-libCoords must be bulit first. Python/Boost and Python/Manual are
-built next.
+libCoords must be built first.
+Python/Boost and Python/Manual are built next.
+It will pass targets through to the Makefiles, like all (a.k.a. the
+default), clean and test.
 
 ```
-$ pwd
-.../Coordinates/
-$ ./build.sh clean
-$ ./build.sh test
+    $ pwd
+    ~/Coordinates/
+    $ ./build.sh clean
+    $ ./build.sh test
 ```
 
 Each directory has its own Makefile with 'build', 'test', and 'clean'
 targets. build.sh simply runs the Makefile in each of the sub directories.
 
 ```
-$ pwd
-.../Coordinates/libCoords
-$ make clean
-$ make test
+    $ pwd
+    ~/Coordinates/libCoords
+    $ make clean
+    $ make test
 ```
 
+Each part can be built by going into each directory in turn and
+running the make command, but libCoords needs to be the first.
+Details on this can be found in [libCoords](libCoords/README.md).
+libCoords and the "manual" python extension can be built with
+out additional packages.
+A complete build of Coordinates uses gtest and Boost.
 
-## To Run
+To build the Boost wrappers you will, of course, need to install
+[Boost](http://www.boost.org) with python. Details on this can be found
+in [Python/Boost](Python/Boost/README.md).
 
-### C++
+
+## OS X
+
+I built this on my iMac using the [LLVM](http://llvm.org) compiler
+that comes with [Xcode](https://developer.apple.com/xcode/).
+Since this has an implementation of std::regex, I used that first.
+I only used Boost for the Boost python wrappers.
+Later, I added Boost regex to support Linux with GCC 4.8 compilers.
+
+After installing Xcode from Apple, I used [homebrew](http://brew.sh)
+to install Boost.
+
+## Linux
+
+The current (2015) CentOS and other Linux releases are using GCC 4.8
+which has the prototype std::regex that throws regex_error on
+my std::regex tests.
+I experimented with upgrading to GCC 4.9, but had linking problems later on.
+To work around this I use the Boost regex libraries.
+
+[Dockerfile.centos](Dockerfile.centos) is an example that will build the library
+in a CentOS container.
+
+# To Run
+
+## C++
 
 [example1.cpp](libCoords/example1.cpp) demonstrates the C++ interface.
 Here I use the spherical coordinates with the radius of the earth (in
@@ -157,7 +178,7 @@ distance 11.3235 km
 ```
 
 
-### Python
+## Python
 
 
 see [SunPosition.py](https://github.com/lrmcfarland/Astronomy/blob/master/Bodies/SunPosition.py)
