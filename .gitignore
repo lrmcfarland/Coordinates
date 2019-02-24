@@ -31,6 +31,9 @@ libCoords/regex_test
 
 # Boost
 Python/Boost/build
+Python/Boost/dist
+Python/Boost/starbug.coords.egg-info
+
 
 # Manual
 Python/Manual/build

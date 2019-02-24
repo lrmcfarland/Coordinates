@@ -47,6 +47,9 @@ all: build
 build: coords.cpp setup.py
 	${OSFLAGS} python setup.py build
 
+dist: build
+	python3 setup.py sdist bdist_wheel
+
 # this fails on with a datetime seg fault. datetime compile warnings about closure?
 
 test: build test_angle test_Cartesian test_datetime test_spherical
@@ -65,7 +68,7 @@ test_spherical: test_spherical.py
 
 
 clean:
-	-$(RM) -r build
+	-$(RM) -r build dist starbug.coords.egg-info
 
 clobber: clean
 	-$(RM) *~
