@@ -8,14 +8,17 @@ ASSUMES: ../../libCoords exists and has boost installed (in
 """
 
 import platform
+import setuptools
 import sys
 
 from distutils.core import setup, Extension
 
-name = 'coords'
-version = '1.0'
+name = 'starbug.coords'
+version = '1.0.0'
 description = 'coords package'
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 if platform.system() == 'Darwin':
 
@@ -53,7 +56,20 @@ coords_module = Extension(name,
                           library_dirs=library_dirs,
                           sources=sources)
 
-setup (name=name,
-       version=version,
-       description=description,
-       ext_modules=[coords_module])
+setuptools.setup (name=name,
+                  version=version,
+                  author="Lincoln Randall McFarland",
+                  author_email="lrm@starbug.com",
+                  description=description,
+                  long_description=long_description,
+                  long_description_content_type="text/markdown",
+                  url="https://github.com/lrmcfarland/Coordinates",
+                  packages=setuptools.find_packages(),
+                  classifiers=[
+                      "Programming Language :: Python :: 3",
+                      "License :: OSI Approved :: MIT License",
+                      "Operating System :: OS Independent",
+                      "Topic :: Scientific/Engineering :: Astronomy"
+                  ],
+                  ext_modules=[coords_module]
+)

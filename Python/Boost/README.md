@@ -1,24 +1,29 @@
 # Python Boost wrappers
 
-This directory contains the Boost generated Python wrappers for the C++
-classes in ../../libCoords. coords.cpp contains the Boost macros that
-are used to generate the wrappers. setup.py builds them.
+## [starbug.com coordinate Python wrappers](https://github.com/lrmcfarland/Coordinates)
 
-There are some differences from the [Boost](../Boost) version,
+This module contains the source to generate Python wrappers for the
+C++ classes in [libCoords](https://github.com/lrmcfarland/Coordinates/tree/adds-pypi-v2/libCoords) using Boost.  This
+library is assumed to have been built first. coords.cpp contains the
+Boost macros that are used to generate the wrappers. setup.py builds
+them.
+
+There are some differences from the [manual](https://github.com/lrmcfarland/Coordinates/tree/master/Python/Manual) version,
 like not having a coords.Error exception but using RuntimeError
 instead. The static unit vectors have also moved from coords.Ux
 to coords.Cartesian.Ux. Similarly for Uy, Uz, and Uo.
 
-## To Build
+# To Build
 
 The build is done using make on the command line. There are targets
 for clean and test. See the Makefile for details.
 
-This Makefile will not build ../../libCoords. That must be done before this.
+This Makefile will not build libCoords. That must be done before this.
 
-setup.py expects to find libCoords.dylib in ../../libCoords and Boost
+setup.py expects to find libCoords.dylib in libCoords and Boost
 to be in /usr/local. See setup.py for details.
 
+## Build Tools
 
 ### [Boost](http://www.boost.org)
 
@@ -34,11 +39,7 @@ python wrappers are not in the "regular" boost bottle.
 
 
 ```
-
 $ brew install boost-python  --with-python3
-
-
-
 ```
 
 #### On CentOS with yum
@@ -46,8 +47,6 @@ $ brew install boost-python  --with-python3
 ```
 sudo yum install boost-devel
 ```
-
-
 
 #### On Ubuntu with apt-get
 
@@ -64,7 +63,6 @@ To built and install from the
 source, unpack the tar-ball in /usr/local
 
 ```
-
 cd /usr/local/boost_1_56_0
 
 ./bootstrap.sh
@@ -77,9 +75,10 @@ The boost files are now in /usr/local/include/boost and
 point there. On OS X brew doctor will notice and complain about this.
 
 
-## The Test Environment
+# The run time environment with setenv.sh
 
-The runtime environment expects ../../libCoords to be built.
+On the local host, relative to this directory, the runtime environment
+expects libCoords to be built.
 
 On OS X, this needs to be on the DYLD_LIBRARY_PATH.
 On Linux, this needs to be on the LD_LIBRARY_PATH.
@@ -91,21 +90,41 @@ library path and use COORDS_ORIGIN environment variable to find
 coords.so. If COORDS_ORIGIN is not set, it will assume it is relative
 to this directory.
 
-pylaunch.sh will use setenv.sh to bring up a Python interpreter in
-this environment.
+## An Interactive Session
 
-test_coords.sh will run the angle, Cartesian, datetime and spherical
-unit tests.
+You can use pylaunch.sh to set up an interactive session.
+
+Here I use the spherical coordinates with the radius of the earth, the
+latitude (which needs to be converted to the theta angle from the
+positive z axis), and longitude of two locations to calculate the
+distance between them.
+
+```
+$ ./pylaunch.sh
+# COORDS_ROOT not set. Using ../..
+# coords.so: ../../python/Boost/build/lib.macosx-10.9-intel-2.7/coords.so
+# DYLD_LIBRARY_PATH :../../libCoords
+# PYTHONPATH :../../python/Boost/build/lib.macosx-10.9-intel-2.7
+
+Python 2.7.5 (default, Mar  9 2014, 22:15:05)
+[GCC 4.2.1 Compatible Apple LLVM 5.0 (clang-500.0.68)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import coords
+>>> keplers = coords.spherical(6371, coords.angle(90) - coords.angle(37, 27, 13), coords.angle(-122, 10, 55))
+>>> booksinc = coords.spherical(6371, coords.angle(90) - coords.angle(37, 23, 32.4852), coords.angle(-122, 4, 46.2252))
+>>> print keplers - booksinc
+<spherical><r>11.3235</r><theta>61.4649</theta><phi>123.282</phi></spherical>
+
+```
 
 
-### To test a component
+# To test a component wiht pylaunch.sh
 
 Use pylaunch.sh to call setenv.sh. Select one of the associated python
 unittest scripts, e.g. test_Cartesian.py, along with the usual command
 line options like -v
 
 ```
-
 $ ./pylaunch.sh test_angle.py -v
 
 # COORDS_ROOT not set. Using ../..
@@ -134,17 +153,14 @@ Test latitude += latitude ... ok
 Ran 49 tests in 0.003s
 
 OK (skipped=5)
-
-
 ```
 
-### To run a single unit test
+# To run a single unit test
 
 From the command line, pass in the UnitTest test harness and test name,
 e.g. TestCartesian, test_default_constructor to the test script
 
 ```
-
 $ ./pylaunch.sh test_Cartesian.py -v TestCartesian.test_default_constructor
 
 # COORDS_ROOT not set. Using ../..
@@ -159,42 +175,107 @@ Test default constructor ... ok
 Ran 1 test in 0.000s
 
 OK
-
 ```
 
 
-### To test all components
+# To test all components
 
 ```
-
 $ ./test_coords.sh -v
+```
+
+
+# PyPI dist
+
+The Makefile as a dist target to build the python distribution files.
+
+```
+$ pwd
+.../Coordinates/Python/Boost
+
+$ make dist
+env ARCHFLAGS="-arch x86_64" python setup.py build
+
+/Users/lrm/.pyenv/versions/3.7.0/lib/python3.7/distutils/dist.py:274: UserWarning: Unknown distribution option: 'long_description_content_type'
+  warnings.warn(msg)
+```
+
+TODO: It complains about long_description_content_type, but it doesn't render correctly with out it.
+
+Make clean will remove them
+
+```
+$ make clean
+rm -f -r build dist coords.egg-info
+```
+
+
+# PyPI
+
+I use the [packaging python projects
+instructions](https://packaging.python.org/tutorials/packaging-projects/)
+to push builds to a PyPI distribution.
+
+You will need to increment the version number in setup.py to push a new package.
+
+Use twine to upload the distribution
+
+
+## To Test PyPI
+
+```
+$ twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+Enter your username: lrmcfarland
+Enter your password:
+Uploading distributions to https://pypi.org/
+Uploading coords-1.0.1-cp37-cp37m-macosx_10_13_x86_64.whl
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 129k/129k [00:02<00:00, 58.4kB/s]
+Uploading coords-1.0.1.tar.gz
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 13.8k/13.8k [00:01<00:00, 7.83kB/s]
+```
+
+To install the test distribution
 
 ```
 
-## The Runtime Environment
-
-You can use pylaunch.sh to set up an interactive session.
-
-Here I use the spherical coordinates with the radius of the earth, the
-latitude (which needs to be converted to the theta angle from the
-positive z axis), and longitude of two locations to calculate the
-distance between them.
+$ pip install -i https://test.pypi.org/simple/ starbug.coords
+Looking in indexes: https://test.pypi.org/simple/
+Collecting coords
+  Downloading https://test-files.pythonhosted.org/packages/e3/6f/0476d2792045eb0185e039e52b29991fc32bb9c4ceabc178053d11c276e0/coords-1.0-cp37-cp37m-macosx_10_13_x86_64.whl (123kB)
+    100% |████████████████████████████████| 133kB 1.4MB/s
+Installing collected packages: coords
+Successfully installed coords-1.0
 
 ```
 
-$ ./pylaunch.sh
-# COORDS_ROOT not set. Using ../..
-# coords.so: ../../python/Boost/build/lib.macosx-10.9-intel-2.7/coords.so
-# DYLD_LIBRARY_PATH :../../libCoords
-# PYTHONPATH :../../python/Boost/build/lib.macosx-10.9-intel-2.7
+## To PyPI
 
-Python 2.7.5 (default, Mar  9 2014, 22:15:05)
-[GCC 4.2.1 Compatible Apple LLVM 5.0 (clang-500.0.68)] on darwin
+```
+$ twine upload dist/*
+```
+
+To install the test distribution
+
+```
+$ pip install -i https://pypi.org/project/ starbug.coords
+```
+
+
+# To use
+
+```
+(test-coords) $ python
+Python 3.7.0 (default, Jul  1 2018, 12:43:10)
+[Clang 9.1.0 (clang-902.0.39.2)] on darwin
 Type "help", "copyright", "credits" or "license" for more information.
->>> import coords
+
+>>> import starbug.coords as coords
+
 >>> keplers = coords.spherical(6371, coords.angle(90) - coords.angle(37, 27, 13), coords.angle(-122, 10, 55))
+
 >>> booksinc = coords.spherical(6371, coords.angle(90) - coords.angle(37, 23, 32.4852), coords.angle(-122, 4, 46.2252))
->>> print keplers - booksinc
-<spherical><r>11.3235</r><theta>61.4649</theta><phi>123.282</phi></spherical>
+
+>>> str(keplers - booksinc)
+'<spherical><r>11.3235</r><theta>61.4649</theta><phi>123.282</phi></spherical>'
 
 ```

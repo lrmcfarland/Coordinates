@@ -15,6 +15,44 @@ All objects are in the name space "Coords", e.g. Coords::Cartesian.
 
 # To Install
 
+I have pushed a python3 version of the library to the pypi repo
+
+## Using pyenv
+
+To use [pyenv](https://github.com/pyenv/pyenv) as a virtualenv
+
+```
+$ pyenv virtualenv 3.7.0 test-coords
+
+$ pyenv activate test-coords
+
+(test-coords) $ pip install --upgrade pip
+
+(test-coords) $ pip install --index-url https://test.pypi.org/sample starbug.coords
+```
+
+TODO example wiht python3 -m
+
+## Running an example
+
+You should now be able to import the coords module and run this example
+
+```
+(test-coords) $ python
+Python 3.7.0 (default, Jul  1 2018, 12:43:10)
+[Clang 9.1.0 (clang-902.0.39.2)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import starbug.coords as coords
+
+>>> keplers = coords.spherical(6371, coords.angle(90) - coords.angle(37, 27, 13), coords.angle(-122, 10, 55))
+>>> booksinc = coords.spherical(6371, coords.angle(90) - coords.angle(37, 23, 32.4852), coords.angle(-122, 4, 46.2252))
+>>> str(keplers - booksinc)
+'<spherical><r>11.3235</r><theta>61.4649</theta><phi>123.282</phi></spherical>'
+```
+
+
+# To Build
+
 Clone the repo from here. This has googletest as a sub-module to
 build the unit tests, but it is not necessary to build just the coords
 library.
@@ -22,25 +60,25 @@ The [build.sh](build.sh) script will run
 
 ```
     git submodule update --init --recursive
-
 ```
 
+## Build tools
 
-## cmake
+### cmake
 
-googletest will also need cmake installed, e.g.
+googletest will also need cmake installed
 
-### On OS X
+#### On OS X
 
 ```
     brew install cmake
 ```
 
-## Boost
+### Boost
 
 Boost is needed to build the Python Boost wrappers.
 
-### On OS X
+#### On OS X
 
 ```
     brew install boost --with-python
@@ -48,16 +86,16 @@ Boost is needed to build the Python Boost wrappers.
     brew install boost-python3
 ```
 
-## swig
+### swig
 
-### On OS X
+#### On OS X
 
 ```
     brew install swig
 ```
 
 
-# To build
+# build.sh
 
 The top level [build.sh](build.sh) script will build all libraries.
 libCoords must be built first.
@@ -98,23 +136,16 @@ in [Python/Boost](Python/Boost/README.md).
 
 I built this on my iMac using the [LLVM](http://llvm.org) compiler
 that comes with [Xcode](https://developer.apple.com/xcode/).
-Since this has an implementation of std::regex, I used that first.
-I only used Boost for the Boost python wrappers.
-Later, I added Boost regex to support Linux with GCC 4.8 compilers.
-
 After installing Xcode from Apple, I used [homebrew](http://brew.sh)
 to install Boost.
 
 ## Linux
 
-The current (2015) CentOS and other Linux releases are using GCC 4.8
+TODO 2015: CentOS and other Linux releases are using GCC 4.8
 which has the prototype std::regex that throws regex_error on
 my std::regex tests.
 I experimented with upgrading to GCC 4.9, but had linking problems later on.
 To work around this I use the Boost regex libraries.
-
-[Dockerfile.centos](Dockerfile.centos) is an example that will build the library
-in a CentOS container.
 
 # To Run
 
@@ -178,35 +209,27 @@ distance 11.3235 km
 ```
 
 
-## Python
+## Interactive Python
+
+This example uses pylaunch.sh to set the library path to use the local library
+and not import one from PYPI.
 
 
-see [SunPosition.py](https://github.com/lrmcfarland/Astronomy/blob/master/Bodies/SunPosition.py)
-
-To run
 
 ```
+$ ./pylaunch.sh
+# coords.so: ./build/lib.macosx-10.13-x86_64-3.7/coords.cpython-37m-darwin.so
+# PYTHONPATH :./build/lib.macosx-10.13-x86_64-3.7
+Python 3.7.0 (default, Jul  1 2018, 12:43:10)
+[Clang 9.1.0 (clang-902.0.39.2)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
 
-$ ./pylaunch.sh SunPosition.py -v -- 37:24 -122:04:57 2015-06-20T09:00:00-07
-# COORDS_ROOT not set. Using ..
-# coords.so: ../Coordinates/Python/Manual/build/lib.macosx-10.10-intel-2.7/coords.so
-# DYLD_LIBRARY_PATH :../Coordinates/libCoords
-# PYTHONPATH :../Coordinates/Python/Manual/build/lib.macosx-10.10-intel-2.7:..
+>>> import coords
 
-A datetime:  2015-06-20T09:00:00-07 (2457193.58333)
-An observer: <spherical><r>1</r><theta>52.6</theta><phi>-122.0825</phi></spherical>
-Ecliptic longitude: 88:27:51.4396
-Distance in AU: 1.01614270588
-Obliquity of the ecliptic: 23:26:14.2101
-Sun in ecliptic coordinates: <spherical><r>1.01614270588</r><theta>90</theta><phi>88.4642887862</phi></spherical>
-Sun in equatorial coordinates: <spherical><r>1.01614270588</r><theta>66.5716406896</theta><phi>88.3262683622</phi></spherical>
-Sun in horizon coordinates: <spherical><r>1</r><theta>54.6345463459</theta><phi>85.9229363769</phi></spherical>
-Solar Declination: 23:25:42.0935 (23.4283593104)
-Equation of time (minutes): -1.28859183158
-Azimuth (degrees): 85:55:22.571 (85.9229363769)
-Altitude (degrees): 35:21:55.6332 (35.3654536541)
-Rising : 2015-06-20T05:47:49.1767-07
-Transit: 2015-06-20T13:10:4.5581-07
-Setting: 2015-06-20T20:32:19.9395-07
+>>> keplers = coords.spherical(6371, coords.angle(90) - coords.angle(37, 27, 13), coords.angle(-122, 10, 55))
+>>> booksinc = coords.spherical(6371, coords.angle(90) - coords.angle(37, 23, 32.4852), coords.angle(-122, 4, 46.2252))
+
+>>> print keplers - booksinc
+<spherical><r>11.3235</r><theta>61.4649</theta><phi>123.282</phi></spherical>
 
 ```
