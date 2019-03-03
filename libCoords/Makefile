@@ -45,9 +45,17 @@ endif
 ifeq ($(UNAME), Linux)
 
 CXX      = g++
-CXXFLAGS = -g -W -Wall -fPIC -I. -I$(GTEST_INC_DIR) -D BOOST_REGEX
+CXXFLAGS = -g -W -Wall -fPIC -I. -std=c++11
 LINK     = g++
-LDFLAGS  = -L. -lCoords -L$(GTEST_LIB_DIR) -lgtest -lboost_python -lboost_regex
+LDFLAGS  = -L. -lCoords
+
+# TODO some backwards compatibility. std::regex is in gcc 4.9+
+GCCVERSION := $(shell gcc -dumpversion)
+ifeq ($(GCCVERSION), 4.8.5)
+  CXXFLAGS += -D BOOST_REGEX
+  LDFLAGS  += -lboost_python -lboost_regex
+endif
+
 
 GTEST_LIBS = -L$(GTEST_LIB_DIR) -lgtest -lpthread
 GTEST_FLAGS = -std=c++11 -I$(GTEST_INC_DIR) -I. -g -c

@@ -54,9 +54,11 @@ int main(int argc, char **argv) {
 
   std::cout << "c++11 regex" << std::endl;
 
+  std::string not_temp_buffer(test_buffer.str());
+
   std::regex cc_rex(cc_fmt);
   std::smatch m;
-  bool found = std::regex_match(test_buffer.str(), m, cc_rex);
+  bool found = std::regex_match(not_temp_buffer, m, cc_rex);
   std::smatch::iterator it = m.begin();
 #endif
 
