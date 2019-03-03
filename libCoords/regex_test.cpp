@@ -22,7 +22,9 @@
 
 int main(int argc, char **argv) {
 
-  const std::string cc_fmt("(\\d{4}[- ]){3}\\d{4}");
+
+  const std::string cc_fmt("(\\d{4})-(\\d{1,2})-(\\d{1,2})"); // ./regex_test 2019-03-03
+
 
   std::cout << "test regex: " << cc_fmt << std::endl;
 
@@ -32,7 +34,7 @@ int main(int argc, char **argv) {
   for (int i(1); i < argc; ++i) {
 
     test_buffer << argv[i];
-    if (i < argc - 1) 
+    if (i < argc - 1)
       test_buffer << " ";
 
   }
@@ -67,6 +69,8 @@ int main(int argc, char **argv) {
     for (it = m.begin(); it != m.end(); ++it) {
       std::cout << "smatch iter: " << *it << std::endl;
     }
+
+    for (auto it: m) std::cout << "auto smatch iter: " << it << std::endl;
 
 
   } else {
