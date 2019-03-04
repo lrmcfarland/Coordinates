@@ -111,7 +111,7 @@ Coords::Cartesian& Coords::Cartesian::operator*=(const double& rhs) {
   return *this;
 }
 
-Coords::Cartesian& Coords::Cartesian::operator/=(const double& rhs) throw (DivideByZeroError) {
+Coords::Cartesian& Coords::Cartesian::operator/=(const double& rhs) {
   if (rhs == 0)
     throw DivideByZeroError();
   m_x /= rhs;
@@ -130,7 +130,7 @@ double Coords::Cartesian::magnitude2() const {
   return m_x*m_x + m_y*m_y + m_z*m_z;
 }
 
-Coords::Cartesian Coords::Cartesian::normalized() const throw (DivideByZeroError) {
+Coords::Cartesian Coords::Cartesian::normalized() const {
   const double h(magnitude());
   return Coords::Cartesian(m_x/h, m_y/h, m_z/h);
 }
@@ -171,16 +171,14 @@ Coords::Cartesian Coords::operator*(const double& lhs,
 }
 
 Coords::Cartesian Coords::operator/(const Coords::Cartesian& lhs,
-				    const double& rhs)
-  throw (DivideByZeroError) {
+				    const double& rhs) {
   if (rhs == 0)
     throw DivideByZeroError();
   return Coords::Cartesian(lhs.x() / rhs, lhs.y() / rhs, lhs.z() / rhs);
 }
 
 Coords::Cartesian Coords::operator/(const double& lhs,
-				    const Coords::Cartesian& rhs)
-  throw (DivideByZeroError) {
+				    const Coords::Cartesian& rhs) {
   if (rhs.x() == 0 || rhs.y() == 0 || rhs.z() == 0)
     throw DivideByZeroError();
   return Coords::Cartesian(lhs / rhs.x(), lhs / rhs.y(), lhs / rhs.z());

@@ -88,8 +88,8 @@ namespace Coords {
 
     // ----- accessors -----
 
-    void isValid(const std::string& an_iso8601_time = "") throw (Error);
-    void throwError(const std::string& a_datetime, const std::string msg) throw (Error);
+    void isValid(const std::string& an_iso8601_time = "");
+    void throwError(const std::string& a_datetime, const std::string msg);
 
     // there are no set value accessors to force the use of the constructor isValid check
     // i.e. do time component arithmatic in the constructor.

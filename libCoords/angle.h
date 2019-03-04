@@ -92,7 +92,7 @@ namespace Coords {
     angle& operator-=(const angle& rhs);
 
     angle& operator*=(const angle& rhs);
-    angle& operator/=(const angle& rhs) throw (DivideByZeroError);
+    angle& operator/=(const angle& rhs);
 
 
     // ----- other methods -----
@@ -116,7 +116,7 @@ namespace Coords {
   angle operator- (const angle& rhs); // unary minus
 
   angle operator* (const angle& lhs, const angle& rhs);
-  angle operator/ (const angle& lhs, const angle& rhs) throw (DivideByZeroError);
+  angle operator/ (const angle& lhs, const angle& rhs);
 
 
   // -------------------------------

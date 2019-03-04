@@ -130,7 +130,7 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
   isValid(an_iso8601_time);
 }
 
-void Coords::DateTime::throwError(const std::string& a_datetime, const std::string msg) throw (Error) {
+void Coords::DateTime::throwError(const std::string& a_datetime, const std::string msg) {
   std::stringstream emsg;
   std::stringstream current_time;
 
@@ -143,7 +143,7 @@ void Coords::DateTime::throwError(const std::string& a_datetime, const std::stri
   throw Coords::Error(emsg.str());
 }
 
-void Coords::DateTime::isValid(const std::string& an_iso8601_time) throw (Error) {
+void Coords::DateTime::isValid(const std::string& an_iso8601_time) {
 
   if (m_month < 1 || m_month > 12)
     throwError(an_iso8601_time, "month out of range.");
