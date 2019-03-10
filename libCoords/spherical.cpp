@@ -104,7 +104,7 @@ Coords::spherical& Coords::spherical::operator*=(const double& rhs) {
   return *this;
 }
 
-Coords::spherical& Coords::spherical::operator/=(const double& rhs) throw (DivideByZeroError) {
+Coords::spherical& Coords::spherical::operator/=(const double& rhs) {
   if (rhs == 0)
     throw DivideByZeroError();
   m_r /= rhs;
@@ -151,16 +151,14 @@ Coords::spherical Coords::operator*(const double& lhs,
 }
 
 Coords::spherical Coords::operator/(const Coords::spherical& lhs,
-				    const double& rhs)
-  throw (DivideByZeroError) {
+				    const double& rhs) {
   if (rhs == 0)
     throw DivideByZeroError();
   return Coords::spherical(lhs.r() / rhs, lhs.theta(), lhs.phi());
 }
 
 Coords::spherical Coords::operator/(const double& lhs,
-				    const Coords::spherical& rhs)
-  throw (DivideByZeroError) {
+				    const Coords::spherical& rhs) {
   if (rhs.r() == 0)
     throw DivideByZeroError();
   return Coords::spherical(lhs / rhs.r(), rhs.theta(), rhs.phi());

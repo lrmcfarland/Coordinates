@@ -1,12 +1,12 @@
-# This will build the starbug.com Coordinates library
+# Create a CentOS container to test coords building
 #
-# to build:    docker build -f Dockerfile.centos -t coords .
+# to build: docker build -f Dockerfile.centos -t coords .
 #
-# to shell:    docker run -it --rm --entrypoint /bin/bash coords
+# to run:   docker run -it --rm --entrypoint /bin/bash coords
 #
-# https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-centos-7
-#
-
+# TODO creates gcc 7 environment in shell
+# like RUN echo 'scl enable devtoolset-7 bash' >> ~/.bashrc
+# but with out so many shells
 
 
 FROM centos
@@ -16,17 +16,14 @@ LABEL service "Coordinates"
 
 # packages
 
+
 RUN yum update -y
-RUN yum install -y gcc gcc-c++ boost boost-devel make cmake git epel-release && yum clean all
-RUN yum install -y python-devel python-pip && yum clean all
+RUN yum install -y gcc gcc-c++ boost boost-devel make cmake git epel-release
+RUN yum install -y python-devel python-pip
 
-RUN yum -y install https://centos7.iuscommunity.org/ius-release.rpm
-RUN yum -y install python36u
-RUN yum -y install python36u-pip
-RUN yum -y install python36u-devel
-
-RUN pip install --upgrade pip
-RUN pip install virtualenv
+RUN yum install -y centos-release-scl
+RUN yum-config-manager --enable rhel-server-rhscl-7-rpms
+RUN yum install -y yum install devtoolset-7
 
 
 # -----------------------
@@ -42,24 +39,21 @@ RUN groupadd ${COORDS_GRP} \
     && mkdir -p ${COORDS_HOME}/logs/flask \
     && chown -R ${COORDS_USER}:${COORDS_GRP} ${COORDS_HOME}
 
-
 USER ${COORDS_USER}:${COORDS_GRP}
 
-
 WORKDIR ${COORDS_HOME}
-
-# built with git
-RUN git clone https://github.com/lrmcfarland/Coordinates.git
 
 # -----------------
 # ----- build -----
 # -----------------
 
+
+RUN git clone https://github.com/lrmcfarland/Coordinates.git
+
 WORKDIR ${COORDS_HOME}/Coordinates/
 
-RUN git submodule update --init --recursive
 
-RUN ./build.sh test
+# RUN ./build.sh test
 
 ENTRYPOINT ["bash"]
 

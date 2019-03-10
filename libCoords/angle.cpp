@@ -102,7 +102,7 @@ Coords::angle& Coords::angle::operator*=(const Coords::angle& rhs) {
   return *this;
 }
 
-Coords::angle& Coords::angle::operator/=(const Coords::angle& rhs) throw (DivideByZeroError) {
+Coords::angle& Coords::angle::operator/=(const Coords::angle& rhs) {
   if (rhs.value() == 0)
     throw DivideByZeroError();
   m_value /= rhs.value();
@@ -129,8 +129,7 @@ Coords::angle Coords::operator*(const Coords::angle& lhs, const Coords::angle& r
   return Coords::angle(lhs.value() * rhs.value());
 }
 
-Coords::angle Coords::operator/(const Coords::angle& lhs, const Coords::angle& rhs)
-  throw (DivideByZeroError) {
+Coords::angle Coords::operator/(const Coords::angle& lhs, const Coords::angle& rhs) {
   if (rhs.value() == 0)
     throw DivideByZeroError();
   return Coords::angle(lhs.value() / rhs.value());

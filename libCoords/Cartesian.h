@@ -90,7 +90,7 @@ namespace Coords {
     Cartesian& operator-=(const Cartesian& rhs);
 
     Cartesian& operator*=(const double& rhs); // scale
-    Cartesian& operator/=(const double& rhs) throw (DivideByZeroError);
+    Cartesian& operator/=(const double& rhs);
 
     // ----- other methods -----
 
@@ -99,7 +99,7 @@ namespace Coords {
     double magnitude()  const;
     double magnitude2() const;
 
-    Cartesian normalized() const throw (DivideByZeroError);
+    Cartesian normalized() const;
 
   private:
 
@@ -123,8 +123,8 @@ namespace Coords {
   Cartesian operator*(const Cartesian& lhs, const double& rhs); // scale
   Cartesian operator*(const double& lhs, const Cartesian& rhs); // scale
 
-  Cartesian operator/(const Cartesian& lhs, const double& rhs) throw (DivideByZeroError); // scale
-  Cartesian operator/(const double& lhs, const Cartesian& rhs) throw (DivideByZeroError); // scale
+  Cartesian operator/(const Cartesian& lhs, const double& rhs); // scale
+  Cartesian operator/(const double& lhs, const Cartesian& rhs); // scale
 
   // vector products
   double operator*(const Cartesian& lhs, const Cartesian& rhs); // dot product

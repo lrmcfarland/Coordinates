@@ -257,8 +257,15 @@ $ twine upload dist/*
 To install the test distribution
 
 ```
-$ pip install -i https://pypi.org/project/ starbug.coords
+$ pip install -i https://test.pypi.org/project starbug.coords
 ```
+
+or from PyPI
+
+```
+$ pip install starbug.coords
+```
+
 
 
 # To use

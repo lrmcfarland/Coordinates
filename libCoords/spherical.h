@@ -90,7 +90,7 @@ namespace Coords {
     spherical& operator-=(const spherical& rhs);
 
     spherical& operator*=(const double& rhs); // scale
-    spherical& operator/=(const double& rhs) throw (DivideByZeroError);
+    spherical& operator/=(const double& rhs);
 
     // ----- other methods -----
 
@@ -128,8 +128,8 @@ namespace Coords {
   spherical operator*(const spherical& lhs, const double& rhs); // scale
   spherical operator*(const double& lhs, const spherical& rhs); // scale
 
-  spherical operator/(const spherical& lhs, const double& rhs) throw (DivideByZeroError); // scale
-  spherical operator/(const double& lhs, const spherical& rhs) throw (DivideByZeroError); // scale
+  spherical operator/(const spherical& lhs, const double& rhs); // scale
+  spherical operator/(const double& lhs, const spherical& rhs); // scale
 
   // -------------------------------
   // ----- output operator<<() -----

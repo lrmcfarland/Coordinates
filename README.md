@@ -12,23 +12,45 @@ web framework like [flask](http://flask.pocoo.org/) (See
 [AAI](https://aai.starbug.com/)).
 All objects are in the name space "Coords", e.g. Coords::Cartesian.
 
+# To Install from PyPI
 
-# To Install
+I have pushed an [OS X python3 version of coords to
+PyPI](https://pypi.org/project/starbug.coords/).
 
-I have pushed a python3 version of the library to the pypi repo
+I am working on a Linux version, but am stuck between gcc compiler
+versions. I use regex to parse datetime strings. Since this is not
+part of gcc before version 4.9, I link to the boost implementation.
+This becomes one more dependency for a PyPI build. CentOS 7.6 ships
+with gcc 4.8.5 and I can install 4.9 and build coords, but linking the
+python library built with gcc 4.8.5 becomes the issue. I expect this
+to clear up in future releases soon. For now, I am linking and building
+on the install machine,
+e.g. [AAI](https://github.com/lrmcfarland/AAI).
+
 
 ## Using pyenv
 
 To use [pyenv](https://github.com/pyenv/pyenv) as a virtualenv
 
 ```
-$ pyenv virtualenv 3.7.0 test-coords
+$ pyenv virtualenv 3.7.0 aai.starbug
 
-$ pyenv activate test-coords
+$ pyenv activate aai.starbug
 
-(test-coords) $ pip install --upgrade pip
+```
 
-(test-coords) $ pip install --index-url https://test.pypi.org/sample starbug.coords
+from the test server
+
+```
+$ pip install -i https://pypi.org/project/ starbug.coords
+
+```
+
+or from the real server
+
+```
+(aai.starbug) $ pip install starbug.coords
+
 ```
 
 TODO example wiht python3 -m

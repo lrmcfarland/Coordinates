@@ -36,10 +36,7 @@ if platform.system() == 'Darwin':
 
 elif platform.system() == 'Linux':
 
-    if sys.version_info.major == 3:
-        boost_pylib = 'boost_python3' # TODO test this
-    else:
-        boost_pylib = 'boost_python'
+    boost_pylib = 'boost_python'
 
     include_dirs = ['../../libCoords']
     library_dirs = ['../../libCoords', '/usr/lib64']
