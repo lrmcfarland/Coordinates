@@ -50,7 +50,7 @@ namespace Coords {
   double degrees2seconds(const double& a_deg, const double& a_min, const double& a_sec);
 
   // output operator<<
-  void value2DMSString(const double& a_value, std::stringstream& a_string);
-  void value2HMSString(const double& a_value, std::stringstream& a_string);
+  void degrees2DMSString(const double& a_degrees, std::stringstream& a_string);
+  void degrees2HMSString(const double& a_degrees, std::stringstream& a_string);
 
 } // end namespace Coords

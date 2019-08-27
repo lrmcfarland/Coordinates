@@ -20,7 +20,7 @@ using namespace boost::python;
 
 // overload wrappers
 
-void (Coords::angle::*setAngleValue)(const double&) = &Coords::angle::setValue;
+void (Coords::angle::*setAngleDegrees)(const double&) = &Coords::angle::setDegrees;
 void (Coords::angle::*setAngleRadians)(const double&) = &Coords::angle::setRadians;
 void (Coords::angle::*normalize)(const double&, const double&) = &Coords::angle::normalize;
 Coords::angle (Coords::angle::*complement)() const = &Coords::angle::complement;
@@ -60,9 +60,9 @@ BOOST_PYTHON_MODULE(coords) {
 
     // accessors
 
-    .def("getValue", &Coords::angle::getValue)
-    .def("setValue", setAngleValue)
-    .add_property("value", &Coords::angle::getValue, setAngleValue)
+    .def("getDegrees", &Coords::angle::getDegrees)
+    .def("setDegrees", setAngleDegrees)
+    .add_property("degrees", &Coords::angle::getDegrees, setAngleDegrees)
 
     .def("getRadians", &Coords::angle::getRadians)
     .def("setRadians", setAngleRadians)

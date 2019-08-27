@@ -140,7 +140,7 @@ class TestAngle(unittest.TestCase):
         """Test copy constructor"""
         an_angle = coords.angle(self.rd1)
         another_angle = coords.angle(an_angle)
-        self.assertAlmostEqual(self.rd1, another_angle.value, self.places)
+        self.assertAlmostEqual(self.rd1, another_angle.degrees, self.places)
 
 
     def test_copy_assign(self):
@@ -149,31 +149,31 @@ class TestAngle(unittest.TestCase):
         an_angle = coords.angle(self.rd1)
         another_angle = coords.angle()
         another_angle = an_angle
-        self.assertAlmostEqual(self.rd1, another_angle.value, self.places)
+        self.assertAlmostEqual(self.rd1, another_angle.degrees, self.places)
 
 
     def test_default_constructor(self):
         """Test default constructor"""
         an_angle = coords.angle()
-        self.assertEqual(0, an_angle.value)
+        self.assertEqual(0, an_angle.degrees)
 
 
     def test_construct_degrees(self):
         """Test construct_degrees"""
         an_angle = coords.angle(self.rd1)
-        self.assertAlmostEqual(self.rd1, an_angle.value, self.places)
+        self.assertAlmostEqual(self.rd1, an_angle.degrees, self.places)
 
 
     def test_construct_degrees_minutes(self):
         """Test construct degrees minutes"""
         an_angle = coords.angle(-45.0, 30.0)
-        self.assertEqual(-45.5, an_angle.value)
+        self.assertEqual(-45.5, an_angle.degrees)
 
 
     def test_construct_degrees_minutes_seconds(self):
         """Test construct degrees minutes seconds"""
         an_angle = coords.angle(-44, 59.0, 60)
-        self.assertEqual(-45.0, an_angle.value)
+        self.assertEqual(-45.0, an_angle.degrees)
 
 
     def test_mixed_sign_constructor_1(self):
@@ -181,20 +181,20 @@ class TestAngle(unittest.TestCase):
         # divide 2 to keep in range
         a = coords.angle(-self.rd1/2, self.rm1, self.rs1)
         b = coords.angle(-self.rd1/2, -self.rm1, self.rs1)
-        self.assertAlmostEqual(a.value, b.value, self.places)
+        self.assertAlmostEqual(a.degrees, b.degrees, self.places)
 
 
     def test_mixed_sign_constructor_2(self):
         """Test mixed sign constructor 2"""
         a = coords.angle(-self.rd1/2, self.rm1, self.rs1)
         b = coords.angle(-self.rd1/2, self.rm1, -self.rs1)
-        self.assertAlmostEqual(a.value, b.value, self.places)
+        self.assertAlmostEqual(a.degrees, b.degrees, self.places)
 
     def test_mixed_sign_constructor_3(self):
         """Test mixed sign constructor 3"""
         a = coords.angle(-self.rd1/2, self.rm1, self.rs1)
         b = coords.angle(-self.rd1/2, -self.rm1, -self.rs1)
-        self.assertAlmostEqual(a.value, b.value, self.places)
+        self.assertAlmostEqual(a.degrees, b.degrees, self.places)
 
 
 
@@ -212,8 +212,8 @@ class TestAngle(unittest.TestCase):
     def test_accessors_1(self):
         """Test value accessors 1"""
         an_angle = coords.angle()
-        an_angle.value = 90
-        self.assertEqual(90, an_angle.value)
+        an_angle.degrees = 90
+        self.assertEqual(90, an_angle.degrees)
         self.assertEqual(math.pi/2.0, an_angle.radians)
 
     @unittest.skip('TODO Boost.Python.ArgumentError')
@@ -221,7 +221,7 @@ class TestAngle(unittest.TestCase):
         """Test value accessor exception"""
         try:
             an_angle = coords.angle()
-            an_angle.value = 'foo'
+            an_angle.degrees = 'foo'
             self.assertRaises(False) # correct behavior skips this
         except RuntimeError as err:
             self.assertTrue(RuntimeError == type(err))
@@ -231,7 +231,7 @@ class TestAngle(unittest.TestCase):
         """Test radians accessor negative"""
         an_angle = coords.angle()
         an_angle.radians = -math.pi/2.0
-        self.assertEqual(-90, an_angle.value)
+        self.assertEqual(-90, an_angle.degrees)
         self.assertEqual(-math.pi/2.0, an_angle.radians)
 
     @unittest.skip('TODO Boost.Python.ArgumentError')
@@ -253,7 +253,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         a2 = coords.angle(self.rd2)
         a1 += a2
-        self.assertAlmostEqual(self.rd1 + self.rd2, a1.value, self.places)
+        self.assertAlmostEqual(self.rd1 + self.rd2, a1.degrees, self.places)
 
     def test_angle_plus_angle(self):
         """Test angle + angle"""
@@ -261,7 +261,7 @@ class TestAngle(unittest.TestCase):
         a2 = coords.angle(self.rd2)
         a3 = coords.angle()
         a3 = a1 + a2
-        self.assertAlmostEqual(self.rd1 + self.rd2, a3.value, self.places)
+        self.assertAlmostEqual(self.rd1 + self.rd2, a3.degrees, self.places)
 
 
     # subtract
@@ -271,7 +271,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         a2 = coords.angle(self.rd2)
         a1 -= a2
-        self.assertAlmostEqual(self.rd1 - self.rd2, a1.value, self.places)
+        self.assertAlmostEqual(self.rd1 - self.rd2, a1.degrees, self.places)
 
     def test_angle_minus_angle(self):
         """Test angle - angle"""
@@ -279,7 +279,7 @@ class TestAngle(unittest.TestCase):
         a2 = coords.angle(self.rd2)
         a3 = coords.angle()
         a3 = a1 - a2
-        self.assertAlmostEqual(self.rd1 - self.rd2, a3.value, self.places)
+        self.assertAlmostEqual(self.rd1 - self.rd2, a3.degrees, self.places)
 
 
     @unittest.skip('TODO')
@@ -287,7 +287,7 @@ class TestAngle(unittest.TestCase):
         """Test angle = -angle"""
         a1 = coords.angle(self.rd1)
         a2 = -a1
-        self.assertAlmostEqual(a1.value, -a2.value, self.places)
+        self.assertAlmostEqual(a1.degrees, -a2.degrees, self.places)
 
     # multiply
 
@@ -296,7 +296,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         a2 = coords.angle(self.rd2)
         a1 *= a2
-        self.assertAlmostEqual(self.rd1 * self.rd2, a1.value, self.places)
+        self.assertAlmostEqual(self.rd1 * self.rd2, a1.degrees, self.places)
 
 
     def test_angle_times_angle(self):
@@ -304,7 +304,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         a2 = coords.angle(self.rd2)
         a3 = a1 * a2
-        self.assertAlmostEqual(self.rd1 * self.rd2, a3.value, self.places)
+        self.assertAlmostEqual(self.rd1 * self.rd2, a3.degrees, self.places)
 
 
     # divide
@@ -314,7 +314,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         a2 = coords.angle(self.rd2)
         a1 /= a2
-        self.assertAlmostEqual(self.rd1 / self.rd2, a1.value, self.places)
+        self.assertAlmostEqual(self.rd1 / self.rd2, a1.degrees, self.places)
 
 
     def test_angle_divide_angle(self):
@@ -322,7 +322,7 @@ class TestAngle(unittest.TestCase):
         a1 = coords.angle(self.rd1)
         a2 = coords.angle(self.rd2)
         a3 = a1 / a2
-        self.assertAlmostEqual(self.rd1 / self.rd2, a3.value, self.places)
+        self.assertAlmostEqual(self.rd1 / self.rd2, a3.degrees, self.places)
 
 
     def test_angle_divide_zero(self):
@@ -339,13 +339,13 @@ class TestAngle(unittest.TestCase):
         """Test normalize 1"""
         a1 = coords.angle(45 + 360)
         a1.normalize(0, 360)
-        self.assertAlmostEqual(45, a1.value)
+        self.assertAlmostEqual(45, a1.degrees)
 
     def test_normzlize_2(self):
         """Test normalize 1"""
         a1 = coords.angle(-45 + 360)
         a1.normalize(-180, 180)
-        self.assertAlmostEqual(-45, a1.value)
+        self.assertAlmostEqual(-45, a1.degrees)
 
 
     # complement
@@ -354,14 +354,14 @@ class TestAngle(unittest.TestCase):
         """Test complement 45"""
         a1 = coords.angle(45)
         c1 = a1.complement()
-        self.assertAlmostEqual(45, c1.value)
+        self.assertAlmostEqual(45, c1.degrees)
 
 
     def test_complement_60(self):
         """Test complement 60"""
         a1 = coords.angle(60)
         c1 = a1.complement()
-        self.assertAlmostEqual(30, c1.value)
+        self.assertAlmostEqual(30, c1.degrees)
 
 
     # strings
@@ -393,13 +393,13 @@ class TestLatitude(unittest.TestCase):
     def test_default_constructor(self):
         """Test default constructor"""
         a_latitude = coords.latitude()
-        self.assertEqual(0, a_latitude.value)
+        self.assertEqual(0, a_latitude.degrees)
 
 
     def test_constructor_1(self):
         """Test constructor 1"""
         a_latitude = coords.latitude(45)
-        self.assertEqual(45, a_latitude.value)
+        self.assertEqual(45, a_latitude.degrees)
 
 
     def test_constructor_exception_north(self):
@@ -425,14 +425,14 @@ class TestLatitude(unittest.TestCase):
         a1 = coords.latitude(10)
         a2 = coords.latitude(10)
         a1 += a2
-        self.assertAlmostEqual(20, a1.value, self.places)
+        self.assertAlmostEqual(20, a1.degrees, self.places)
 
     def test_inplace_add_2(self):
         """Test latitude += angle"""
         a1 = coords.latitude(10)
         a2 = coords.angle(10)
         a1 += a2
-        self.assertAlmostEqual(20, a1.value, self.places)
+        self.assertAlmostEqual(20, a1.degrees, self.places)
 
 
     def test_inplace_add_over_limit(self):
@@ -441,7 +441,7 @@ class TestLatitude(unittest.TestCase):
         a1 = coords.latitude(50)
         a2 = coords.latitude(50)
         a1 += a2
-        self.assertAlmostEqual(100, a1.value, self.places)
+        self.assertAlmostEqual(100, a1.degrees, self.places)
 
 
 
@@ -458,13 +458,13 @@ class TestDeclination(unittest.TestCase):
     def test_default_constructor(self):
         """Test default constructor"""
         a_declination = coords.declination()
-        self.assertEqual(0, a_declination.value)
+        self.assertEqual(0, a_declination.degrees)
 
 
     def test_constructor_1(self):
         """Test constructor 1"""
         a_declination = coords.declination(45)
-        self.assertEqual(45, a_declination.value)
+        self.assertEqual(45, a_declination.degrees)
 
 
     def test_constructor_exception_north(self):
@@ -490,14 +490,14 @@ class TestDeclination(unittest.TestCase):
         a1 = coords.declination(10)
         a2 = coords.declination(10)
         a1 += a2
-        self.assertAlmostEqual(20, a1.value, self.places)
+        self.assertAlmostEqual(20, a1.degrees, self.places)
 
     def test_inplace_add_2(self):
         """Test declination += angle"""
         a1 = coords.declination(10)
         a2 = coords.angle(10)
         a1 += a2
-        self.assertAlmostEqual(20, a1.value, self.places)
+        self.assertAlmostEqual(20, a1.degrees, self.places)
 
 
     def test_inplace_add_over_limit(self):
@@ -506,7 +506,7 @@ class TestDeclination(unittest.TestCase):
         a1 = coords.declination(50)
         a2 = coords.declination(50)
         a1 += a2
-        self.assertAlmostEqual(100, a1.value, self.places)
+        self.assertAlmostEqual(100, a1.degrees, self.places)
 
 
 

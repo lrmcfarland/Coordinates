@@ -53,12 +53,12 @@ namespace Coords {
     explicit spherical(const double& r,
 		       const Latitude& lat,
 		       const angle& phi = angle(0.0))
-      : m_r(r), m_theta(90.0 - lat.value()), m_phi(phi) {};
+      : m_r(r), m_theta(90.0 - lat.degrees()), m_phi(phi) {};
 
     explicit spherical(const double& r,
 		       const Declination& lat,
 		       const angle& phi = angle(0.0))
-      : m_r(r), m_theta(90.0 - lat.value()), m_phi(phi) {};
+      : m_r(r), m_theta(90.0 - lat.degrees()), m_phi(phi) {};
 
     ~spherical() {};
 
@@ -139,8 +139,8 @@ namespace Coords {
   inline std::ostream& operator<< (std::ostream& os, const Coords::spherical& a) {
     os << "<spherical>"
        << "<r>" << a.r() << "</r>"
-       << "<theta>" << a.theta().value() << "</theta>"
-       << "<phi>" << a.phi().value() << "</phi>"
+       << "<theta>" << a.theta().degrees() << "</theta>"
+       << "<phi>" << a.phi().degrees() << "</phi>"
        << "</spherical>";
     return os;
   }

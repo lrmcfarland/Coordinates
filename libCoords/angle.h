@@ -63,17 +63,17 @@ namespace Coords {
     angle& operator=(const angle& rhs);
 
     // ----- accessors -----
-    void          value(const double& a_value) {m_value = a_value;}
-    const double& value() const                {return m_value;}
+    void          degrees(const double& a_degrees) {m_degrees = a_degrees;}
+    const double& degrees() const                  {return m_degrees;}
 
-    void          setValue(const double& a_value) {m_value = a_value;}
-    double        getValue() const                {return m_value;} // for boost
+    void          setDegrees(const double& a_degrees) {m_degrees = a_degrees;}
+    double        getDegrees() const                  {return m_degrees;} // for boost
 
-    void          radians(const double& a_value) {value(rad2deg(a_value));}
-    double        radians() const                {return deg2rad(value());}
+    void          radians(const double& a_degrees) {degrees(rad2deg(a_degrees));}
+    double        radians() const                  {return deg2rad(degrees());}
 
-    void          setRadians(const double& a_value) {value(rad2deg(a_value));}
-    double        getRadians() const                {return deg2rad(value());} // for boost
+    void          setRadians(const double& a_degrees) {degrees(rad2deg(a_degrees));}
+    double        getRadians() const                  {return deg2rad(degrees());} // for boost
 
     // ----- boolean operators -----
 
@@ -98,11 +98,11 @@ namespace Coords {
     // ----- other methods -----
     void normalize(const double& begin=0.0, const double& end=360);  // TODO normalized -> return a new copy?
 
-    angle complement() const {return angle(90 - value());}
+    angle complement() const {return angle(90 - degrees());}
 
   private:
 
-    double m_value; // degrees for declination, latitude, longitude, seconds for right ascension
+    double m_degrees;
 
   };
 
@@ -126,7 +126,7 @@ namespace Coords {
   // inline for boost. Use hpp instead?
   inline std::ostream& operator<< (std::ostream& os, const Coords::angle& a) {
     std::stringstream out;
-    Coords::value2HMSString(a.value(), out);
+    Coords::degrees2HMSString(a.degrees(), out);
     return os << out.str();
   }
 

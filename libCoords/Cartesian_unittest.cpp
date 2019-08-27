@@ -782,8 +782,8 @@ namespace {
     Coords::spherical rotate_point_sph(rotated_point);
 
     EXPECT_DOUBLE_EQ(axis_sph.r(), rotate_point_sph.r());
-    EXPECT_DOUBLE_EQ(135, rotate_point_sph.theta().value());
-    EXPECT_NEAR(axis_sph.phi().value(), rotate_point_sph.phi().value(),
+    EXPECT_DOUBLE_EQ(135, rotate_point_sph.theta().degrees());
+    EXPECT_NEAR(axis_sph.phi().degrees(), rotate_point_sph.phi().degrees(),
 		Coords::epsilon*1000); // accumulated rounding error!?!
 
     EXPECT_NEAR(0.0, rotated_point.x(), Coords::epsilon*10);
@@ -850,7 +850,7 @@ namespace {
     std::cout << "rotated point: " << rotate_point_sph << std::endl; // TODO rm
 
     EXPECT_DOUBLE_EQ(axis_sph.r(), rotate_point_sph.r());
-    EXPECT_NEAR(axis_sph.phi().value(), rotate_point_sph.phi().value(), Coords::epsilon*1000); // accumulated rounding error!?!
+    EXPECT_NEAR(axis_sph.phi().degrees(), rotate_point_sph.phi().degrees(), Coords::epsilon*1000); // accumulated rounding error!?!
 
     EXPECT_DOUBLE_EQ(1.0, rotated_point.x());
     EXPECT_DOUBLE_EQ(1.0, rotated_point.y());
