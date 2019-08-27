@@ -210,6 +210,7 @@ class TestAngle(unittest.TestCase):
         an_angle.degrees = 90
         self.assertEqual(90, an_angle.degrees)
         self.assertEqual(math.pi/2.0, an_angle.radians)
+        self.assertEqual(6.0, an_angle.RA)
 
     def test_accessors_1b(self):
         """Test degrees accessor exception"""
@@ -227,6 +228,7 @@ class TestAngle(unittest.TestCase):
         an_angle.radians = -math.pi/2.0
         self.assertEqual(-90, an_angle.degrees)
         self.assertEqual(-math.pi/2.0, an_angle.radians)
+        self.assertEqual(-6.0, an_angle.RA)
 
     def test_accessors_2a(self):
         """Test radians accessor exception"""

@@ -82,6 +82,7 @@ static char sSecondStr[] = "seconds";
 
 static char sDegreesStr[] = "degrees";
 static char sRadiansStr[] = "radians";
+static char sRAStr[] = "RA";
 
 typedef struct {
   PyObject_HEAD
@@ -384,6 +385,29 @@ static int Angle_setRadians(Angle* self, PyObject* radians, void* closure) {
   }
 
   self->m_angle.radians(PyFloat_AsDouble(radians));
+
+  return 0;
+}
+
+// ----- RA -----
+
+static PyObject* Angle_getRA(Angle* self, void* closure) {
+  return PyFloat_FromDouble(self->m_angle.RA());
+}
+
+static int Angle_setRA(Angle* self, PyObject* RA, void* closure) {
+
+  if (RA == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete RA");
+    return -1;
+  }
+
+  if (!PyFloat_Check(RA) && !COORDS_INT_CHECK(RA)) {
+    PyErr_SetString(sCoordsException, "RA must be a float or int");
+    return -1;
+  }
+
+  self->m_angle.RA(PyFloat_AsDouble(RA));
 
   return 0;
 }
@@ -704,12 +728,34 @@ static PyObject* rad2deg(PyObject* self, PyObject *args) {
   return (PyObject*)  Py_BuildValue("d", degrees);
 }
 
+// ----- deg2RA -----
+
+static PyObject* deg2RA(PyObject* self, PyObject *args) {
+  double RA(0);
+  if (!PyArg_ParseTuple(args, "d", &RA))
+    return NULL;
+  double degrees = Coords::angle::deg2RA(RA);
+  return (PyObject*)  Py_BuildValue("d", degrees);
+}
+
+// ----- RA2deg -----
+
+static PyObject* RA2deg(PyObject* self, PyObject *args) {
+  double RA(0);
+  if (!PyArg_ParseTuple(args, "d", &RA))
+    return NULL;
+  double degrees = Coords::angle::RA2deg(RA);
+  return (PyObject*)  Py_BuildValue("d", degrees);
+}
+
 // --------------------------
 // ----- Python structs -----
 // --------------------------
 
 PyDoc_STRVAR(coords_deg2rad__doc__, "converts degrees into radians");
 PyDoc_STRVAR(coords_rad2deg__doc__, "converts radians into degrees");
+PyDoc_STRVAR(coords_deg2RA__doc__, "converts degrees into RA");
+PyDoc_STRVAR(coords_RA2deg__doc__, "converts RA into degrees");
 PyDoc_STRVAR(coords_normalize__doc__, "normalizes the degrees to given range");
 PyDoc_STRVAR(coords_complement__doc__, "returns the complement of the angle");
 
@@ -729,6 +775,7 @@ static PyMemberDef Angle_members[] = {
 static PyGetSetDef Angle_getseters[] = {
   {sDegreesStr, (getter)Angle_getDegrees, (setter)Angle_setDegrees, sDegreesStr, NULL},
   {sRadiansStr, (getter)Angle_getRadians, (setter)Angle_setRadians, sRadiansStr, NULL},
+  {sRAStr, (getter)Angle_getRA, (setter)Angle_setRA, sRAStr, NULL},
   {NULL}  /* Sentinel */
 };
 
@@ -1027,6 +1074,29 @@ static int Latitude_setRadians(Latitude* self, PyObject* radians, void* closure)
   return 0;
 }
 
+// ----- RA -----
+
+static PyObject* Latitude_getRA(Latitude* self, void* closure) {
+  return PyFloat_FromDouble(self->m_angle.RA());
+}
+
+static int Latitude_setRA(Latitude* self, PyObject* RA, void* closure) {
+
+  if (RA == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete RA");
+    return -1;
+  }
+
+  if (!PyFloat_Check(RA) && !COORDS_INT_CHECK(RA)) {
+    PyErr_SetString(sCoordsException, "RA must be a float or int");
+    return -1;
+  }
+
+  self->m_angle.RA(PyFloat_AsDouble(RA));
+
+  return 0;
+}
+
 // --------------------------
 // ----- number methods -----
 // --------------------------
@@ -1278,6 +1348,7 @@ static PyMemberDef Latitude_members[] = {
 static PyGetSetDef Latitude_getseters[] = {
   {sDegreesStr, (getter)Latitude_getDegrees, (setter)Latitude_setDegrees, sDegreesStr, NULL},
   {sRadiansStr, (getter)Latitude_getRadians, (setter)Latitude_setRadians, sRadiansStr, NULL},
+  {sRAStr, (getter)Latitude_getRA, (setter)Latitude_setRA, sRAStr, NULL},
   {NULL}  /* Sentinel */
 };
 
@@ -1577,6 +1648,29 @@ static int Declination_setRadians(Declination* self, PyObject* radians, void* cl
   return 0;
 }
 
+// ----- RA -----
+
+static PyObject* Declination_getRA(Declination* self, void* closure) {
+  return PyFloat_FromDouble(self->m_angle.RA());
+}
+
+static int Declination_setRA(Declination* self, PyObject* RA, void* closure) {
+
+  if (RA == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete RA");
+    return -1;
+  }
+
+  if (!PyFloat_Check(RA) && !COORDS_INT_CHECK(RA)) {
+    PyErr_SetString(sCoordsException, "RA must be a float or int");
+    return -1;
+  }
+
+  self->m_angle.RA(PyFloat_AsDouble(RA));
+
+  return 0;
+}
+
 // --------------------------
 // ----- number methods -----
 // --------------------------
@@ -1828,6 +1922,7 @@ static PyMemberDef Declination_members[] = {
 static PyGetSetDef Declination_getseters[] = {
   {sDegreesStr, (getter)Declination_getDegrees, (setter)Declination_setDegrees, sDegreesStr, NULL},
   {sRadiansStr, (getter)Declination_getRadians, (setter)Declination_setRadians, sRadiansStr, NULL},
+  {sRAStr, (getter)Declination_getRA, (setter)Declination_setRA, sRAStr, NULL},
   {NULL}  /* Sentinel */
 };
 

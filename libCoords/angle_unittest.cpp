@@ -35,14 +35,39 @@ namespace {
 
   // ----- static methods -----
 
-  TEST(angle, Degree2Radians) {
+  TEST(angle, Degree2Radians45) {
     double a = Coords::angle::deg2rad(45);
     EXPECT_DOUBLE_EQ(0.78539816339744828, a);
   }
 
-  TEST(angle, Radian2Degrees) {
+  TEST(angle, Radian2Degrees45) {
     double a = Coords::angle::rad2deg(0.78539816339744828);
     EXPECT_DOUBLE_EQ(45, a);
+  }
+
+  TEST(angle, Degree2RightAscension180) {
+    double a = Coords::angle::deg2RA(180);
+    EXPECT_DOUBLE_EQ(12, a);
+  }
+
+  TEST(angle, Degree2RightAscension360) {
+    double a = Coords::angle::deg2RA(360);
+    EXPECT_DOUBLE_EQ(24, a);
+  }
+
+  TEST(angle, Degree2RightAscension365) {
+    double a = Coords::angle::deg2RA(365);
+    EXPECT_DOUBLE_EQ(24.333333333333332, a);
+  }
+
+  TEST(angle, RightAscension2Degrees12) {
+    double a = Coords::angle::RA2deg(12);
+    EXPECT_DOUBLE_EQ(180, a);
+  }
+
+  TEST(angle, RightAscension2Degrees24) {
+    double a = Coords::angle::RA2deg(24);
+    EXPECT_DOUBLE_EQ(360, a);
   }
 
   // constructors (and implicitly radians() accessor)
@@ -61,15 +86,24 @@ namespace {
     EXPECT_TRUE(a == b);
   }
 
-  TEST(angle, DefaultConstructor) {
+  TEST(angle, DefaultConstructorRadians) {
     Coords::angle a;
     EXPECT_EQ(0, a.radians());
   }
 
+  TEST(angle, DefaultConstructorRA) {
+    Coords::angle a;
+    EXPECT_EQ(0, a.RA());
+  }
 
-  TEST(angle, ConstructorDeg) {
+  TEST(angle, Constructor1) {
     Coords::angle a(-45);
     EXPECT_EQ(Coords::angle::deg2rad(-45), a.radians());
+  }
+
+  TEST(angle, Constructor2) {
+    Coords::angle a(-30);
+    EXPECT_EQ(Coords::angle::deg2RA(-30), a.RA());
   }
 
   TEST(angle, ConstructorDegFromStr) {
@@ -130,6 +164,8 @@ namespace {
     EXPECT_EQ(-45, a.getDegrees());
     EXPECT_EQ(Coords::angle::deg2rad(-45), a.radians());
     EXPECT_EQ(Coords::angle::deg2rad(-45), a.getRadians());
+    EXPECT_EQ(Coords::angle::deg2RA(-45),  a.RA());
+    EXPECT_EQ(Coords::angle::deg2RA(-45),  a.getRA());
   }
 
   // ----- booleans -----

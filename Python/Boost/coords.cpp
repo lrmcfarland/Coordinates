@@ -22,6 +22,7 @@ using namespace boost::python;
 
 void (Coords::angle::*setAngleDegrees)(const double&) = &Coords::angle::setDegrees;
 void (Coords::angle::*setAngleRadians)(const double&) = &Coords::angle::setRadians;
+void (Coords::angle::*setAngleRA)(const double&) = &Coords::angle::setRA;
 void (Coords::angle::*normalize)(const double&, const double&) = &Coords::angle::normalize;
 Coords::angle (Coords::angle::*complement)() const = &Coords::angle::complement;
 
@@ -67,6 +68,10 @@ BOOST_PYTHON_MODULE(coords) {
     .def("getRadians", &Coords::angle::getRadians)
     .def("setRadians", setAngleRadians)
     .add_property("radians", &Coords::angle::getRadians, setAngleRadians)
+
+    .def("getRA", &Coords::angle::getRA)
+    .def("setRA", setAngleRA)
+    .add_property("RA", &Coords::angle::getRA, setAngleRA)
 
     // rich compare
     .def("__eq__", &Coords::angle::operator==)

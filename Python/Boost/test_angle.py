@@ -215,6 +215,7 @@ class TestAngle(unittest.TestCase):
         an_angle.degrees = 90
         self.assertEqual(90, an_angle.degrees)
         self.assertEqual(math.pi/2.0, an_angle.radians)
+        self.assertEqual(6.0, an_angle.RA)
 
     @unittest.skip('TODO Boost.Python.ArgumentError')
     def test_accessors_1b(self):
@@ -233,6 +234,7 @@ class TestAngle(unittest.TestCase):
         an_angle.radians = -math.pi/2.0
         self.assertEqual(-90, an_angle.degrees)
         self.assertEqual(-math.pi/2.0, an_angle.radians)
+        self.assertEqual(-6.0, an_angle.RA)
 
     @unittest.skip('TODO Boost.Python.ArgumentError')
     def test_accessors_2a(self):
