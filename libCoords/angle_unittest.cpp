@@ -263,6 +263,14 @@ namespace {
     EXPECT_DOUBLE_EQ(0, a.degrees());
   }
 
+  TEST(angle, InplaceAddDouble) {
+    Coords::angle a(45);
+    double b(45);
+    a += b;
+    EXPECT_DOUBLE_EQ(90, a.degrees());
+  }
+
+
   TEST(angle, AnglePlusAnglePos) {
     Coords::angle a(44.5);
     Coords::angle b(44.5);
@@ -279,6 +287,23 @@ namespace {
     EXPECT_DOUBLE_EQ(0, c.degrees());
   }
 
+  TEST(angle, AnglePlusDouble) {
+    Coords::angle a(30);
+    double b(60);
+    Coords::angle c;
+    c = a + b;
+    EXPECT_DOUBLE_EQ(90, c.degrees());
+  }
+
+  TEST(angle, DoublePlusAngle) {
+    Coords::angle a(29);
+    double b(61);
+    Coords::angle c;
+    c = b + a;
+    EXPECT_DOUBLE_EQ(90, c.degrees());
+  }
+
+
   // subtract
   TEST(angle, InplaceSubtractAnglePos) {
     Coords::angle a(45);
@@ -293,6 +318,14 @@ namespace {
     a -= b;
     EXPECT_DOUBLE_EQ(90, a.degrees());
   }
+
+  TEST(angle, InplaceSubtractDouble) {
+    Coords::angle a(40);
+    double b(-45);
+    a -= b;
+    EXPECT_DOUBLE_EQ(85, a.degrees());
+  }
+
 
   TEST(angle, AngleMinusAnglePos) {
     Coords::angle a(45);
@@ -310,6 +343,24 @@ namespace {
     EXPECT_DOUBLE_EQ(90, c.degrees());
   }
 
+
+  TEST(angle, AngleMinusDouble) {
+    Coords::angle a(45);
+    double b(40);
+    Coords::angle c;
+    c = a - b;
+    EXPECT_DOUBLE_EQ(5, c.degrees());
+  }
+
+  TEST(angle, DoubleMinusAngle) {
+    Coords::angle a(45);
+    double b(40);
+    Coords::angle c;
+    c = b - a;
+    EXPECT_DOUBLE_EQ(-5, c.degrees());
+  }
+
+
   // unary minus
   TEST(angle, UnaryMinus) {
     Coords::angle a;
@@ -320,9 +371,16 @@ namespace {
 
   // multiply
 
-  TEST(angle, InplaceMultiply) {
+  TEST(angle, InplaceMultiplyByAngle) {
     Coords::angle a(45);
     Coords::angle b(2);
+    a *= b;
+    EXPECT_DOUBLE_EQ(90, a.degrees());
+  }
+
+  TEST(angle, InplaceMultiplyByDouble) {
+    Coords::angle a(45);
+    double b(2);
     a *= b;
     EXPECT_DOUBLE_EQ(90, a.degrees());
   }
@@ -335,11 +393,54 @@ namespace {
     EXPECT_DOUBLE_EQ(90, c.degrees());
   }
 
+  TEST(angle, MultiplyAngleByDouble) {
+    Coords::angle a(33);
+    double b(2.5);
+    Coords::angle c;
+    c = a * b;
+    EXPECT_DOUBLE_EQ(82.5, c.degrees());
+  }
+
+  TEST(angle, MultiplyAngleByInt) {
+    Coords::angle a(33);
+    int b(2);
+    Coords::angle c;
+    c = a * b;
+    EXPECT_DOUBLE_EQ(66, c.degrees());
+  }
+
+  TEST(angle, MultiplyIntByAngle) {
+    Coords::angle a(20.5);
+    int b(2);
+    Coords::angle c;
+    c = b * a;
+    EXPECT_DOUBLE_EQ(41, c.degrees());
+  }
+
+
+  TEST(angle, MultiplyDoubleByAngle) {
+    Coords::angle a(33);
+    double b(1.5);
+    Coords::angle c;
+    c = b * a;
+    EXPECT_DOUBLE_EQ(49.5, c.degrees());
+  }
+
+
+
+
   // divide
 
-  TEST(angle, InplaceDivide) {
+  TEST(angle, InplaceDivideByAngle) {
     Coords::angle a(90);
     Coords::angle b(2);
+    a /= b;
+    EXPECT_DOUBLE_EQ(45, a.degrees());
+  }
+
+  TEST(angle, InplaceDivideByDouble) {
+    Coords::angle a(90);
+    double b(2);
     a /= b;
     EXPECT_DOUBLE_EQ(45, a.degrees());
   }
@@ -368,6 +469,21 @@ namespace {
     EXPECT_DOUBLE_EQ(45, c.degrees());
   }
 
+  TEST(angle, DivideAngleByDouble) {
+    Coords::angle a(90);
+    double b(2);
+    Coords::angle c;
+    c = a / b;
+    EXPECT_DOUBLE_EQ(45, c.degrees());
+  }
+
+  TEST(angle, DivideDoubleByAngle) {
+    Coords::angle a(0.5);
+    double b(33);
+    Coords::angle c;
+    c = b / a;
+    EXPECT_DOUBLE_EQ(66, c.degrees());
+  }
 
   // operator<<
 

@@ -98,10 +98,16 @@ namespace Coords {
     // ----- in-place operators -----
 
     angle& operator+=(const angle& rhs);
+    angle& operator+=(const double& rhs);
+
     angle& operator-=(const angle& rhs);
+    angle& operator-=(const double& rhs);
 
     angle& operator*=(const angle& rhs);
+    angle& operator*=(const double& rhs);
+
     angle& operator/=(const angle& rhs);
+    angle& operator/=(const double& rhs);
 
 
     // ----- other methods -----
@@ -120,12 +126,25 @@ namespace Coords {
   // ----- operators -----
   // ---------------------
 
+  // TODO allow implicit angle to double construction?
+
   angle operator+ (const angle& lhs, const angle& rhs);
+  angle operator+ (const double& lhs, const angle& rhs);
+  angle operator+ (const angle& lhs, const double& rhs);
+
   angle operator- (const angle& lhs, const angle& rhs);
+  angle operator- (const double& lhs, const angle& rhs);
+  angle operator- (const angle& lhs, const double& rhs);
+
   angle operator- (const angle& rhs); // unary minus
 
   angle operator* (const angle& lhs, const angle& rhs);
+  angle operator* (const double& lhs, const angle& rhs);
+  angle operator* (const angle& lhs, const double& rhs);
+
   angle operator/ (const angle& lhs, const angle& rhs);
+  angle operator/ (const double& lhs, const angle& rhs);
+  angle operator/ (const angle& lhs, const double& rhs);
 
 
   // -------------------------------

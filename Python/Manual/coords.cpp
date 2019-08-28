@@ -468,14 +468,7 @@ static PyObject* complement(PyObject* o1) {
 
 static PyObject* Angle_nb_add(PyObject* o1, PyObject* o2) {
 
-  if (!is_AngleType(o1) || !is_AngleType(o2)) {
-    // TODO coords.Error?
-    Py_INCREF(Py_NotImplemented);
-    return Py_NotImplemented;
-  }
-
   Angle* result_angle(NULL);
-
   new_AngleType(&result_angle);
 
   if (result_angle == NULL) {
@@ -483,9 +476,26 @@ static PyObject* Angle_nb_add(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  Coords::angle the_sum(((Angle*)o1)->m_angle + ((Angle*)o2)->m_angle);
+  if (is_AngleType(o1) && is_AngleType(o2)) {
 
-  result_angle->m_angle = the_sum;
+    Coords::angle the_sum(((Angle*)o1)->m_angle + ((Angle*)o2)->m_angle);
+    result_angle->m_angle = the_sum;
+
+  } else if ((PyFloat_Check(o1) || COORDS_INT_CHECK(o1)) && is_AngleType(o2)) {
+
+    Coords::angle the_sum(PyFloat_AsDouble(o1) + ((Angle*)o2)->m_angle);
+    result_angle->m_angle = the_sum;
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    Coords::angle the_sum(((Angle*)o1)->m_angle + PyFloat_AsDouble(o2));
+    result_angle->m_angle = the_sum;
+
+  } else if (!is_AngleType(o1) || !is_AngleType(o2) ) {
+    // TODO coords.Error?
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
 
   return (PyObject*) result_angle;
 }
@@ -493,13 +503,7 @@ static PyObject* Angle_nb_add(PyObject* o1, PyObject* o2) {
 
 static PyObject* Angle_nb_subtract(PyObject* o1, PyObject* o2) {
 
-  if (!is_AngleType(o1) || !is_AngleType(o2)) {
-    Py_INCREF(Py_NotImplemented);
-    return Py_NotImplemented;
-  }
-
   Angle* result_angle(NULL);
-
   new_AngleType(&result_angle);
 
   if (result_angle == NULL) {
@@ -507,9 +511,26 @@ static PyObject* Angle_nb_subtract(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  Coords::angle the_difference(((Angle*)o1)->m_angle - ((Angle*)o2)->m_angle);
+  if (is_AngleType(o1) && is_AngleType(o2)) {
 
-  result_angle->m_angle = the_difference;
+    Coords::angle the_difference(((Angle*)o1)->m_angle - ((Angle*)o2)->m_angle);
+    result_angle->m_angle = the_difference;
+
+  } else if ((PyFloat_Check(o1) || COORDS_INT_CHECK(o1)) && is_AngleType(o2)) {
+
+    Coords::angle the_difference(PyFloat_AsDouble(o1) - ((Angle*)o2)->m_angle);
+    result_angle->m_angle = the_difference;
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    Coords::angle the_difference(((Angle*)o1)->m_angle - PyFloat_AsDouble(o2));
+    result_angle->m_angle = the_difference;
+
+  } else if (!is_AngleType(o1) || !is_AngleType(o2) ) {
+    // TODO coords.Error?
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
 
   return (PyObject*) result_angle;
 }
@@ -542,13 +563,6 @@ static PyObject* Angle_nb_negative(PyObject* o1) {
 
 static PyObject* Angle_nb_multiply(PyObject* o1, PyObject* o2) {
 
-  // TODO support o2 as double?
-
-  if (!is_AngleType(o1) || !is_AngleType(o2)) {
-    Py_INCREF(Py_NotImplemented);
-    return Py_NotImplemented;
-  }
-
   Angle* result_angle(NULL);
   new_AngleType(&result_angle);
 
@@ -557,7 +571,26 @@ static PyObject* Angle_nb_multiply(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  result_angle->m_angle = ((Angle*)o1)->m_angle * ((Angle*)o2)->m_angle;
+  if (is_AngleType(o1) && is_AngleType(o2)) {
+
+    Coords::angle the_difference(((Angle*)o1)->m_angle * ((Angle*)o2)->m_angle);
+    result_angle->m_angle = the_difference;
+
+  } else if ((PyFloat_Check(o1) || COORDS_INT_CHECK(o1)) && is_AngleType(o2)) {
+
+    Coords::angle the_difference(PyFloat_AsDouble(o1) * ((Angle*)o2)->m_angle);
+    result_angle->m_angle = the_difference;
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    Coords::angle the_difference(((Angle*)o1)->m_angle * PyFloat_AsDouble(o2));
+    result_angle->m_angle = the_difference;
+
+  } else {
+    // TODO coords.Error?
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
 
   return (PyObject*) result_angle;
 }
@@ -565,12 +598,6 @@ static PyObject* Angle_nb_multiply(PyObject* o1, PyObject* o2) {
 
 static PyObject* Angle_nb_divide(PyObject* o1, PyObject* o2) {
 
-  // TODO support o2 as double?
-
-  if (!is_AngleType(o1) || !is_AngleType(o2)) {
-    Py_INCREF(Py_NotImplemented);
-    return Py_NotImplemented;
-  }
 
   Angle* result_angle(NULL);
   new_AngleType(&result_angle);
@@ -580,14 +607,46 @@ static PyObject* Angle_nb_divide(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  try {
-    result_angle->m_angle = ((Angle*)o1)->m_angle / ((Angle*)o2)->m_angle;
-  } catch (Coords::Error err) {
-    PyErr_SetString(sCoordsException, err.what());
-    return NULL;
+
+  if (is_AngleType(o1) && is_AngleType(o2)) {
+
+    try {
+      result_angle->m_angle = ((Angle*)o1)->m_angle / ((Angle*)o2)->m_angle;
+      return (PyObject*) result_angle;
+
+    } catch (Coords::Error err) {
+      PyErr_SetString(sCoordsException, err.what());
+      return NULL;
+    }
+
+  } else if ((PyFloat_Check(o1) || COORDS_INT_CHECK(o1)) && is_AngleType(o2)) {
+
+    try {
+      result_angle->m_angle = PyFloat_AsDouble(o1) / ((Angle*)o2)->m_angle;
+      return (PyObject*) result_angle;
+
+    } catch (Coords::Error err) {
+      PyErr_SetString(sCoordsException, err.what());
+      return NULL;
+    }
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    try {
+      result_angle->m_angle = ((Angle*)o1)->m_angle / PyFloat_AsDouble(o2);
+      return (PyObject*) result_angle;
+
+    } catch (Coords::Error err) {
+      PyErr_SetString(sCoordsException, err.what());
+      return NULL;
+      }
+
+  } else {
+
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
   }
 
-  return (PyObject*) result_angle;
 }
 
 
@@ -654,51 +713,91 @@ static PyObject* Angle_tp_richcompare(PyObject* o1, PyObject* o2, int op) {
 // ---------------------------
 
 static PyObject* Angle_nb_inplace_add(PyObject* o1, PyObject* o2) {
-  // TODO o1 is implicitly always angleType?
-  // TODO support o2 as double?
+
   if (is_AngleType(o1) && is_AngleType(o2)) {
+
     ((Angle*)o1)->m_angle.operator+=(((Angle*)o2)->m_angle);
     Py_INCREF(o1);
     return o1;
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    ((Angle*)o1)->m_angle.operator+=(PyFloat_AsDouble(o2));
+    Py_INCREF(o1);
+    return o1;
+
+  } else {
+
+    PyErr_SetString(sCoordsException, "angle::operator+=() only supports angle, double or int types");
+    return NULL;
+
   }
-  PyErr_SetString(sCoordsException, "angle::operator+=() only supports angle types");
-  return NULL;
 }
 
 static PyObject* Angle_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
-  // TODO o1 is implicitly always angleType?
-  // TODO support o2 as double?
+
   if (is_AngleType(o1) && is_AngleType(o2)) {
+
     ((Angle*)o1)->m_angle.operator-=(((Angle*)o2)->m_angle);
     Py_INCREF(o1);
     return o1;
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    ((Angle*)o1)->m_angle.operator-=(PyFloat_AsDouble(o2));
+    Py_INCREF(o1);
+    return o1;
+
+  } else {
+
+    PyErr_SetString(sCoordsException, "angle::operator-=() only supports angle types");
+    return NULL;
   }
-  PyErr_SetString(sCoordsException, "angle::operator-=() only supports angle types");
-  return NULL;
+
 }
 
 static PyObject* Angle_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
-  // TODO o1 is implicitly always angleType?
-  // TODO support o2 as double?
+
   if (is_AngleType(o1) && is_AngleType(o2)) {
+
     ((Angle*)o1)->m_angle.operator*=(((Angle*)o2)->m_angle);
     Py_INCREF(o1);
     return o1;
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    ((Angle*)o1)->m_angle.operator*=(PyFloat_AsDouble(o2));
+    Py_INCREF(o1);
+    return o1;
+
+  } else {
+
+    PyErr_SetString(sCoordsException, "angle::operator*=() only supports angle, double or int types");
+    return NULL;
   }
-  PyErr_SetString(sCoordsException, "angle::operator*=() only supports angle types");
-  return NULL;
+
 }
 
 static PyObject* Angle_nb_inplace_divide(PyObject* o1, PyObject* o2) {
-  // TODO o1 is implicitly always angleType?
-  // TODO support o2 as double?
+
   if (is_AngleType(o1) && is_AngleType(o2)) {
+
     ((Angle*)o1)->m_angle.operator/=(((Angle*)o2)->m_angle);
     Py_INCREF(o1);
     return o1;
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    ((Angle*)o1)->m_angle.operator/=(PyFloat_AsDouble(o2));
+    Py_INCREF(o1);
+    return o1;
+
+  } else {
+
+    PyErr_SetString(sCoordsException, "angle::operator/=() only supports angle, double or int types");
+    return NULL;
   }
-  PyErr_SetString(sCoordsException, "angle::operator/=() only supports angle types");
-  return NULL;
+
 }
 
 
@@ -754,14 +853,16 @@ static PyObject* RA2deg(PyObject* self, PyObject *args) {
 
 PyDoc_STRVAR(coords_deg2rad__doc__, "converts degrees into radians");
 PyDoc_STRVAR(coords_rad2deg__doc__, "converts radians into degrees");
-PyDoc_STRVAR(coords_deg2RA__doc__, "converts degrees into RA");
-PyDoc_STRVAR(coords_RA2deg__doc__, "converts RA into degrees");
+PyDoc_STRVAR(coords_deg2RA__doc__, "converts degrees into Right Ascension");
+PyDoc_STRVAR(coords_RA2deg__doc__, "converts Right Ascension into degrees");
 PyDoc_STRVAR(coords_normalize__doc__, "normalizes the degrees to given range");
 PyDoc_STRVAR(coords_complement__doc__, "returns the complement of the angle");
 
 static PyMethodDef Angle_methods[] = {
   {"deg2rad", (PyCFunction) deg2rad, METH_VARARGS, coords_deg2rad__doc__},
   {"rad2deg", (PyCFunction) rad2deg, METH_VARARGS, coords_rad2deg__doc__},
+  {"deg2RA", (PyCFunction) deg2RA, METH_VARARGS, coords_deg2RA__doc__},
+  {"RA2deg", (PyCFunction) RA2deg, METH_VARARGS, coords_RA2deg__doc__},
   {"normalize", (PyCFunction) normalize, METH_VARARGS, coords_normalize__doc__},
   {"complement", (PyCFunction) complement, METH_VARARGS, coords_complement__doc__},
   {NULL}  /* Sentinel */

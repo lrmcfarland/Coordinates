@@ -92,20 +92,45 @@ Coords::angle& Coords::angle::operator+=(const Coords::angle& rhs) {
   return *this;
 }
 
+Coords::angle& Coords::angle::operator+=(const double& rhs) {
+  m_degrees += rhs;
+  return *this;
+}
+
+
 Coords::angle& Coords::angle::operator-=(const Coords::angle& rhs) {
   m_degrees -= rhs.degrees();
   return *this;
 }
+
+Coords::angle& Coords::angle::operator-=(const double& rhs) {
+  m_degrees -= rhs;
+  return *this;
+}
+
 
 Coords::angle& Coords::angle::operator*=(const Coords::angle& rhs) {
   m_degrees *= rhs.degrees();
   return *this;
 }
 
+Coords::angle& Coords::angle::operator*=(const double& rhs) {
+  m_degrees *= rhs;
+  return *this;
+}
+
+
 Coords::angle& Coords::angle::operator/=(const Coords::angle& rhs) {
   if (rhs.degrees() == 0)
     throw DivideByZeroError();
   m_degrees /= rhs.degrees();
+  return *this;
+}
+
+Coords::angle& Coords::angle::operator/=(const double& rhs) {
+  if (rhs == 0)
+    throw DivideByZeroError();
+  m_degrees /= rhs;
   return *this;
 }
 
@@ -117,22 +142,63 @@ Coords::angle Coords::operator+(const Coords::angle& lhs, const Coords::angle& r
   return Coords::angle(lhs.degrees() + rhs.degrees());
 }
 
+Coords::angle Coords::operator+(const double& lhs, const Coords::angle& rhs) {
+  return Coords::angle(lhs + rhs.degrees());
+}
+
+Coords::angle Coords::operator+(const Coords::angle& lhs, const double& rhs) {
+  return Coords::angle(lhs.degrees() + rhs);
+}
+
+
 Coords::angle Coords::operator-(const Coords::angle& lhs, const Coords::angle& rhs) {
   return Coords::angle(lhs.degrees() - rhs.degrees());
 }
 
+Coords::angle Coords::operator-(const double& lhs, const Coords::angle& rhs) {
+  return Coords::angle(lhs - rhs.degrees());
+}
+
+Coords::angle Coords::operator-(const Coords::angle& lhs, const double& rhs) {
+  return Coords::angle(lhs.degrees() - rhs);
+}
+
+
+// unitary minus
 Coords::angle Coords::operator-(const Coords::angle& rhs) {
   return Coords::angle(-rhs.degrees());
 }
+
 
 Coords::angle Coords::operator*(const Coords::angle& lhs, const Coords::angle& rhs) {
   return Coords::angle(lhs.degrees() * rhs.degrees());
 }
 
+Coords::angle Coords::operator*(const double& lhs, const Coords::angle& rhs) {
+  return Coords::angle(lhs * rhs.degrees());
+}
+
+Coords::angle Coords::operator*(const Coords::angle& lhs, const double& rhs) {
+  return Coords::angle(lhs.degrees() * rhs);
+}
+
+
 Coords::angle Coords::operator/(const Coords::angle& lhs, const Coords::angle& rhs) {
   if (rhs.degrees() == 0)
     throw DivideByZeroError();
   return Coords::angle(lhs.degrees() / rhs.degrees());
+}
+
+Coords::angle Coords::operator/(const double& lhs, const Coords::angle& rhs) {
+  if (rhs.degrees() == 0)
+    throw DivideByZeroError();
+  return Coords::angle(lhs / rhs.degrees());
+}
+
+Coords::angle Coords::operator/(const Coords::angle& lhs, const double& rhs) {
+  if (rhs == 0)
+    throw DivideByZeroError();
+  return Coords::angle(lhs.degrees() / rhs);
 }
 
 // -------------------------

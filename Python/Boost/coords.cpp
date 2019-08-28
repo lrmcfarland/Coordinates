@@ -88,14 +88,26 @@ BOOST_PYTHON_MODULE(coords) {
     .def(self + Coords::angle())
     .def(Coords::angle() + self)
 
+    .def(self + double())
+    .def(double() + self)
+
     .def(self - Coords::angle())
     .def(Coords::angle() - self)
+
+    .def(self - double())
+    .def(double() - self)
 
     .def(self * Coords::angle())
     .def(Coords::angle() * self)
 
+    .def(self * double())
+    .def(double() * self)
+
     .def(self / Coords::angle())
     .def(Coords::angle() / self)
+
+    .def(self / double())
+    .def(double() / self)
 
 
     // operator<<(), str not repr
