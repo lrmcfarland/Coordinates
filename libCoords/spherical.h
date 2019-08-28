@@ -53,12 +53,12 @@ namespace Coords {
     explicit spherical(const double& r,
 		       const Latitude& lat,
 		       const angle& phi = angle(0.0))
-      : m_r(r), m_theta(90.0 - lat.degrees()), m_phi(phi) {};
+      : m_r(r), m_theta(Latitude::g_north_pole - lat.degrees()), m_phi(phi) {};
 
     explicit spherical(const double& r,
 		       const Declination& lat,
 		       const angle& phi = angle(0.0))
-      : m_r(r), m_theta(90.0 - lat.degrees()), m_phi(phi) {};
+      : m_r(r), m_theta(Latitude::g_north_pole - lat.degrees()), m_phi(phi) {};
 
     ~spherical() {};
 
