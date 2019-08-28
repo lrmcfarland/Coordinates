@@ -33,15 +33,15 @@
 Coords::angle::angle(const double& a_deg,
 		     const double& a_min,
 		     const double& a_sec) {
-  value(degrees2seconds(a_deg, a_min, a_sec)/3600.0);
+  degrees(degrees2seconds(a_deg, a_min, a_sec)/3600.0);
 }
 
 Coords::angle::angle(const std::string& a_deg,
 		     const std::string& a_min,
 		     const std::string& a_sec) {
-  value(angle(Coords::stod(a_deg),
-	      Coords::stod(a_min),
-	      Coords::stod(a_sec)).value());
+  degrees(angle(Coords::stod(a_deg),
+		Coords::stod(a_min),
+		Coords::stod(a_sec)).degrees());
   // TODO bad string exception with C++11 stod
   // TODO delegating constructors in C++11
 }
@@ -49,20 +49,20 @@ Coords::angle::angle(const std::string& a_deg,
 
 // copy constructor
 Coords::angle::angle(const Coords::angle& a) {
-  m_value = a.value();
+  m_degrees = a.degrees();
 }
 
 // copy assignment
 Coords::angle& Coords::angle::operator=(const Coords::angle& rhs) {
   if (this == &rhs) return *this;
-  m_value = rhs.value();
+  m_degrees = rhs.degrees();
   return *this;
 }
 
 // ----- bool operators -----
 
 bool Coords::angle::operator== (const Coords::angle& rhs) const {
-  return m_value == rhs.value();
+  return m_degrees == rhs.degrees();
 }
 
 bool Coords::angle::operator!= (const Coords::angle& rhs) const {
@@ -70,42 +70,67 @@ bool Coords::angle::operator!= (const Coords::angle& rhs) const {
 }
 
 bool Coords::angle::operator< (const Coords::angle& rhs) const {
-  return m_value < rhs.value();
+  return m_degrees < rhs.degrees();
 }
 
 bool Coords::angle::operator<= (const Coords::angle& rhs) const {
-  return m_value <= rhs.value();
+  return m_degrees <= rhs.degrees();
 }
 
 bool Coords::angle::operator> (const Coords::angle& rhs) const {
-  return m_value > rhs.value();
+  return m_degrees > rhs.degrees();
 }
 
 bool Coords::angle::operator>= (const Coords::angle& rhs) const {
-  return m_value >= rhs.value();
+  return m_degrees >= rhs.degrees();
 }
 
 // ----- in-place operators -----
 
 Coords::angle& Coords::angle::operator+=(const Coords::angle& rhs) {
-  m_value += rhs.value();
+  m_degrees += rhs.degrees();
   return *this;
 }
+
+Coords::angle& Coords::angle::operator+=(const double& rhs) {
+  m_degrees += rhs;
+  return *this;
+}
+
 
 Coords::angle& Coords::angle::operator-=(const Coords::angle& rhs) {
-  m_value -= rhs.value();
+  m_degrees -= rhs.degrees();
   return *this;
 }
+
+Coords::angle& Coords::angle::operator-=(const double& rhs) {
+  m_degrees -= rhs;
+  return *this;
+}
+
 
 Coords::angle& Coords::angle::operator*=(const Coords::angle& rhs) {
-  m_value *= rhs.value();
+  m_degrees *= rhs.degrees();
   return *this;
 }
 
+Coords::angle& Coords::angle::operator*=(const double& rhs) {
+  m_degrees *= rhs;
+  return *this;
+}
+
+
 Coords::angle& Coords::angle::operator/=(const Coords::angle& rhs) {
-  if (rhs.value() == 0)
+  if (rhs.degrees() == 0)
     throw DivideByZeroError();
-  m_value /= rhs.value();
+  m_degrees /= rhs.degrees();
+  return *this;
+}
+
+Coords::angle& Coords::angle::operator/=(const double& rhs) {
+  if (rhs == 0)
+    throw DivideByZeroError();
+  m_degrees /= rhs;
   return *this;
 }
 
@@ -114,25 +139,66 @@ Coords::angle& Coords::angle::operator/=(const Coords::angle& rhs) {
 // ---------------------
 
 Coords::angle Coords::operator+(const Coords::angle& lhs, const Coords::angle& rhs) {
-  return Coords::angle(lhs.value() + rhs.value());
+  return Coords::angle(lhs.degrees() + rhs.degrees());
 }
+
+Coords::angle Coords::operator+(const double& lhs, const Coords::angle& rhs) {
+  return Coords::angle(lhs + rhs.degrees());
+}
+
+Coords::angle Coords::operator+(const Coords::angle& lhs, const double& rhs) {
+  return Coords::angle(lhs.degrees() + rhs);
+}
+
 
 Coords::angle Coords::operator-(const Coords::angle& lhs, const Coords::angle& rhs) {
-  return Coords::angle(lhs.value() - rhs.value());
+  return Coords::angle(lhs.degrees() - rhs.degrees());
 }
 
-Coords::angle Coords::operator-(const Coords::angle& rhs) {
-  return Coords::angle(-rhs.value());
+Coords::angle Coords::operator-(const double& lhs, const Coords::angle& rhs) {
+  return Coords::angle(lhs - rhs.degrees());
 }
+
+Coords::angle Coords::operator-(const Coords::angle& lhs, const double& rhs) {
+  return Coords::angle(lhs.degrees() - rhs);
+}
+
+
+// unitary minus
+Coords::angle Coords::operator-(const Coords::angle& rhs) {
+  return Coords::angle(-rhs.degrees());
+}
+
 
 Coords::angle Coords::operator*(const Coords::angle& lhs, const Coords::angle& rhs) {
-  return Coords::angle(lhs.value() * rhs.value());
+  return Coords::angle(lhs.degrees() * rhs.degrees());
 }
 
+Coords::angle Coords::operator*(const double& lhs, const Coords::angle& rhs) {
+  return Coords::angle(lhs * rhs.degrees());
+}
+
+Coords::angle Coords::operator*(const Coords::angle& lhs, const double& rhs) {
+  return Coords::angle(lhs.degrees() * rhs);
+}
+
+
 Coords::angle Coords::operator/(const Coords::angle& lhs, const Coords::angle& rhs) {
-  if (rhs.value() == 0)
+  if (rhs.degrees() == 0)
     throw DivideByZeroError();
-  return Coords::angle(lhs.value() / rhs.value());
+  return Coords::angle(lhs.degrees() / rhs.degrees());
+}
+
+Coords::angle Coords::operator/(const double& lhs, const Coords::angle& rhs) {
+  if (rhs.degrees() == 0)
+    throw DivideByZeroError();
+  return Coords::angle(lhs / rhs.degrees());
+}
+
+Coords::angle Coords::operator/(const Coords::angle& lhs, const double& rhs) {
+  if (rhs == 0)
+    throw DivideByZeroError();
+  return Coords::angle(lhs.degrees() / rhs);
 }
 
 // -------------------------
@@ -142,8 +208,8 @@ Coords::angle Coords::operator/(const Coords::angle& lhs, const Coords::angle& r
 void Coords::angle::normalize(const double& begin, const double& end) {
   // from http://stackoverflow.com/questions/1628386/normalise-orientation-between-0-and-360
   const double width(end - begin);
-  const double offset(m_value - begin);
-  m_value = (offset - (floor(offset/width) * width)) + begin;
+  const double offset(m_degrees - begin);
+  m_degrees = (offset - (floor(offset/width) * width)) + begin;
 }
 
 // ====================
@@ -160,10 +226,10 @@ Coords::Latitude::Latitude(const double& a_deg,
 			   const double& a_sec)
   : angle(a_deg, a_min, a_sec) {
 
-  if (value() > g_north_pole)
+  if (degrees() > g_north_pole)
     throw Coords::Error("maximum exceeded");
 
-  if (value() < g_south_pole)
+  if (degrees() < g_south_pole)
     throw Coords::Error("minimum exceeded");
 }
 
@@ -172,10 +238,10 @@ Coords::Latitude::Latitude(const std::string& a_deg,
 			   const std::string& a_sec)
   : angle(a_deg, a_min, a_sec) {
 
-  if (value() > g_north_pole)
+  if (degrees() > g_north_pole)
     throw Coords::Error("maximum exceeded");
 
-  if (value() < g_south_pole)
+  if (degrees() < g_south_pole)
     throw Coords::Error("minimum exceeded");
 }
 
@@ -193,10 +259,10 @@ Coords::Declination::Declination(const double& a_deg,
 				 const double& a_sec)
   : angle(a_deg, a_min, a_sec) {
 
-  if (value() > g_north_pole)
+  if (degrees() > g_north_pole)
     throw Coords::Error("maximum exceeded");
 
-  if (value() < g_south_pole)
+  if (degrees() < g_south_pole)
     throw Coords::Error("minimum exceeded");
 }
 
@@ -205,9 +271,9 @@ Coords::Declination::Declination(const std::string& a_deg,
 				 const std::string& a_sec)
   : angle(a_deg, a_min, a_sec) {
 
-  if (value() > g_north_pole)
+  if (degrees() > g_north_pole)
     throw Coords::Error("maximum exceeded");
 
-  if (value() < g_south_pole)
+  if (degrees() < g_south_pole)
     throw Coords::Error("minimum exceeded");
 }

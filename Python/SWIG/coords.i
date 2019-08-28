@@ -50,11 +50,11 @@ namespace Coords {
     ~angle();
 
     // accessors
-    void value(double a);
-    double value();
+    void degrees(double a);
+    double degrees();
 
-    void setValue(double a);
-    double getValue();
+    void setDegrees(double a);
+    double getDegrees();
 
   };
 

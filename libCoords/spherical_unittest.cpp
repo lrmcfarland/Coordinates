@@ -53,12 +53,12 @@ namespace {
     EXPECT_EQ(1.1, a.getR());
 
     a.theta(Coords::angle(-2.2));
-    EXPECT_EQ(-2.2, a.theta().value());
-    EXPECT_EQ(-2.2, a.getTheta().value());
+    EXPECT_EQ(-2.2, a.theta().degrees());
+    EXPECT_EQ(-2.2, a.getTheta().degrees());
 
     a.phi(Coords::angle(3.3));
-    EXPECT_EQ(3.3, a.phi().value());
-    EXPECT_EQ(3.3, a.getPhi().value());
+    EXPECT_EQ(3.3, a.phi().degrees());
+    EXPECT_EQ(3.3, a.getPhi().degrees());
 
   }
 
@@ -99,18 +99,18 @@ namespace {
 
     Coords::spherical a("1.23");
     EXPECT_DOUBLE_EQ(1.23, a.r());
-    EXPECT_DOUBLE_EQ(0, a.theta().value());
-    EXPECT_DOUBLE_EQ(0.0, a.phi().value());
+    EXPECT_DOUBLE_EQ(0, a.theta().degrees());
+    EXPECT_DOUBLE_EQ(0.0, a.phi().degrees());
 
     Coords::spherical b("-1.23", "1.23e-7");
     EXPECT_DOUBLE_EQ(-1.23, b.r());
-    EXPECT_DOUBLE_EQ(1.23e-7, b.theta().value());
-    EXPECT_DOUBLE_EQ(0.0, b.phi().value());
+    EXPECT_DOUBLE_EQ(1.23e-7, b.theta().degrees());
+    EXPECT_DOUBLE_EQ(0.0, b.phi().degrees());
 
     Coords::spherical c("1.23", "-1.23e-7", "10");
     EXPECT_DOUBLE_EQ(1.23, c.r());
-    EXPECT_DOUBLE_EQ(-1.23e-7, c.theta().value());
-    EXPECT_DOUBLE_EQ(10.0, c.phi().value());
+    EXPECT_DOUBLE_EQ(-1.23e-7, c.theta().degrees());
+    EXPECT_DOUBLE_EQ(10.0, c.phi().degrees());
 
   }
 
@@ -364,8 +364,8 @@ namespace {
 
     a += b;
     EXPECT_DOUBLE_EQ(2.0, a.r());
-    EXPECT_DOUBLE_EQ(Coords::angle(30.0).value(), a.theta().value());
-    EXPECT_DOUBLE_EQ(Coords::angle(60.0).value(), a.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(30.0).degrees(), a.theta().degrees());
+    EXPECT_DOUBLE_EQ(Coords::angle(60.0).degrees(), a.phi().degrees());
   }
 
 
@@ -375,8 +375,8 @@ namespace {
     Coords::spherical c;
     c = a + b;
     EXPECT_DOUBLE_EQ(2.0, c.r());
-    EXPECT_DOUBLE_EQ(Coords::angle(30.0).value(), c.theta().value());
-    EXPECT_DOUBLE_EQ(Coords::angle(60.0).value(), c.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(30.0).degrees(), c.theta().degrees());
+    EXPECT_DOUBLE_EQ(Coords::angle(60.0).degrees(), c.phi().degrees());
   }
 
   TEST(FixedSpherical, Add_1) {
@@ -398,9 +398,9 @@ namespace {
     EXPECT_DOUBLE_EQ(c_z/sin(atan(c_z/1.0)), c.r()); // 1.7320
 
     // theta, the angle to the z-axis, is:
-    EXPECT_DOUBLE_EQ(Coords::angle::rad2deg(atan(1.0/c_z)), c.theta().value()); // 35.2646
+    EXPECT_DOUBLE_EQ(Coords::angle::rad2deg(atan(1.0/c_z)), c.theta().degrees()); // 35.2646
 
-    EXPECT_DOUBLE_EQ(Coords::angle(0.0).value(), c.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(0.0).degrees(), c.phi().degrees());
 
     Coords::Cartesian cart_c(c);
     EXPECT_DOUBLE_EQ(1.0, cart_c.x()); // 0.5 + 0.5 projection in xy plane
@@ -422,9 +422,9 @@ namespace {
     EXPECT_DOUBLE_EQ(c_z/sin(atan(c_z/1.0)), c.r());
 
     // theta, the angle to the z-axis, is:
-    EXPECT_DOUBLE_EQ(Coords::angle::rad2deg(atan(1.0/c_z)), c.theta().value());
+    EXPECT_DOUBLE_EQ(Coords::angle::rad2deg(atan(1.0/c_z)), c.theta().degrees());
 
-    EXPECT_DOUBLE_EQ(Coords::angle(0.0).value(), c.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(0.0).degrees(), c.phi().degrees());
 
     Coords::Cartesian cart_c(c);
     EXPECT_DOUBLE_EQ(1.0, cart_c.x()); // 0.5 + 0.5 projection in xy plane
@@ -442,8 +442,8 @@ namespace {
     Coords::spherical b(1, Coords::angle(30), Coords::angle(60));
     a -= b;
     EXPECT_DOUBLE_EQ(0.0, a.r());
-    EXPECT_DOUBLE_EQ(Coords::angle(0.0).value(), a.theta().value());
-    EXPECT_DOUBLE_EQ(Coords::angle(0.0).value(), a.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(0.0).degrees(), a.theta().degrees());
+    EXPECT_DOUBLE_EQ(Coords::angle(0.0).degrees(), a.phi().degrees());
   }
 
   TEST(FixedSpherical, Subtract_inplace_trivial_1) {
@@ -451,8 +451,8 @@ namespace {
     Coords::spherical b(1, Coords::angle(30), Coords::angle(-60));
     a -= b;
     EXPECT_DOUBLE_EQ(9.0, a.r());
-    EXPECT_DOUBLE_EQ(Coords::angle(30.0).value(), a.theta().value());
-    EXPECT_DOUBLE_EQ(Coords::angle(-60.0).value(), a.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(30.0).degrees(), a.theta().degrees());
+    EXPECT_DOUBLE_EQ(Coords::angle(-60.0).degrees(), a.phi().degrees());
   }
 
 
@@ -462,8 +462,8 @@ namespace {
     Coords::spherical c;
     c = a - b;
     EXPECT_DOUBLE_EQ(0.0, c.r());
-    EXPECT_DOUBLE_EQ(Coords::angle(0.0).value(), c.theta().value());
-    EXPECT_DOUBLE_EQ(Coords::angle(0.0).value(), c.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(0.0).degrees(), c.theta().degrees());
+    EXPECT_DOUBLE_EQ(Coords::angle(0.0).degrees(), c.phi().degrees());
   }
 
   TEST(FixedSpherical, Subtract_trivial_1) {
@@ -472,8 +472,8 @@ namespace {
     Coords::spherical c;
     c = a - b;
     EXPECT_DOUBLE_EQ(9.0, c.r());
-    EXPECT_DOUBLE_EQ(Coords::angle(30.0).value(), c.theta().value());
-    EXPECT_DOUBLE_EQ(Coords::angle(60.0).value(), c.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(30.0).degrees(), c.theta().degrees());
+    EXPECT_DOUBLE_EQ(Coords::angle(60.0).degrees(), c.phi().degrees());
   }
 
 
@@ -485,8 +485,8 @@ namespace {
     c = a - b; // +y axis
 
     EXPECT_DOUBLE_EQ(1.0, c.r());
-    EXPECT_DOUBLE_EQ(Coords::angle(90.0).value(), c.theta().value());
-    EXPECT_DOUBLE_EQ(Coords::angle(90.0).value(), c.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(90.0).degrees(), c.theta().degrees());
+    EXPECT_DOUBLE_EQ(Coords::angle(90.0).degrees(), c.phi().degrees());
 
     Coords::Cartesian cart_c(c);
     EXPECT_NEAR(0.0, cart_c.z(), Coords::epsilon);
@@ -503,8 +503,8 @@ namespace {
     c = b - a; // -y axis
 
     EXPECT_DOUBLE_EQ(1.0, c.r());
-    EXPECT_DOUBLE_EQ(Coords::angle(90.0).value(), c.theta().value());
-    EXPECT_DOUBLE_EQ(Coords::angle(-90.0).value(), c.phi().value());
+    EXPECT_DOUBLE_EQ(Coords::angle(90.0).degrees(), c.theta().degrees());
+    EXPECT_DOUBLE_EQ(Coords::angle(-90.0).degrees(), c.phi().degrees());
 
     Coords::Cartesian cart_c(c);
     EXPECT_NEAR(0.0, cart_c.z(), Coords::epsilon);

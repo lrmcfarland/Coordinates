@@ -39,8 +39,8 @@ class TestSpherical(unittest.TestCase):
     def assertSpacesAreEqual(self, lhs_space, rhs_space):
         """Space assert helper method."""
         self.assertAlmostEqual(lhs_space.r, rhs_space.r, places=self.places)
-        self.assertAlmostEqual(lhs_space.theta.value, rhs_space.theta.value, places=self.places)
-        self.assertAlmostEqual(lhs_space.phi.value, rhs_space.phi.value, places=self.places)
+        self.assertAlmostEqual(lhs_space.theta.degrees, rhs_space.theta.degrees, places=self.places)
+        self.assertAlmostEqual(lhs_space.phi.degrees, rhs_space.phi.degrees, places=self.places)
 
     # -----------------------------
     # ----- test constructors -----
@@ -50,24 +50,24 @@ class TestSpherical(unittest.TestCase):
         """Test default constructor"""
         a = coords.spherical()
         self.assertEqual(0, a.r)
-        self.assertEqual(0, a.theta.value)
-        self.assertEqual(0, a.phi.value)
+        self.assertEqual(0, a.theta.degrees)
+        self.assertEqual(0, a.phi.degrees)
 
 
     def test_r_constructor(self):
         """Test r constructor"""
         a = coords.spherical(self.p1.r)
         self.assertEqual(self.p1.r, a.r)
-        self.assertEqual(0, a.theta.value)
-        self.assertEqual(0, a.phi.value)
+        self.assertEqual(0, a.theta.degrees)
+        self.assertEqual(0, a.phi.degrees)
 
 
     def test_r_theta_constructor(self):
         """Test r theta constructor"""
         a = coords.spherical(self.p1.r, self.p1.theta)
         self.assertEqual(self.p1.r, a.r)
-        self.assertEqual(self.p1.theta.value, a.theta.value)
-        self.assertEqual(0, a.phi.value)
+        self.assertEqual(self.p1.theta.degrees, a.theta.degrees)
+        self.assertEqual(0, a.phi.degrees)
 
 
     def test_r_theta_phi_constructor(self):
@@ -165,7 +165,7 @@ class TestSpherical(unittest.TestCase):
         b = coords.spherical(a)
         self.assertAlmostEqual(math.sqrt(2 + 1), b.r) # xy = sqrt(2), z = 1
         self.assertAlmostEqual(math.atan(math.sqrt(2)/1), b.theta.radians)
-        self.assertAlmostEqual(45, b.phi.value)
+        self.assertAlmostEqual(45, b.phi.degrees)
 
 
     def test_str(self):
@@ -202,7 +202,7 @@ class TestSpherical(unittest.TestCase):
         """Test space != space"""
         a = coords.spherical(1, coords.angle(2), coords.angle(3))
         b = coords.spherical(-1, coords.angle(2), coords.angle(3))
-        self.assertTrue(a != b) # True because comparing memory addresses not value.
+        self.assertTrue(a != b) # True because comparing memory addresses not degrees.
 
     def test_space_eq_space1(self):
         """Test space == space"""
@@ -343,8 +343,8 @@ class TestSpherical(unittest.TestCase):
     def test_divide(self):
         """Test divide (scale)"""
         result = coords.spherical(self.p1.r / 2.0,
-                                  coords.angle(self.p1.theta.value),
-                                  coords.angle(self.p1.phi.value))
+                                  coords.angle(self.p1.theta.degrees),
+                                  coords.angle(self.p1.phi.degrees))
         a = self.p1 / 2.0
         self.assertSpacesAreEqual(result, a)
 
@@ -352,8 +352,8 @@ class TestSpherical(unittest.TestCase):
     def test_inplace_divide(self):
         """Test inplace divide (scale)"""
         result = coords.spherical(self.p1.r / 2.0,
-                                  coords.angle(self.p1.theta.value),
-                                  coords.angle(self.p1.phi.value))
+                                  coords.angle(self.p1.theta.degrees),
+                                  coords.angle(self.p1.phi.degrees))
         a = self.p1
         a /= 2.0
         self.assertSpacesAreEqual(result, a)
@@ -371,8 +371,8 @@ class TestSpherical(unittest.TestCase):
         lat1 = coords.spherical(1, coords.latitude(30), coords.angle(120))
 
         self.assertAlmostEqual(1, lat1.r)
-        self.assertAlmostEqual(60, lat1.theta.value)
-        self.assertAlmostEqual(120, lat1.phi.value)
+        self.assertAlmostEqual(60, lat1.theta.degrees)
+        self.assertAlmostEqual(120, lat1.phi.degrees)
 
 
     def test_construct_from_latitude_south(self):
@@ -380,8 +380,8 @@ class TestSpherical(unittest.TestCase):
         lat1 = coords.spherical(1, coords.latitude(-30), coords.angle(120))
 
         self.assertAlmostEqual(1, lat1.r)
-        self.assertAlmostEqual(120, lat1.theta.value)
-        self.assertAlmostEqual(120, lat1.phi.value)
+        self.assertAlmostEqual(120, lat1.theta.degrees)
+        self.assertAlmostEqual(120, lat1.phi.degrees)
 
 
 

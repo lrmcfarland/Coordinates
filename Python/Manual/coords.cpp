@@ -80,8 +80,9 @@ static char sDegreeStr[] = "degees";
 static char sMinuteStr[] = "minutes";
 static char sSecondStr[] = "seconds";
 
-static char sValueStr[] = "value";
+static char sDegreesStr[] = "degrees";
 static char sRadiansStr[] = "radians";
+static char sRAStr[] = "RA";
 
 typedef struct {
   PyObject_HEAD
@@ -285,7 +286,7 @@ static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
 
     // copy constructor
     if (is_AngleType(arg0)) {
-      self->m_angle.value(((Angle*)arg0)->m_angle.value());
+      self->m_angle.degrees(((Angle*)arg0)->m_angle.degrees());
       return 0;
 
     } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
@@ -308,7 +309,7 @@ static int Angle_init(Angle* self, PyObject* args, PyObject* kwds) {
   if (parse_double_arg(arg2, seconds))
       return -1;
 
-  self->m_angle.value(Coords::degrees2seconds(degrees, minutes, seconds)/3600);
+  self->m_angle.degrees(Coords::degrees2seconds(degrees, minutes, seconds)/3600);
 
   return 0;
 
@@ -342,25 +343,25 @@ PyObject* Angle_repr(PyObject* self) {
 // ----- getters and setters -----
 // -------------------------------
 
-// ----- value -----
+// ----- degrees -----
 
-static PyObject* Angle_getValue(Angle* self, void* closure) {
-  return PyFloat_FromDouble(self->m_angle.value());
+static PyObject* Angle_getDegrees(Angle* self, void* closure) {
+  return PyFloat_FromDouble(self->m_angle.degrees());
 }
 
-static int Angle_setValue(Angle* self, PyObject* value, void* closure) {
+static int Angle_setDegrees(Angle* self, PyObject* degrees, void* closure) {
 
-  if (value == NULL) {
-    PyErr_SetString(sCoordsException, "can not delete value");
+  if (degrees == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete degrees");
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
-    PyErr_SetString(sCoordsException, "value must be a float or int");
+  if (!PyFloat_Check(degrees) && !COORDS_INT_CHECK(degrees)) {
+    PyErr_SetString(sCoordsException, "degrees must be a float or int");
     return -1;
   }
 
-  self->m_angle.value(PyFloat_AsDouble(value));
+  self->m_angle.degrees(PyFloat_AsDouble(degrees));
 
   return 0;
 }
@@ -384,6 +385,29 @@ static int Angle_setRadians(Angle* self, PyObject* radians, void* closure) {
   }
 
   self->m_angle.radians(PyFloat_AsDouble(radians));
+
+  return 0;
+}
+
+// ----- RA -----
+
+static PyObject* Angle_getRA(Angle* self, void* closure) {
+  return PyFloat_FromDouble(self->m_angle.RA());
+}
+
+static int Angle_setRA(Angle* self, PyObject* RA, void* closure) {
+
+  if (RA == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete RA");
+    return -1;
+  }
+
+  if (!PyFloat_Check(RA) && !COORDS_INT_CHECK(RA)) {
+    PyErr_SetString(sCoordsException, "RA must be a float or int");
+    return -1;
+  }
+
+  self->m_angle.RA(PyFloat_AsDouble(RA));
 
   return 0;
 }
@@ -444,14 +468,7 @@ static PyObject* complement(PyObject* o1) {
 
 static PyObject* Angle_nb_add(PyObject* o1, PyObject* o2) {
 
-  if (!is_AngleType(o1) || !is_AngleType(o2)) {
-    // TODO coords.Error?
-    Py_INCREF(Py_NotImplemented);
-    return Py_NotImplemented;
-  }
-
   Angle* result_angle(NULL);
-
   new_AngleType(&result_angle);
 
   if (result_angle == NULL) {
@@ -459,9 +476,26 @@ static PyObject* Angle_nb_add(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  Coords::angle the_sum(((Angle*)o1)->m_angle + ((Angle*)o2)->m_angle);
+  if (is_AngleType(o1) && is_AngleType(o2)) {
 
-  result_angle->m_angle = the_sum;
+    Coords::angle the_sum(((Angle*)o1)->m_angle + ((Angle*)o2)->m_angle);
+    result_angle->m_angle = the_sum;
+
+  } else if ((PyFloat_Check(o1) || COORDS_INT_CHECK(o1)) && is_AngleType(o2)) {
+
+    Coords::angle the_sum(PyFloat_AsDouble(o1) + ((Angle*)o2)->m_angle);
+    result_angle->m_angle = the_sum;
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    Coords::angle the_sum(((Angle*)o1)->m_angle + PyFloat_AsDouble(o2));
+    result_angle->m_angle = the_sum;
+
+  } else if (!is_AngleType(o1) || !is_AngleType(o2) ) {
+    // TODO coords.Error?
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
 
   return (PyObject*) result_angle;
 }
@@ -469,13 +503,7 @@ static PyObject* Angle_nb_add(PyObject* o1, PyObject* o2) {
 
 static PyObject* Angle_nb_subtract(PyObject* o1, PyObject* o2) {
 
-  if (!is_AngleType(o1) || !is_AngleType(o2)) {
-    Py_INCREF(Py_NotImplemented);
-    return Py_NotImplemented;
-  }
-
   Angle* result_angle(NULL);
-
   new_AngleType(&result_angle);
 
   if (result_angle == NULL) {
@@ -483,9 +511,26 @@ static PyObject* Angle_nb_subtract(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  Coords::angle the_difference(((Angle*)o1)->m_angle - ((Angle*)o2)->m_angle);
+  if (is_AngleType(o1) && is_AngleType(o2)) {
 
-  result_angle->m_angle = the_difference;
+    Coords::angle the_difference(((Angle*)o1)->m_angle - ((Angle*)o2)->m_angle);
+    result_angle->m_angle = the_difference;
+
+  } else if ((PyFloat_Check(o1) || COORDS_INT_CHECK(o1)) && is_AngleType(o2)) {
+
+    Coords::angle the_difference(PyFloat_AsDouble(o1) - ((Angle*)o2)->m_angle);
+    result_angle->m_angle = the_difference;
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    Coords::angle the_difference(((Angle*)o1)->m_angle - PyFloat_AsDouble(o2));
+    result_angle->m_angle = the_difference;
+
+  } else if (!is_AngleType(o1) || !is_AngleType(o2) ) {
+    // TODO coords.Error?
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
 
   return (PyObject*) result_angle;
 }
@@ -518,13 +563,6 @@ static PyObject* Angle_nb_negative(PyObject* o1) {
 
 static PyObject* Angle_nb_multiply(PyObject* o1, PyObject* o2) {
 
-  // TODO support o2 as double?
-
-  if (!is_AngleType(o1) || !is_AngleType(o2)) {
-    Py_INCREF(Py_NotImplemented);
-    return Py_NotImplemented;
-  }
-
   Angle* result_angle(NULL);
   new_AngleType(&result_angle);
 
@@ -533,7 +571,26 @@ static PyObject* Angle_nb_multiply(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  result_angle->m_angle = ((Angle*)o1)->m_angle * ((Angle*)o2)->m_angle;
+  if (is_AngleType(o1) && is_AngleType(o2)) {
+
+    Coords::angle the_difference(((Angle*)o1)->m_angle * ((Angle*)o2)->m_angle);
+    result_angle->m_angle = the_difference;
+
+  } else if ((PyFloat_Check(o1) || COORDS_INT_CHECK(o1)) && is_AngleType(o2)) {
+
+    Coords::angle the_difference(PyFloat_AsDouble(o1) * ((Angle*)o2)->m_angle);
+    result_angle->m_angle = the_difference;
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    Coords::angle the_difference(((Angle*)o1)->m_angle * PyFloat_AsDouble(o2));
+    result_angle->m_angle = the_difference;
+
+  } else {
+    // TODO coords.Error?
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+  }
 
   return (PyObject*) result_angle;
 }
@@ -541,12 +598,6 @@ static PyObject* Angle_nb_multiply(PyObject* o1, PyObject* o2) {
 
 static PyObject* Angle_nb_divide(PyObject* o1, PyObject* o2) {
 
-  // TODO support o2 as double?
-
-  if (!is_AngleType(o1) || !is_AngleType(o2)) {
-    Py_INCREF(Py_NotImplemented);
-    return Py_NotImplemented;
-  }
 
   Angle* result_angle(NULL);
   new_AngleType(&result_angle);
@@ -556,14 +607,46 @@ static PyObject* Angle_nb_divide(PyObject* o1, PyObject* o2) {
     return NULL;
   }
 
-  try {
-    result_angle->m_angle = ((Angle*)o1)->m_angle / ((Angle*)o2)->m_angle;
-  } catch (Coords::Error err) {
-    PyErr_SetString(sCoordsException, err.what());
-    return NULL;
+
+  if (is_AngleType(o1) && is_AngleType(o2)) {
+
+    try {
+      result_angle->m_angle = ((Angle*)o1)->m_angle / ((Angle*)o2)->m_angle;
+      return (PyObject*) result_angle;
+
+    } catch (Coords::Error err) {
+      PyErr_SetString(sCoordsException, err.what());
+      return NULL;
+    }
+
+  } else if ((PyFloat_Check(o1) || COORDS_INT_CHECK(o1)) && is_AngleType(o2)) {
+
+    try {
+      result_angle->m_angle = PyFloat_AsDouble(o1) / ((Angle*)o2)->m_angle;
+      return (PyObject*) result_angle;
+
+    } catch (Coords::Error err) {
+      PyErr_SetString(sCoordsException, err.what());
+      return NULL;
+    }
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    try {
+      result_angle->m_angle = ((Angle*)o1)->m_angle / PyFloat_AsDouble(o2);
+      return (PyObject*) result_angle;
+
+    } catch (Coords::Error err) {
+      PyErr_SetString(sCoordsException, err.what());
+      return NULL;
+      }
+
+  } else {
+
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
   }
 
-  return (PyObject*) result_angle;
 }
 
 
@@ -630,51 +713,91 @@ static PyObject* Angle_tp_richcompare(PyObject* o1, PyObject* o2, int op) {
 // ---------------------------
 
 static PyObject* Angle_nb_inplace_add(PyObject* o1, PyObject* o2) {
-  // TODO o1 is implicitly always angleType?
-  // TODO support o2 as double?
+
   if (is_AngleType(o1) && is_AngleType(o2)) {
+
     ((Angle*)o1)->m_angle.operator+=(((Angle*)o2)->m_angle);
     Py_INCREF(o1);
     return o1;
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    ((Angle*)o1)->m_angle.operator+=(PyFloat_AsDouble(o2));
+    Py_INCREF(o1);
+    return o1;
+
+  } else {
+
+    PyErr_SetString(sCoordsException, "angle::operator+=() only supports angle, double or int types");
+    return NULL;
+
   }
-  PyErr_SetString(sCoordsException, "angle::operator+=() only supports angle types");
-  return NULL;
 }
 
 static PyObject* Angle_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
-  // TODO o1 is implicitly always angleType?
-  // TODO support o2 as double?
+
   if (is_AngleType(o1) && is_AngleType(o2)) {
+
     ((Angle*)o1)->m_angle.operator-=(((Angle*)o2)->m_angle);
     Py_INCREF(o1);
     return o1;
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    ((Angle*)o1)->m_angle.operator-=(PyFloat_AsDouble(o2));
+    Py_INCREF(o1);
+    return o1;
+
+  } else {
+
+    PyErr_SetString(sCoordsException, "angle::operator-=() only supports angle types");
+    return NULL;
   }
-  PyErr_SetString(sCoordsException, "angle::operator-=() only supports angle types");
-  return NULL;
+
 }
 
 static PyObject* Angle_nb_inplace_multiply(PyObject* o1, PyObject* o2) {
-  // TODO o1 is implicitly always angleType?
-  // TODO support o2 as double?
+
   if (is_AngleType(o1) && is_AngleType(o2)) {
+
     ((Angle*)o1)->m_angle.operator*=(((Angle*)o2)->m_angle);
     Py_INCREF(o1);
     return o1;
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    ((Angle*)o1)->m_angle.operator*=(PyFloat_AsDouble(o2));
+    Py_INCREF(o1);
+    return o1;
+
+  } else {
+
+    PyErr_SetString(sCoordsException, "angle::operator*=() only supports angle, double or int types");
+    return NULL;
   }
-  PyErr_SetString(sCoordsException, "angle::operator*=() only supports angle types");
-  return NULL;
+
 }
 
 static PyObject* Angle_nb_inplace_divide(PyObject* o1, PyObject* o2) {
-  // TODO o1 is implicitly always angleType?
-  // TODO support o2 as double?
+
   if (is_AngleType(o1) && is_AngleType(o2)) {
+
     ((Angle*)o1)->m_angle.operator/=(((Angle*)o2)->m_angle);
     Py_INCREF(o1);
     return o1;
+
+  } else if (is_AngleType(o1) && (PyFloat_Check(o2) || COORDS_INT_CHECK(o2))) {
+
+    ((Angle*)o1)->m_angle.operator/=(PyFloat_AsDouble(o2));
+    Py_INCREF(o1);
+    return o1;
+
+  } else {
+
+    PyErr_SetString(sCoordsException, "angle::operator/=() only supports angle, double or int types");
+    return NULL;
   }
-  PyErr_SetString(sCoordsException, "angle::operator/=() only supports angle types");
-  return NULL;
+
 }
 
 
@@ -704,18 +827,42 @@ static PyObject* rad2deg(PyObject* self, PyObject *args) {
   return (PyObject*)  Py_BuildValue("d", degrees);
 }
 
+// ----- deg2RA -----
+
+static PyObject* deg2RA(PyObject* self, PyObject *args) {
+  double RA(0);
+  if (!PyArg_ParseTuple(args, "d", &RA))
+    return NULL;
+  double degrees = Coords::angle::deg2RA(RA);
+  return (PyObject*)  Py_BuildValue("d", degrees);
+}
+
+// ----- RA2deg -----
+
+static PyObject* RA2deg(PyObject* self, PyObject *args) {
+  double RA(0);
+  if (!PyArg_ParseTuple(args, "d", &RA))
+    return NULL;
+  double degrees = Coords::angle::RA2deg(RA);
+  return (PyObject*)  Py_BuildValue("d", degrees);
+}
+
 // --------------------------
 // ----- Python structs -----
 // --------------------------
 
 PyDoc_STRVAR(coords_deg2rad__doc__, "converts degrees into radians");
 PyDoc_STRVAR(coords_rad2deg__doc__, "converts radians into degrees");
-PyDoc_STRVAR(coords_normalize__doc__, "normalizes the value to given range");
+PyDoc_STRVAR(coords_deg2RA__doc__, "converts degrees into Right Ascension");
+PyDoc_STRVAR(coords_RA2deg__doc__, "converts Right Ascension into degrees");
+PyDoc_STRVAR(coords_normalize__doc__, "normalizes the degrees to given range");
 PyDoc_STRVAR(coords_complement__doc__, "returns the complement of the angle");
 
 static PyMethodDef Angle_methods[] = {
   {"deg2rad", (PyCFunction) deg2rad, METH_VARARGS, coords_deg2rad__doc__},
   {"rad2deg", (PyCFunction) rad2deg, METH_VARARGS, coords_rad2deg__doc__},
+  {"deg2RA", (PyCFunction) deg2RA, METH_VARARGS, coords_deg2RA__doc__},
+  {"RA2deg", (PyCFunction) RA2deg, METH_VARARGS, coords_RA2deg__doc__},
   {"normalize", (PyCFunction) normalize, METH_VARARGS, coords_normalize__doc__},
   {"complement", (PyCFunction) complement, METH_VARARGS, coords_complement__doc__},
   {NULL}  /* Sentinel */
@@ -727,8 +874,9 @@ static PyMemberDef Angle_members[] = {
 };
 
 static PyGetSetDef Angle_getseters[] = {
-  {sValueStr, (getter)Angle_getValue, (setter)Angle_setValue, sValueStr, NULL},
+  {sDegreesStr, (getter)Angle_getDegrees, (setter)Angle_setDegrees, sDegreesStr, NULL},
   {sRadiansStr, (getter)Angle_getRadians, (setter)Angle_setRadians, sRadiansStr, NULL},
+  {sRAStr, (getter)Angle_getRA, (setter)Angle_setRA, sRAStr, NULL},
   {NULL}  /* Sentinel */
 };
 
@@ -924,7 +1072,7 @@ static int Latitude_init(Latitude* self, PyObject* args, PyObject* kwds) {
 
     // copy constructor
     if (is_LatitudeType(arg0)) {
-      self->m_angle.value(((Latitude*)arg0)->m_angle.value());
+      self->m_angle.degrees(((Latitude*)arg0)->m_angle.degrees());
       return 0;
 
     } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
@@ -947,7 +1095,7 @@ static int Latitude_init(Latitude* self, PyObject* args, PyObject* kwds) {
   if (parse_double_arg(arg2, seconds))
       return -1;
 
-  self->m_angle.value(Coords::degrees2seconds(degrees, minutes, seconds)/3600);
+  self->m_angle.degrees(Coords::degrees2seconds(degrees, minutes, seconds)/3600);
 
   return 0;
 
@@ -981,25 +1129,25 @@ PyObject* Latitude_repr(PyObject* self) {
 // ----- getters and setters -----
 // -------------------------------
 
-// ----- value -----
+// ----- degrees -----
 
-static PyObject* Latitude_getValue(Latitude* self, void* closure) {
-  return PyFloat_FromDouble(self->m_angle.value());
+static PyObject* Latitude_getDegrees(Latitude* self, void* closure) {
+  return PyFloat_FromDouble(self->m_angle.degrees());
 }
 
-static int Latitude_setValue(Latitude* self, PyObject* value, void* closure) {
+static int Latitude_setDegrees(Latitude* self, PyObject* degrees, void* closure) {
 
-  if (value == NULL) {
-    PyErr_SetString(sCoordsException, "can not delete value");
+  if (degrees == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete degrees");
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
-    PyErr_SetString(sCoordsException, "value must be a float or int");
+  if (!PyFloat_Check(degrees) && !COORDS_INT_CHECK(degrees)) {
+    PyErr_SetString(sCoordsException, "degrees must be a float or int");
     return -1;
   }
 
-  self->m_angle.value(PyFloat_AsDouble(value));
+  self->m_angle.degrees(PyFloat_AsDouble(degrees));
 
   return 0;
 }
@@ -1023,6 +1171,29 @@ static int Latitude_setRadians(Latitude* self, PyObject* radians, void* closure)
   }
 
   self->m_angle.radians(PyFloat_AsDouble(radians));
+
+  return 0;
+}
+
+// ----- RA -----
+
+static PyObject* Latitude_getRA(Latitude* self, void* closure) {
+  return PyFloat_FromDouble(self->m_angle.RA());
+}
+
+static int Latitude_setRA(Latitude* self, PyObject* RA, void* closure) {
+
+  if (RA == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete RA");
+    return -1;
+  }
+
+  if (!PyFloat_Check(RA) && !COORDS_INT_CHECK(RA)) {
+    PyErr_SetString(sCoordsException, "RA must be a float or int");
+    return -1;
+  }
+
+  self->m_angle.RA(PyFloat_AsDouble(RA));
 
   return 0;
 }
@@ -1276,8 +1447,9 @@ static PyMemberDef Latitude_members[] = {
 };
 
 static PyGetSetDef Latitude_getseters[] = {
-  {sValueStr, (getter)Latitude_getValue, (setter)Latitude_setValue, sValueStr, NULL},
+  {sDegreesStr, (getter)Latitude_getDegrees, (setter)Latitude_setDegrees, sDegreesStr, NULL},
   {sRadiansStr, (getter)Latitude_getRadians, (setter)Latitude_setRadians, sRadiansStr, NULL},
+  {sRAStr, (getter)Latitude_getRA, (setter)Latitude_setRA, sRAStr, NULL},
   {NULL}  /* Sentinel */
 };
 
@@ -1474,7 +1646,7 @@ static int Declination_init(Declination* self, PyObject* args, PyObject* kwds) {
 
     // copy constructor
     if (is_DeclinationType(arg0)) {
-      self->m_angle.value(((Declination*)arg0)->m_angle.value());
+      self->m_angle.degrees(((Declination*)arg0)->m_angle.degrees());
       return 0;
 
     } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
@@ -1497,7 +1669,7 @@ static int Declination_init(Declination* self, PyObject* args, PyObject* kwds) {
   if (parse_double_arg(arg2, seconds))
       return -1;
 
-  self->m_angle.value(Coords::degrees2seconds(degrees, minutes, seconds)/3600);
+  self->m_angle.degrees(Coords::degrees2seconds(degrees, minutes, seconds)/3600);
 
   return 0;
 
@@ -1531,25 +1703,25 @@ PyObject* Declination_repr(PyObject* self) {
 // ----- getters and setters -----
 // -------------------------------
 
-// ----- value -----
+// ----- degrees -----
 
-static PyObject* Declination_getValue(Declination* self, void* closure) {
-  return PyFloat_FromDouble(self->m_angle.value());
+static PyObject* Declination_getDegrees(Declination* self, void* closure) {
+  return PyFloat_FromDouble(self->m_angle.degrees());
 }
 
-static int Declination_setValue(Declination* self, PyObject* value, void* closure) {
+static int Declination_setDegrees(Declination* self, PyObject* degrees, void* closure) {
 
-  if (value == NULL) {
-    PyErr_SetString(sCoordsException, "can not delete value");
+  if (degrees == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete degrees");
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
-    PyErr_SetString(sCoordsException, "value must be a float or int");
+  if (!PyFloat_Check(degrees) && !COORDS_INT_CHECK(degrees)) {
+    PyErr_SetString(sCoordsException, "degrees must be a float or int");
     return -1;
   }
 
-  self->m_angle.value(PyFloat_AsDouble(value));
+  self->m_angle.degrees(PyFloat_AsDouble(degrees));
 
   return 0;
 }
@@ -1573,6 +1745,29 @@ static int Declination_setRadians(Declination* self, PyObject* radians, void* cl
   }
 
   self->m_angle.radians(PyFloat_AsDouble(radians));
+
+  return 0;
+}
+
+// ----- RA -----
+
+static PyObject* Declination_getRA(Declination* self, void* closure) {
+  return PyFloat_FromDouble(self->m_angle.RA());
+}
+
+static int Declination_setRA(Declination* self, PyObject* RA, void* closure) {
+
+  if (RA == NULL) {
+    PyErr_SetString(sCoordsException, "can not delete RA");
+    return -1;
+  }
+
+  if (!PyFloat_Check(RA) && !COORDS_INT_CHECK(RA)) {
+    PyErr_SetString(sCoordsException, "RA must be a float or int");
+    return -1;
+  }
+
+  self->m_angle.RA(PyFloat_AsDouble(RA));
 
   return 0;
 }
@@ -1826,8 +2021,9 @@ static PyMemberDef Declination_members[] = {
 };
 
 static PyGetSetDef Declination_getseters[] = {
-  {sValueStr, (getter)Declination_getValue, (setter)Declination_setValue, sValueStr, NULL},
+  {sDegreesStr, (getter)Declination_getDegrees, (setter)Declination_setDegrees, sDegreesStr, NULL},
   {sRadiansStr, (getter)Declination_getRadians, (setter)Declination_setRadians, sRadiansStr, NULL},
+  {sRAStr, (getter)Declination_getRA, (setter)Declination_setRA, sRAStr, NULL},
   {NULL}  /* Sentinel */
 };
 
@@ -2103,19 +2299,19 @@ static PyObject* Cartesian_getx(Cartesian* self, void* closure) {
   return PyFloat_FromDouble(self->m_Cartesian.x());
 }
 
-static int Cartesian_setx(Cartesian* self, PyObject* value, void* closure) {
+static int Cartesian_setx(Cartesian* self, PyObject* degrees, void* closure) {
 
-  if (value == NULL) {
+  if (degrees == NULL) {
     PyErr_SetString(sCoordsException, "can not delete x");
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
+  if (!PyFloat_Check(degrees) && !COORDS_INT_CHECK(degrees)) {
     PyErr_SetString(sCoordsException, "x must be a float or int");
     return -1;
   }
 
-  self->m_Cartesian.x(PyFloat_AsDouble(value));
+  self->m_Cartesian.x(PyFloat_AsDouble(degrees));
 
   return 0;
 }
@@ -2126,19 +2322,19 @@ static PyObject* Cartesian_gety(Cartesian* self, void* closure) {
   return PyFloat_FromDouble(self->m_Cartesian.y());
 }
 
-static int Cartesian_sety(Cartesian* self, PyObject* value, void* closure) {
+static int Cartesian_sety(Cartesian* self, PyObject* degrees, void* closure) {
 
-  if (value == NULL) {
+  if (degrees == NULL) {
     PyErr_SetString(sCoordsException, "can not delete y");
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
+  if (!PyFloat_Check(degrees) && !COORDS_INT_CHECK(degrees)) {
     PyErr_SetString(sCoordsException, "y must be a float or int");
     return -1;
   }
 
-  self->m_Cartesian.y(PyFloat_AsDouble(value));
+  self->m_Cartesian.y(PyFloat_AsDouble(degrees));
 
   return 0;
 }
@@ -2149,19 +2345,19 @@ static PyObject* Cartesian_getz(Cartesian* self, void* closure) {
   return PyFloat_FromDouble(self->m_Cartesian.z());
 }
 
-static int Cartesian_setz(Cartesian* self, PyObject* value, void* closure) {
+static int Cartesian_setz(Cartesian* self, PyObject* degrees, void* closure) {
 
-  if (value == NULL) {
+  if (degrees == NULL) {
     PyErr_SetString(sCoordsException, "can not delete z");
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
+  if (!PyFloat_Check(degrees) && !COORDS_INT_CHECK(degrees)) {
     PyErr_SetString(sCoordsException, "z must be a float or int");
     return -1;
   }
 
-  self->m_Cartesian.z(PyFloat_AsDouble(value));
+  self->m_Cartesian.z(PyFloat_AsDouble(degrees));
 
   return 0;
 }
@@ -2952,19 +3148,19 @@ static PyObject* spherical_getR(spherical* self, void* closure) {
   return PyFloat_FromDouble(self->m_spherical.r());
 }
 
-static int spherical_setR(spherical* self, PyObject* value, void* closure) {
+static int spherical_setR(spherical* self, PyObject* degrees, void* closure) {
 
-  if (value == NULL) {
+  if (degrees == NULL) {
     PyErr_SetString(sCoordsException, "can not delete r");
     return 0;
   }
 
-  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
+  if (!PyFloat_Check(degrees) && !COORDS_INT_CHECK(degrees)) {
     PyErr_SetString(sCoordsException, "r must be a float or int");
     return 0;
   }
 
-  self->m_spherical.r(PyFloat_AsDouble(value));
+  self->m_spherical.r(PyFloat_AsDouble(degrees));
 
   return 0;
 }
@@ -2987,19 +3183,19 @@ static PyObject* spherical_getTheta(spherical* self, void* closure) {
 
 }
 
-static int spherical_setTheta(spherical* self, PyObject* value, void* closure) {
+static int spherical_setTheta(spherical* self, PyObject* degrees, void* closure) {
 
-  if (value == NULL) {
+  if (degrees == NULL) {
     PyErr_SetString(sCoordsException, "can not delete theta");
     return -1;
   }
 
-  if (!is_AngleType(value)) {
+  if (!is_AngleType(degrees)) {
     PyErr_SetString(sCoordsException, "theta must be an angle");
     return -1;
   }
 
-  self->m_spherical.theta(((Angle*)value)->m_angle);
+  self->m_spherical.theta(((Angle*)degrees)->m_angle);
 
   return 0;
 }
@@ -3021,19 +3217,19 @@ static PyObject* spherical_getPhi(spherical* self, void* closure) {
   return (PyObject*) a_phi;
 }
 
-static int spherical_setPhi(spherical* self, PyObject* value, void* closure) {
+static int spherical_setPhi(spherical* self, PyObject* degrees, void* closure) {
 
-  if (value == NULL) {
+  if (degrees == NULL) {
     PyErr_SetString(sCoordsException, "can not delete phi");
     return -1;
   }
 
-  if (!is_AngleType(value)) {
+  if (!is_AngleType(degrees)) {
     PyErr_SetString(sCoordsException, "phi must be an angle");
     return -1;
   }
 
-  self->m_spherical.phi(((Angle*)value)->m_angle);
+  self->m_spherical.phi(((Angle*)degrees)->m_angle);
 
   return 0;
 }
@@ -3585,19 +3781,19 @@ static PyObject* datetime_getJulianDate(datetime* self, void* closure) {
   return PyFloat_FromDouble(self->m_datetime.toJulianDate());
 }
 
-static int datetime_setJulianDate(datetime* self, PyObject* value, void* closure) {
+static int datetime_setJulianDate(datetime* self, PyObject* degrees, void* closure) {
 
-  if (value == NULL) {
+  if (degrees == NULL) {
     PyErr_SetString(sCoordsException, "can not delete Julian Date");
     return -1;
   }
 
-  if (!PyFloat_Check(value) && !COORDS_INT_CHECK(value)) {
+  if (!PyFloat_Check(degrees) && !COORDS_INT_CHECK(degrees)) {
     PyErr_SetString(sCoordsException, "Julian Date must be float or int");
     return -1;
   }
 
-  self->m_datetime.fromJulianDate(PyFloat_AsDouble(value));
+  self->m_datetime.fromJulianDate(PyFloat_AsDouble(degrees));
 
   return 0;
 }

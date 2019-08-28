@@ -119,16 +119,16 @@ double Coords::degrees2seconds(const double& a_deg, const double& a_min, const d
 // ----- output operator<< -----
 // -----------------------------
 
-void Coords::value2DMSString(const double& a_value, std::stringstream& a_string) {
+void Coords::degrees2DMSString(const double& a_degrees, std::stringstream& a_string) {
 
   // output as degrees minutes seconds
 
   bool isNegative(false);
 
-  if (a_value < 0)
+  if (a_degrees < 0)
     isNegative = true;
 
-  double degrees = fabs(a_value);
+  double degrees = fabs(a_degrees);
   double minutes = 60 * (degrees - floor(degrees));
   double seconds = 60 * (minutes - floor(minutes));
 
@@ -141,16 +141,16 @@ void Coords::value2DMSString(const double& a_value, std::stringstream& a_string)
 
 }
 
-void Coords::value2HMSString(const double& a_value, std::stringstream& a_string) {
+void Coords::degrees2HMSString(const double& a_degrees, std::stringstream& a_string) {
 
   // output as time 00:00:00
 
   bool isNegative(false);
 
-  if (a_value < 0)
+  if (a_degrees < 0)
     isNegative = true;
 
-  double degrees = fabs(a_value);
+  double degrees = fabs(a_degrees);
   double minutes = 60 * (degrees - floor(degrees));
   double seconds = 60 * (minutes - floor(minutes));
 

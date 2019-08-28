@@ -47,6 +47,9 @@ namespace Coords {
     static double deg2rad(const double& deg) {return deg*M_PI/180.0;}
     static double rad2deg(const double& rad) {return rad*180.0/M_PI;}
 
+    static double deg2RA(const double& deg)  {return deg*24.0/360.0;} // Right Ascension
+    static double RA2deg(const double& ra)   {return ra*360.0/24.0;}
+
     // ----- ctor and dtor -----
 
     explicit angle(const double& a_deg = 0.0,
@@ -63,17 +66,23 @@ namespace Coords {
     angle& operator=(const angle& rhs);
 
     // ----- accessors -----
-    void          value(const double& a_value) {m_value = a_value;}
-    const double& value() const                {return m_value;}
+    void          degrees(const double& a_degrees) {m_degrees = a_degrees;}
+    const double& degrees() const                  {return m_degrees;}
 
-    void          setValue(const double& a_value) {m_value = a_value;}
-    double        getValue() const                {return m_value;} // for boost
+    void          setDegrees(const double& a_degrees) {m_degrees = a_degrees;}
+    double        getDegrees() const                  {return m_degrees;} // for boost
 
-    void          radians(const double& a_value) {value(rad2deg(a_value));}
-    double        radians() const                {return deg2rad(value());}
+    void          radians(const double& a_degrees) {degrees(rad2deg(a_degrees));}
+    double        radians() const                  {return deg2rad(degrees());}
 
-    void          setRadians(const double& a_value) {value(rad2deg(a_value));}
-    double        getRadians() const                {return deg2rad(value());} // for boost
+    void          setRadians(const double& a_degrees) {degrees(rad2deg(a_degrees));}
+    double        getRadians() const                  {return deg2rad(degrees());} // for boost
+
+    void          RA(const double& a_degrees) {degrees(RA2deg(a_degrees));} // Right Ascension
+    double        RA() const                  {return deg2RA(degrees());}
+
+    void          setRA(const double& a_degrees) {degrees(RA2deg(a_degrees));}
+    double        getRA() const                  {return deg2RA(degrees());} // for boost
 
     // ----- boolean operators -----
 
@@ -89,20 +98,26 @@ namespace Coords {
     // ----- in-place operators -----
 
     angle& operator+=(const angle& rhs);
+    angle& operator+=(const double& rhs);
+
     angle& operator-=(const angle& rhs);
+    angle& operator-=(const double& rhs);
 
     angle& operator*=(const angle& rhs);
+    angle& operator*=(const double& rhs);
+
     angle& operator/=(const angle& rhs);
+    angle& operator/=(const double& rhs);
 
 
     // ----- other methods -----
     void normalize(const double& begin=0.0, const double& end=360);  // TODO normalized -> return a new copy?
 
-    angle complement() const {return angle(90 - value());}
+    angle complement() const {return angle(90 - degrees());}
 
   private:
 
-    double m_value; // degrees for declination, latitude, longitude, seconds for right ascension
+    double m_degrees;
 
   };
 
@@ -111,12 +126,25 @@ namespace Coords {
   // ----- operators -----
   // ---------------------
 
+  // TODO allow implicit angle to double construction?
+
   angle operator+ (const angle& lhs, const angle& rhs);
+  angle operator+ (const double& lhs, const angle& rhs);
+  angle operator+ (const angle& lhs, const double& rhs);
+
   angle operator- (const angle& lhs, const angle& rhs);
+  angle operator- (const double& lhs, const angle& rhs);
+  angle operator- (const angle& lhs, const double& rhs);
+
   angle operator- (const angle& rhs); // unary minus
 
   angle operator* (const angle& lhs, const angle& rhs);
+  angle operator* (const double& lhs, const angle& rhs);
+  angle operator* (const angle& lhs, const double& rhs);
+
   angle operator/ (const angle& lhs, const angle& rhs);
+  angle operator/ (const double& lhs, const angle& rhs);
+  angle operator/ (const angle& lhs, const double& rhs);
 
 
   // -------------------------------
@@ -126,7 +154,7 @@ namespace Coords {
   // inline for boost. Use hpp instead?
   inline std::ostream& operator<< (std::ostream& os, const Coords::angle& a) {
     std::stringstream out;
-    Coords::value2HMSString(a.value(), out);
+    Coords::degrees2HMSString(a.degrees(), out);
     return os << out.str();
   }
 
