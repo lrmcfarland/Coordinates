@@ -75,10 +75,10 @@ namespace Coords {
 		      const int& a_hour = 0,
 		      const int& a_minute = 0,
 		      const double& a_second = 0,
-		      const double& a_timezone = 0)
+		      const double& a_timezone_factor = 0)
       : m_year(a_year), m_month(a_month), m_day(a_day),
       m_hour(a_hour), m_minute(a_minute), m_second(a_second),
-      m_is_zulu(false), m_has_timezone_colon(false), m_timezone(a_timezone), m_is_leap_year(false)
+      m_is_zulu(false), m_has_timezone_colon(false), m_timezone_factor(a_timezone_factor), m_is_leap_year(false)
       {isValid();};
 
     ~DateTime() {};
@@ -116,11 +116,13 @@ namespace Coords {
     const std::string& timezoneHH() const {return m_timezone_hh;}
     const std::string& timezoneMM() const {return m_timezone_mm;}
     const bool& hasTimezoneColon() const {return m_has_timezone_colon;}
-    double timezone() const {return m_timezone;} // copy of timezone for non-const python wrappers
-    void timezone(const double& a_timezone); // changes timezone and hour (day, month, year if needed) to keep UT same
+
+
+    double timezone() const {return m_timezone_factor;} // copy of timezone for non-const python wrappers
+    void timezone(const double& a_timezone_factor); // changes timezone and hour (day, month, year if needed) to keep UT same
 
     double getTimezone() {return timezone();} // for boost python wrappers
-    void setTimezone(const double& a_timezone) {return timezone(a_timezone);} // for boost python wrappers
+    void setTimezone(const double& a_timezone_factor) {return timezone(a_timezone_factor);} // for boost python wrappers
 
     // helpers for Python manual wrappers
     const double& LilianDate() const {return s_LilianDate;}
@@ -170,9 +172,10 @@ namespace Coords {
     bool m_is_zulu;
     std::string m_timezone_hh;
     std::string m_timezone_mm;
+    std::string m_timezone_sign;
     bool m_has_timezone_colon; // for operator<<() idempotence
 
-    double m_timezone;
+    double m_timezone_factor; // timezone as double, e.g. 5:30 > 5.5
 
     bool m_is_leap_year;
 
