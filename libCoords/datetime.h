@@ -45,11 +45,14 @@ namespace Coords {
   public:
 
     static const std::string s_ISO8601_format;
+    static const std::string s_timezone_format;
 
 #if BOOST_REGEX
-    static const boost::regex  s_ISO8601_rx;
+    static const boost::regex  s_ISO8601_regex;
+    static const boost::regex  s_timezone_regex;
 #else
-    static const std::regex  s_ISO8601_rx;
+    static const std::regex  s_ISO8601_regex;
+    static const std::regex  s_timezone_regex;
 #endif
 
     static const long int s_gDateNRC; // used in NRC Julian Date calculations.
@@ -61,6 +64,7 @@ namespace Coords {
 
     static const double   s_resolution; // for rounding seconds
 
+    // TODO rm
     static void adjustForTimezone(int& a_year, int& a_month, int& a_day,
 				  int& a_hour, int& a_minute, double& a_second,
 				  const double& a_timezone);
@@ -76,9 +80,17 @@ namespace Coords {
 		      const int& a_minute = 0,
 		      const double& a_second = 0,
 		      const double& a_timezone_factor = 0)
-      : m_year(a_year), m_month(a_month), m_day(a_day),
-      m_hour(a_hour), m_minute(a_minute), m_second(a_second),
-      m_is_zulu(false), m_has_timezone_colon(false), m_timezone_factor(a_timezone_factor), m_is_leap_year(false)
+      : m_year(a_year),
+      m_month(a_month),
+      m_day(a_day),
+      m_hour(a_hour),
+      m_minute(a_minute),
+      m_second(a_second),
+      m_is_local(false),
+      m_is_zulu(false),
+      m_has_timezone_colon(false),
+      m_timezone_factor(a_timezone_factor),
+      m_is_leap_year(false)
       {isValid();};
 
     // TODO fromJulianDate? DateTime(const double& a_jdate);
@@ -114,17 +126,29 @@ namespace Coords {
     const double& second() const {return m_second;}
     double     getSecond() const {return m_second;} // for boost python wrappers
 
+    const bool& isLocal() const {return m_is_local;}
     const bool& isZulu() const {return m_is_zulu;}
     const std::string& timezoneHH() const {return m_timezone_hh;}
     const std::string& timezoneMM() const {return m_timezone_mm;}
     const bool& hasTimezoneColon() const {return m_has_timezone_colon;}
 
 
+
+
+
+
     double timezone() const {return m_timezone_factor;} // copy of timezone for non-const python wrappers
+
+
     void timezone(const double& a_timezone_factor); // changes timezone and hour (day, month, year if needed) to keep UT same
+
+
 
     double getTimezone() {return timezone();} // for boost python wrappers
     void setTimezone(const double& a_timezone_factor) {return timezone(a_timezone_factor);} // for boost python wrappers
+
+
+
 
     // helpers for Python manual wrappers
     const double& LilianDate() const {return s_LilianDate;}
@@ -169,6 +193,7 @@ namespace Coords {
     int m_minute;
     double m_second;
 
+    bool m_is_local;
     bool m_is_zulu;
     std::string m_timezone_hh;
     std::string m_timezone_mm;

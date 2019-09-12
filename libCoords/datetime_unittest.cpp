@@ -256,7 +256,7 @@ namespace {
       Coords::DateTime a_datetime(a_datetime_string);
     } catch (Coords::Error& err) {
       std::stringstream emsg;
-      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:mm]]";
       EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
@@ -267,7 +267,7 @@ namespace {
       Coords::DateTime a_datetime(a_datetime_string);
     } catch (Coords::Error& err) {
       std::stringstream emsg;
-      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:mm]]";
       EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
@@ -307,7 +307,7 @@ namespace {
       Coords::DateTime a_datetime(a_datetime_string);
     } catch (Coords::Error& err) {
       std::stringstream emsg;
-      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:mm]]";
       EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
@@ -319,7 +319,7 @@ namespace {
       Coords::DateTime a_datetime(a_datetime_string);
     } catch (Coords::Error& err) {
       std::stringstream emsg;
-      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:mm]]";
       EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
@@ -485,7 +485,7 @@ namespace {
       Coords::DateTime a_datetime(a_datetime_string);
     } catch (Coords::Error& err) {
       std::stringstream emsg;
-      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:mm]]";
       EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
@@ -510,7 +510,7 @@ namespace {
       Coords::DateTime a_datetime(a_datetime_string);
     } catch (Coords::Error& err) {
       std::stringstream emsg;
-      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:mm]]";
       EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
@@ -552,7 +552,7 @@ namespace {
       Coords::DateTime a_datetime(a_datetime_string);
     } catch (Coords::Error& err) {
       std::stringstream emsg;
-      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:mm]]";
       EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
@@ -611,7 +611,7 @@ namespace {
       Coords::DateTime a_datetime(a_datetime_string);
     } catch (Coords::Error& err) {
       std::stringstream emsg;
-      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:mm]]";
       EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }
@@ -622,7 +622,7 @@ namespace {
       Coords::DateTime a_datetime(a_datetime_string);
     } catch (Coords::Error& err) {
       std::stringstream emsg;
-      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+      emsg << a_datetime_string << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:mm]]";
       EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }

@@ -47,13 +47,21 @@ const std::string Coords::DateTime::s_ISO8601_format(
 	   "([0-5]\\d)" // minute
 	   "(:"
 	   "([0-5]\\d(\\.\\d*){0,1})" // second
-	   "(Z|(\\+|-)(0[0-9]|1[012])(\\:){0,1}([0-5]\\d){0,1}){0,1}" // time zone
+	   "([Z\\+-]{0,1}[\\d:]*){0,1}" // time zone
 	   "){0,1}"
 						     );
+
+const std::string Coords::DateTime::s_timezone_format(
+	   "Z|(\\+|-)(0[0-9]|1[012])(\\:){0,1}([0-5]\\d){0,1}" // time zone
+						      );
+
+
 #if BOOST_REGEX
-const boost::regex Coords::DateTime::s_ISO8601_rx(Coords::DateTime::s_ISO8601_format);
+const boost::regex Coords::DateTime::s_ISO8601_regex(Coords::DateTime::s_ISO8601_format);
+const boost::regex Coords::DateTime::s_timezone_regex(Coords::DateTime::s_timezone_format);
 #else
-const std::regex Coords::DateTime::s_ISO8601_rx(Coords::DateTime::s_ISO8601_format);
+const std::regex Coords::DateTime::s_ISO8601_regex(Coords::DateTime::s_ISO8601_format);
+const std::regex Coords::DateTime::s_timezone_regex(Coords::DateTime::s_timezone_format);
 #endif
 
 const long int Coords::DateTime::s_gDateNRC(15+31L*(10+12L*1582));
@@ -71,61 +79,93 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
 
 
 #if BOOST_REGEX
-  boost::smatch m;
-  if (!boost::regex_match(an_iso8601_time, m, s_ISO8601_rx)) {
+  boost::smatch iso8601_match;
+  if (!boost::regex_match(an_iso8601_time, iso8601_match, s_ISO8601_regex)) {
 #else
-  std::smatch m;
-  if (!std::regex_match(an_iso8601_time, m, s_ISO8601_rx)) {
+  std::smatch iso8601_match;
+  if (!std::regex_match(an_iso8601_time, iso8601_match, s_ISO8601_regex)) {
 #endif
     std::stringstream emsg;
     emsg << an_iso8601_time
-	 << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:][mm]]";
+	 << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:mm]]";
     throw Coords::Error(emsg.str());
   }
 
-  m_year = Coords::stoi(m[2]);
+  m_year = Coords::stoi(iso8601_match[2]);
 
-  if (m[1] == "-")
+  if (iso8601_match[1] == "-")
     m_year *= -1;
 
-  m_month = Coords::stoi(m[3]);
-  m_day = Coords::stoi(m[4]);
+  m_month = Coords::stoi(iso8601_match[3]);
+  m_day = Coords::stoi(iso8601_match[4]);
 
   if ((m_year % 4 == 0 && m_year % 100 != 0) || m_year % 400 == 0)
     m_is_leap_year = true;
   else
     m_is_leap_year = false;
 
-  m_hour = Coords::stoi(m[5]);
-  m_minute = Coords::stoi(m[6]);
-  m_second = Coords::stod(m[8]);
+  m_hour = Coords::stoi(iso8601_match[5]);
+  m_minute = Coords::stoi(iso8601_match[6]);
+  m_second = Coords::stod(iso8601_match[8]);
 
-  if (m[10] == "Z") {
-    m_is_zulu = true;
-    m_timezone_factor = 0;
+  if (iso8601_match[10] == "") {
+
+    m_is_local = true;
 
   } else {
 
-    m_timezone_sign = m[11];
-    m_timezone_hh = m[12];
-    m_timezone_mm = m[14];
+    std::string timezone_str(iso8601_match[10]);
 
-    m_timezone_factor = Coords::stod(m[12]);
+#if BOOST_REGEX
+    boost::smatch timezone_match;
+    if (!boost::regex_match(timezone_str, timezone_match, s_timezone_regex)) {
+#else
+      std::smatch timezone_match;
+    if (!std::regex_match(timezone_str, timezone_match, s_timezone_regex)) {
+#endif
+      std::stringstream emsg;
+      emsg << an_iso8601_time
+	   << " unsupported timezone format: [Z|(+|-)hh[:mm]]";
+      throw Coords::Error(emsg.str());
+    }
 
-    if (m[13] == ":")
-      m_has_timezone_colon = true;
 
-    if (m[14] != "")
-      m_timezone_factor += Coords::stod(m[14])/60.0;
+    if (timezone_match[0] == "Z") {
+      m_is_zulu = true;
+      m_timezone_factor = 0;
 
-    if (m[11] == "-")
-      m_timezone_factor *= -1;
+    } else {
 
-  }
+      m_timezone_sign = timezone_match[1];
+      m_timezone_hh = timezone_match[2];
+      m_timezone_mm = timezone_match[4];
+
+      m_timezone_factor = Coords::stod(m_timezone_hh);
+
+      if (timezone_match[3] == ":")
+	m_has_timezone_colon = true;
+
+      if (m_timezone_mm != "")
+	m_timezone_factor += Coords::stod(m_timezone_mm)/60.0;
+
+      if (m_timezone_sign == "-")
+	m_timezone_factor *= -1;
+
+    }
+
 
 #if DEBUG_REGEX
-  for (int i = 0; i < 15; ++i)
-    std::cout << "m[" << i << "]" << m[i] << std::endl;
+    for (int i = 0; i < 6; ++i)
+      std::cout << "timezone_match[" << i << "]" << timezone_match[i] << std::endl;
+#endif
+
+
+  }
+    
+
+#if DEBUG_REGEX
+  for (int i = 0; i < 12; ++i)
+    std::cout << "iso8601_match[" << i << "]" << iso8601_match[i] << std::endl;
 #endif
 
   isValid(an_iso8601_time);
