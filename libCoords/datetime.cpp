@@ -437,6 +437,11 @@ void Coords::DateTime::timezone(const double& a_new_timezone_factor) {
     return; // noop
 
 
+
+  double jdate(this->toJulianDate()); // TODO rm
+
+
+
   Coords::DateTime a_new_time;
   a_new_time.fromJulianDate(this->toJulianDate());
 
@@ -664,7 +669,7 @@ double Coords::DateTime::toModifiedJulianDateAPC() const {
 
   double partial_day(Coords::degrees2seconds(m_hour, m_minute, m_second)/86400.0);
 
-  return static_cast<double>(jdays) + partial_day + timezone()/24.0;
+  return static_cast<double>(jdays) + partial_day - timezone()/24.0;
 
 }
 
