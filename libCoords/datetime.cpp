@@ -222,12 +222,12 @@ Coords::DateTime& Coords::DateTime::operator=(const Coords::DateTime& rhs) {
 // ----- operators -----
 
 Coords::DateTime& Coords::DateTime::operator+=(const double& rhs) {
-  this->fromJulianDate(this->toJulianDate() + rhs, this->timezone());
+  this->fromJulianDate(this->toJulianDate() + rhs);
   return *this;
 }
 
 Coords::DateTime& Coords::DateTime::operator-=(const double& rhs) {
-  this->fromJulianDate(this->toJulianDate() - rhs, this->timezone());
+  this->fromJulianDate(this->toJulianDate() - rhs);
   return *this;
 }
 
@@ -427,32 +427,32 @@ void Coords::DateTime::adjustForTimezone(int& a_year, int& a_month, int& a_day,
 }
 
 
-void Coords::DateTime::timezone(const double& a_new_timezone) {
+void Coords::DateTime::timezone(const double& a_new_timezone_factor) {
 
   // change to the time zone but not the time
 
   // TODO timezone_factor as string
 
-  if (a_new_timezone == m_timezone_factor) // TODO string?
+  if (a_new_timezone_factor == m_timezone_factor) // TODO string?
     return; // noop
 
 
   Coords::DateTime a_new_time;
-  a_new_time.fromJulianDate(this->toJulianDate(), a_new_timezone);
+  a_new_time.fromJulianDate(this->toJulianDate());
 
 
 
 
 
   if (m_timezone_factor != 0) {
-    this->fromJulianDate(this->toJulianDate(), 0); // in the 0-th timezone
+    this->fromJulianDate(this->toJulianDate()); // in the 0-th timezone
   }
 
 
 
 
 
-  this->adjustForTimezone(m_year, m_month, m_day, m_hour, m_minute, m_second, a_new_timezone);
+  this->adjustForTimezone(m_year, m_month, m_day, m_hour, m_minute, m_second, a_new_timezone_factor);
 
   int hours(m_timezone_factor); // integer part of factor
   double minutes((m_timezone_factor - hours)*60.0); // integer part of factor
@@ -669,7 +669,7 @@ double Coords::DateTime::toModifiedJulianDateAPC() const {
 }
 
 
-void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays, const double& a_timezone_factor) {
+void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
 
   // Calculates Gregorian calendar date from Julian day number.
   // from Astronomy on the Personal Computer, Montenbruck and Pfleger, p. 15-16
@@ -709,8 +709,9 @@ void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays, const doub
 
   m_second = 60.0 * (d_minute - floor(d_minute));
 
-  m_timezone_factor = a_timezone_factor;
-  this->adjustForTimezone(m_year, m_month, m_day, m_hour, m_minute, m_second, m_timezone_factor);
+  // TODO m_is_zulu = true;
+
+  this->adjustForTimezone(m_year, m_month, m_day, m_hour, m_minute, m_second, timezone()); // TODO meh
 
 }
 

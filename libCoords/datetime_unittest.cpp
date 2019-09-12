@@ -2458,21 +2458,40 @@ namespace {
 
 
 
+
+
+
+
   TEST(DateTime, set_timezone_berlin2moscow_1) {
 
-    std::string a_datetime_string("2015-05-21T05:00:00+02:00");
-    Coords::DateTime a_datetime(a_datetime_string);
+    std::string z_datetime_string("2019-09-12T12:00:00Z");
+    Coords::DateTime z_datetime(z_datetime_string);
 
-    EXPECT_DOUBLE_EQ(2457163.7916666665, a_datetime.toJulianDate());
+    EXPECT_DOUBLE_EQ(2458739, z_datetime.toJulianDate());
 
-    a_datetime.timezone(3);
+
+    std::string berlin_datetime_string("2019-09-12T10:00:00+02:00");
+    Coords::DateTime berlin_datetime(berlin_datetime_string);
+
+    EXPECT_DOUBLE_EQ(2458739, berlin_datetime.toJulianDate());
+
+
+    std::string moscow_datetime_string("2019-09-12T09:00:00+03:00");
+    Coords::DateTime moscow_datetime(moscow_datetime_string);
+
+    EXPECT_DOUBLE_EQ(2458739, moscow_datetime.toJulianDate());
+
+
+    berlin_datetime.timezone(3); // to timezone +03:00
 
     std::stringstream out;
-    out << a_datetime;
+    out << berlin_datetime;
 
-    EXPECT_STREQ("2015-05-21T06:00:00+03:00", out.str().c_str());
+    EXPECT_STREQ("2019-09-12T09:00:00+03:00", out.str().c_str());
 
   }
+
+
 
 
 

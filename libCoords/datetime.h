@@ -81,6 +81,8 @@ namespace Coords {
       m_is_zulu(false), m_has_timezone_colon(false), m_timezone_factor(a_timezone_factor), m_is_leap_year(false)
       {isValid();};
 
+    // TODO fromJulianDate? DateTime(const double& a_jdate);
+
     ~DateTime() {};
 
     DateTime(const DateTime& a);
@@ -141,9 +143,7 @@ namespace Coords {
     // ----- Julian date methods -----
 
     double toJulianDate() const {return toModifiedJulianDateAPC() + s_ModifiedJulianDate;}
-    void   fromJulianDate(const double& jdays, const double& a_timezone=0) {
-      fromModifiedJulianDateAPC(jdays - s_ModifiedJulianDate, a_timezone);
-    }
+    void   fromJulianDate(const double& jdays) {fromModifiedJulianDateAPC(jdays - s_ModifiedJulianDate);}
 
 
     double toJulianDateWiki() const;
@@ -153,7 +153,7 @@ namespace Coords {
     void   fromJulianDateNRC(const double& jdays);
 
     double toModifiedJulianDateAPC() const;
-    void   fromModifiedJulianDateAPC(const double& jdays, const double& a_timezone=0);
+    void   fromModifiedJulianDateAPC(const double& jdays);
 
 
     // TODO J1950, J2000
