@@ -2697,6 +2697,63 @@ namespace {
 
 
 
+  // timezone +05:30
+
+  TEST(DateTime, set_timezone_zulu_vs_0530) {
+    // timezone zulu vs timezone +05:30
+
+    std::string z_datetime_string("2019-08-15T00:00:00Z");
+    Coords::DateTime z_datetime(z_datetime_string);
+
+    EXPECT_DOUBLE_EQ(2458710.5, z_datetime.toJulianDate());
+
+    std::string a_datetime_string("2019-08-15T05:30:00+05:30");
+    Coords::DateTime a_datetime(a_datetime_string);
+
+    EXPECT_DOUBLE_EQ(2458710.5, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << a_datetime;
+
+    EXPECT_STREQ("2019-08-15T05:30:00+05:30", out.str().c_str());
+
+    EXPECT_DOUBLE_EQ(a_datetime.toJulianDate(), z_datetime.toJulianDate());
+
+  }
+
+
+  TEST(DateTime, set_timezone_05c30) {
+    // timezone +0530 with colon
+
+    std::string a_datetime_string("2019-08-15T21:40:00+05:30");
+    Coords::DateTime a_datetime(a_datetime_string);
+
+    EXPECT_DOUBLE_EQ(2458711.173611111, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << a_datetime;
+
+    EXPECT_STREQ("2019-08-15T21:40:00+05:30", out.str().c_str());
+
+  }
+
+
+  TEST(DateTime, set_timezone_0530) {
+    // timezone +0530 with out colon
+
+    std::string a_datetime_string("2019-08-15T08:10:00+0530");
+    Coords::DateTime a_datetime(a_datetime_string);
+
+    EXPECT_DOUBLE_EQ(2458710.6111111115, a_datetime.toJulianDate());
+
+    std::stringstream out;
+    out << a_datetime;
+
+    EXPECT_STREQ("2019-08-15T08:10:00+0530", out.str().c_str());
+
+  }
+
+
 
   // timezone -0800
 
