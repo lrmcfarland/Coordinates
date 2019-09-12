@@ -1461,12 +1461,11 @@ namespace {
 
     Coords::DateTime a_datetime(a_datetime_string);
 
-    // https://aa.usno.navy.mil/jdconverter?ID=AA&year=2014&month=12&day=09&era=1&hr=1&min=0&sec=0.0
-    EXPECT_DOUBLE_EQ(2457000.5416666665, a_datetime.toJulianDate());
+    EXPECT_DOUBLE_EQ(2457000.4583333335, a_datetime.toJulianDate());
 
     a_datetime += 1;
 
-    EXPECT_DOUBLE_EQ(2457001.5416666665, a_datetime.toJulianDate());
+    EXPECT_DOUBLE_EQ(2457001.4583333335, a_datetime.toJulianDate());
 
     std::stringstream out;
     out << a_datetime;
@@ -1481,7 +1480,7 @@ namespace {
 
     a_datetime += 1;
 
-    EXPECT_DOUBLE_EQ(2457001.625, a_datetime.toJulianDate());
+    EXPECT_DOUBLE_EQ(2457001.4583333335, a_datetime.toJulianDate());
 
     std::stringstream out;
     out << a_datetime;
@@ -1496,7 +1495,7 @@ namespace {
 
     a_datetime += 1;
 
-    EXPECT_DOUBLE_EQ(2457001.4583333335, a_datetime.toJulianDate());
+    EXPECT_DOUBLE_EQ(2457001.5416666665, a_datetime.toJulianDate());
 
     std::stringstream out;
     out << a_datetime;
@@ -1511,7 +1510,7 @@ namespace {
 
     a_datetime += 1;
 
-    EXPECT_DOUBLE_EQ(2457002.4166666665, a_datetime.toJulianDate());
+    EXPECT_DOUBLE_EQ(2457002.5, a_datetime.toJulianDate());
 
     std::stringstream out;
     out << a_datetime;
@@ -1590,10 +1589,9 @@ namespace {
   }
 
 
-
-
   // on edge of day transition
   TEST(DateTime, operator_minus_eq_00_tz1) {
+
     std::string a_datetime_string("2014-12-09T00:00:00+0100");
 
     // another interesting day with rounding errors
@@ -1602,15 +1600,18 @@ namespace {
 
     Coords::DateTime a_datetime(a_datetime_string);
 
+    EXPECT_DOUBLE_EQ(2457000.4583333335, a_datetime.toJulianDate()); // 2014-12-08T23:00:00Z
+
     a_datetime -= 1;
 
-    EXPECT_DOUBLE_EQ(2456999.5416666665, a_datetime.toJulianDate());
+    EXPECT_DOUBLE_EQ(2456999.4583333335, a_datetime.toJulianDate()); // 2014-12-07T23:00:00Z
 
     std::stringstream out;
     out << a_datetime;
 
     EXPECT_STREQ("2014-12-08T00:00:00+0100", out.str().c_str());
   }
+
 
   // on edge of day transition
   TEST(DateTime, operator_minus_eq_00_ntz1) {
@@ -1620,13 +1621,14 @@ namespace {
 
     a_datetime -= 1;
 
-    EXPECT_DOUBLE_EQ(2456999.4583333335, a_datetime.toJulianDate());
+    EXPECT_DOUBLE_EQ(2456999.5416666665, a_datetime.toJulianDate()); // 2014-12-08T01:00:00Z
 
     std::stringstream out;
     out << a_datetime;
 
     EXPECT_STREQ("2014-12-08T00:00:00-0100", out.str().c_str());
   }
+
 
   TEST(DateTime, operator_minus_eq_30) {
     std::string a_datetime_string("2014-12-09T14:00:00");
@@ -1776,6 +1778,30 @@ namespace {
 
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+  // !!!!!!!!!!!!!!!!!!!!
+  // ----- refactor ----- TODO rm
+  // !!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+
+
+
+  
   // ------------------------------------
   // ----- timezone date arithmetic -----
   // ------------------------------------
@@ -2043,7 +2069,9 @@ namespace {
 
 
 
-
+  // ----------------------------
+  // ----- moving timezones -----
+  // ----------------------------
 
 
   TEST(DateTime, set_timezone_2015jan01_dc_ptz) {
@@ -2440,6 +2468,11 @@ namespace {
   }
 
 
+
+
+
+
+
   TEST(DateTime, set_timezone_madrid_2_ny) {
 
     std::string a_datetime_string("2015-05-21T05:00:00-01:00");
@@ -2455,6 +2488,12 @@ namespace {
     EXPECT_STREQ("2015-05-20T23:00:00-05:00", out.str().c_str());
 
   }
+
+
+
+
+
+
 
 
 
@@ -2511,6 +2550,9 @@ namespace {
   }
 
 
+
+
+
   TEST(DateTime, set_timezone_zulu_to_timezone_3) {
 
     std::string a_datetime_string("2015-05-21T23:00:00Z");
@@ -2527,12 +2569,17 @@ namespace {
 
   }
 
+
+
+
+
+
   TEST(DateTime, set_timezone_to_same) {
 
     std::string a_datetime_string("2015-05-21T23:00:00-05:00");
     Coords::DateTime a_datetime(a_datetime_string);
 
-    EXPECT_DOUBLE_EQ(2457164.25, a_datetime.toJulianDate());
+    EXPECT_DOUBLE_EQ(2457164.6666666665, a_datetime.toJulianDate());
 
     a_datetime.timezone(-5);
 
@@ -2552,23 +2599,6 @@ namespace {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // !!!!!!!!!!!!!!!!!!!!
-  // ----- refactor ----- TODO rm
-  // !!!!!!!!!!!!!!!!!!!!
 
 
   // ======================
