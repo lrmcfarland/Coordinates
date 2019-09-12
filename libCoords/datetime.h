@@ -79,7 +79,7 @@ namespace Coords {
 		      const int& a_hour = 0,
 		      const int& a_minute = 0,
 		      const double& a_second = 0,
-		      const double& a_timezone_factor = 0)
+		      const double& a_timezone_factor = 0) // TODO as string? or rm?
       : m_year(a_year),
       m_month(a_month),
       m_day(a_day),
@@ -93,12 +93,13 @@ namespace Coords {
       m_is_leap_year(false)
       {isValid();};
 
-    // TODO fromJulianDate? DateTime(const double& a_jdate);
 
     ~DateTime() {};
 
     DateTime(const DateTime& a);
     DateTime& operator=(const DateTime& rhs);
+
+    // TODO fromJulianDate? DateTime(const double& a_jdate);
 
     // ----- accessors -----
 
@@ -136,16 +137,22 @@ namespace Coords {
 
 
 
-
-    double timezone() const {return m_timezone_factor;} // copy of timezone for non-const python wrappers
+    // TODO rm factor access?
+    double timezone_offset() const {return m_timezone_factor;} // copy of timezone for non-const python wrappers
 
 
     void timezone(const double& a_timezone_factor); // changes timezone and hour (day, month, year if needed) to keep UT same
 
 
 
-    double getTimezone() {return timezone();} // for boost python wrappers
+    double getTimezone() {return timezone_offset();} // for boost python wrappers
     void setTimezone(const double& a_timezone_factor) {return timezone(a_timezone_factor);} // for boost python wrappers
+
+
+
+    DateTime inTimezone(const std::string& an_new_timezone) const;
+
+
 
 
 
@@ -156,7 +163,7 @@ namespace Coords {
     const double& TruncatedJulianDate() const {return s_TruncatedJulianDate;}
     const double& J2000() const {return s_J2000;}
 
-    double UT() const {return degrees2seconds(hour() + timezone(), minute(), second())/3600.0;}
+    double UT() const {return degrees2seconds(hour() + timezone_offset(), minute(), second())/3600.0;}
 
 
     // ----- in-place operators -----
@@ -166,18 +173,18 @@ namespace Coords {
 
     // ----- Julian date methods -----
 
-    double toJulianDate() const {return toModifiedJulianDateAPC() + s_ModifiedJulianDate;}
-    void   fromJulianDate(const double& jdays) {fromModifiedJulianDateAPC(jdays - s_ModifiedJulianDate);}
+    double   toJulianDate() const {return toModifiedJulianDateAPC() + s_ModifiedJulianDate;}
+    DateTime fromJulianDate(const double& jdays) const {return fromModifiedJulianDateAPC(jdays - s_ModifiedJulianDate);}
 
 
-    double toJulianDateWiki() const;
-    void   fromJulianDateWiki(const double& jdays);
+    double   toJulianDateWiki() const;
+    DateTime fromJulianDateWiki(const double& jdays) const;
 
-    double toJulianDateNRC() const;
-    void   fromJulianDateNRC(const double& jdays);
+    double   toJulianDateNRC() const;
+    DateTime fromJulianDateNRC(const double& jdays) const;
 
-    double toModifiedJulianDateAPC() const;
-    void   fromModifiedJulianDateAPC(const double& jdays);
+    double   toModifiedJulianDateAPC() const;
+    DateTime fromModifiedJulianDateAPC(const double& jdays) const;
 
 
     // TODO J1950, J2000

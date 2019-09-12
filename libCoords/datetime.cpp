@@ -161,7 +161,7 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
 
 
   }
-    
+
 
 #if DEBUG_REGEX
   for (int i = 0; i < 12; ++i)
@@ -249,6 +249,7 @@ Coords::DateTime& Coords::DateTime::operator=(const Coords::DateTime& rhs) {
   m_hour = rhs.m_hour;
   m_minute = rhs.m_minute;
   m_second = rhs.m_second;
+  m_is_local = rhs.m_is_local;
   m_is_zulu = rhs.m_is_zulu;
   m_timezone_hh = rhs.m_timezone_hh;
   m_timezone_mm = rhs.m_timezone_mm;
@@ -262,13 +263,23 @@ Coords::DateTime& Coords::DateTime::operator=(const Coords::DateTime& rhs) {
 // ----- operators -----
 
 Coords::DateTime& Coords::DateTime::operator+=(const double& rhs) {
+
+
   this->fromJulianDate(this->toJulianDate() + rhs);
   return *this;
+
+
+
 }
 
 Coords::DateTime& Coords::DateTime::operator-=(const double& rhs) {
+
+
   this->fromJulianDate(this->toJulianDate() - rhs);
   return *this;
+
+
+
 }
 
 Coords::DateTime Coords::operator+(const Coords::DateTime& lhs, const double& rhs) {
@@ -291,7 +302,88 @@ double Coords::operator-(const Coords::DateTime& lhs, const Coords::DateTime& rh
 
 // ----- timezone -----
 
-// TODO take datetime as arg
+
+Coords::DateTime Coords::DateTime::inTimezone(const std::string& a_new_timezone) const {
+
+
+  // jdate
+
+  double jdate(this->toJulianDate());
+
+  DateTime z_datetime(this->fromJulianDate(jdate));
+
+
+  // timezone
+  bool a_is_local;
+  bool a_is_zulu;
+  std::string a_timezone_hh;
+  std::string a_timezone_mm;
+  std::string a_timezone_sign;
+  bool a_has_timezone_colon; // for operator<<() idempotence
+
+  double a_timezone_factor(0);
+
+
+#if BOOST_REGEX
+  boost::smatch timezone_match;
+  if (!boost::regex_match(a_new_timezone, timezone_match, s_timezone_regex)) {
+#else
+  std::smatch timezone_match;
+  if (!std::regex_match(a_new_timezone, timezone_match, s_timezone_regex)) {
+#endif
+    std::stringstream emsg;
+    emsg << a_new_timezone
+	 << " unsupported timezone format: [Z|(+|-)hh[:mm]]";
+    throw Coords::Error(emsg.str());
+  }
+
+
+  if (timezone_match[0] == "Z") {
+    a_is_zulu = true;
+    a_timezone_factor = 0;
+
+  } else {
+
+    a_timezone_sign = timezone_match[1];
+    a_timezone_hh = timezone_match[2];
+    a_timezone_mm = timezone_match[4];
+
+    a_timezone_factor = Coords::stod(a_timezone_hh);
+
+    if (timezone_match[3] == ":")
+      a_has_timezone_colon = true;
+
+    if (a_timezone_mm != "")
+      a_timezone_factor += Coords::stod(a_timezone_mm)/60.0;
+
+    if (a_timezone_sign == "-")
+      a_timezone_factor *= -1;
+
+  }
+
+
+  std::stringstream new_datetime_str;
+
+  new_datetime_str  << m_year << "-"
+		    << std::setw(2) << std::setfill('0') << m_month << "-"
+		    << std::setw(2) << std::setfill('0') << m_day
+		    << "T"
+		    << std::setw(2) << std::setfill('0') << m_hour << ":"
+		    << std::setw(2) << std::setfill('0') << m_minute << ":"
+		    << std::setw(2) << std::setfill('0') << m_second;
+
+  // TODO timezone
+
+  Coords::DateTime new_datetime(new_datetime_str.str());
+
+
+  return new_datetime;
+
+
+
+}
+
+// TODO superseded
 
 void Coords::DateTime::adjustForTimezone(int& a_year, int& a_month, int& a_day,
 					 int& a_hour, int& a_minute, double& a_second,
@@ -482,8 +574,8 @@ void Coords::DateTime::timezone(const double& a_new_timezone_factor) {
 
 
 
-  Coords::DateTime a_new_time;
-  a_new_time.fromJulianDate(this->toJulianDate());
+  Coords::DateTime a_new_datetime;
+  a_new_datetime.fromJulianDate(this->toJulianDate());
 
 
 
@@ -550,18 +642,25 @@ double Coords::DateTime::toJulianDateWiki() const {
   }
 
   double partial_day(Coords::degrees2seconds(m_hour, m_minute, m_second)/86400.0);
-  partial_day += timezone()/24.0;
+  partial_day += timezone_offset()/24.0;
 
   return static_cast<double>(jdays) + partial_day;
 
 }
 
 
-void Coords::DateTime::fromJulianDateWiki(const double& jdays) {
+Coords::DateTime Coords::DateTime::fromJulianDateWiki(const double& jdays) const {
 
   // from http://en.wikipedia.org/wiki/Julian_day
 
   // TODO: this does not correct for the Lilian date change. See unit tests.
+
+  int a_year(0);
+  int a_month(0);
+  int a_day(0);
+  int a_hour(0);
+  int a_minute(0);
+  double a_second(0);
 
   const long int y(4716);
   const long int j(1401);
@@ -581,23 +680,25 @@ void Coords::DateTime::fromJulianDateWiki(const double& jdays) {
   long int g((e%p)/r);
   long int h(u*g+w);
 
-  m_day = (h%s)/u + 1;
+  a_day = (h%s)/u + 1;
 
-  m_month = (h/s + m) % n + 1;
+  a_month = (h/s + m) % n + 1;
 
-  m_year = e/p - y + (n + m - m_month)/n;
+  a_year = e/p - y + (n + m - a_month)/n;
 
   double d_hour = 24.0 * (jdays - floor(jdays));
-  m_hour = d_hour; // implicit cast to int
-  m_hour -= timezone();
+  a_hour = d_hour; // implicit cast to int
+  a_hour -= timezone_offset();
 
   double d_minute = 60.0 * (d_hour - floor(d_hour));
-  m_minute = d_minute; // implicit cast to int
+  a_minute = d_minute; // implicit cast to int
 
-  m_second = 60.0 * (d_minute - floor(d_minute));
+  a_second = 60.0 * (d_minute - floor(d_minute));
 
-  m_timezone_factor = 0;
 
+  Coords::DateTime new_datetime(a_year, a_month, a_day, a_hour, a_minute, a_second);
+
+  return new_datetime;
 }
 
 
@@ -634,16 +735,24 @@ double Coords::DateTime::toJulianDateNRC() const {
     jdays += 2 - ja + static_cast<int>(0.25*ja);
   }
 
-  double partial_day(Coords::degrees2seconds(m_hour + timezone(), m_minute, m_second)/86400.0);
+  double partial_day(Coords::degrees2seconds(m_hour + timezone_offset(), m_minute, m_second)/86400.0);
 
   return static_cast<double>(jdays) + partial_day;
 
 }
 
-void Coords::DateTime::fromJulianDateNRC(const double& jdays) {
+Coords::DateTime Coords::DateTime::fromJulianDateNRC(const double& jdays) const {
 
   // Calculates Gregorian calendar date from Julian day number.
   // From Numerical Recipes in C, pp. 14-15
+
+  int a_year(0);
+  int a_month(0);
+  int a_day(0);
+  int a_hour(0);
+  int a_minute(0);
+  double a_second(0);
+
 
   long int ja(0);
   long int jalpha(0);
@@ -664,21 +773,24 @@ void Coords::DateTime::fromJulianDateNRC(const double& jdays) {
   jd = static_cast<long int>(365 * jc + (0.25*jc));
   je = static_cast<long int>((jb - jd)/30.6001);
 
-  m_day = jb - jd - static_cast<long int>(30.6001*je);
-  m_month = je - 1;
+  a_day = jb - jd - static_cast<long int>(30.6001*je);
+  a_month = je - 1;
 
-  if (m_month > 12)
-    m_month -= 12;
+  if (a_month > 12)
+    a_month -= 12;
 
-  m_year = jc - 4715;
+  a_year = jc - 4715;
 
-  if (m_month > 2)
-    --m_year;
+  if (a_month > 2)
+    --a_year;
 
-  if (m_year <= 0)
-    --m_year;
+  if (a_year <= 0)
+    --a_year;
 
-  m_timezone_factor = 0;
+
+  Coords::DateTime new_datetime(a_year, a_month, a_day, a_hour, a_minute, a_second);
+
+  return new_datetime;
 
 }
 
@@ -709,17 +821,24 @@ double Coords::DateTime::toModifiedJulianDateAPC() const {
 
   double partial_day(Coords::degrees2seconds(m_hour, m_minute, m_second)/86400.0);
 
-  return static_cast<double>(jdays) + partial_day - timezone()/24.0;
+  return static_cast<double>(jdays) + partial_day - timezone_offset()/24.0;
 
 }
 
 
-void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
+Coords::DateTime Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) const {
 
   // Calculates Gregorian calendar date from Julian day number.
   // from Astronomy on the Personal Computer, Montenbruck and Pfleger, p. 15-16
 
   // ASSUMES: jdays are Modified Julian Days
+
+  int a_year(0);
+  int a_month(0);
+  int a_day(0);
+  int a_hour(0);
+  int a_minute(0);
+  double a_second(0);
 
   long int a(0);
   long int b(0);
@@ -727,6 +846,8 @@ void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
   long int d(0);
   long int e(0);
   long int f(0);
+
+  // TODO timezone
 
   a = static_cast<long int>(jdays + 2400001.0);
 
@@ -742,21 +863,24 @@ void Coords::DateTime::fromModifiedJulianDateAPC(const double& jdays) {
   e = 365*d + d/4;
   f = static_cast<long int>((c - e)/30.6001);
 
-  m_day = c - e - static_cast<int>(30.6001 * f);
-  m_month = f - 1 - 12*(f/14);
-  m_year = d - 4715 - ((7+m_month)/10);
+  a_day = c - e - static_cast<int>(30.6001 * f);
+  a_month = f - 1 - 12*(f/14);
+  a_year = d - 4715 - ((7+a_month)/10);
 
   double d_hour = 24.0 * (jdays - floor(jdays));
-  m_hour = d_hour; // implicit cast to int
+  a_hour = d_hour; // implicit cast to int
 
   double d_minute = 60.0 * (d_hour - floor(d_hour));
-  m_minute = d_minute; // implicit cast to int
+  a_minute = d_minute; // implicit cast to int
 
-  m_second = 60.0 * (d_minute - floor(d_minute));
+  a_second = 60.0 * (d_minute - floor(d_minute));
 
-  // TODO m_is_zulu = true;
 
-  this->adjustForTimezone(m_year, m_month, m_day, m_hour, m_minute, m_second, timezone()); // TODO meh
+  Coords::DateTime new_datetime(a_year, a_month, a_day, a_hour, a_minute, a_second);
+
+  // TODO a_is_zulu = true;
+
+  return new_datetime;
 
 }
 
@@ -804,21 +928,21 @@ void Coords::DateTime2String(const Coords::DateTime& a_datetime, std::stringstre
   if (a_datetime.isZulu())
     a_string << "Z";
 
-  if (a_datetime.timezone() != 0) {
+  if (a_datetime.timezone_offset() != 0) {
 
-    int hours(a_datetime.timezone());
+    int hours(a_datetime.timezone_offset());
     double minutes(0);
 
-    if (a_datetime.timezone() < 0) {
+    if (a_datetime.timezone_offset() < 0) {
 
-      minutes = (a_datetime.timezone() - hours)*-60.0;
+      minutes = (a_datetime.timezone_offset() - hours)*-60.0;
 
       a_string << "-";
       a_string << std::setw(2) << std::setfill('0') << -hours;
 
     } else {
 
-      minutes = (a_datetime.timezone() - hours)*60.0;
+      minutes = (a_datetime.timezone_offset() - hours)*60.0;
 
       a_string << "+";
       a_string << std::setw(2) << std::setfill('0') << hours;

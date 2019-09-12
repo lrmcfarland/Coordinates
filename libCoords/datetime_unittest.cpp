@@ -246,7 +246,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone_offset());
     }
   }
 
@@ -283,7 +283,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone_offset());
     }
   }
 
@@ -296,7 +296,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone_offset());
     }
   }
 
@@ -474,7 +474,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone_offset());
     }
   }
 
@@ -500,7 +500,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone_offset());
     }
   }
 
@@ -528,7 +528,7 @@ namespace {
       result << a_datetime_string.str() << ":00"; // TODO make idempotent
       EXPECT_STREQ(result.str().c_str(), out.str().c_str());
 
-      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone_offset());
     }
   }
 
@@ -542,7 +542,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timezone());
+      EXPECT_DOUBLE_EQ(0, a_datetime.timezone_offset());
     }
   }
 
@@ -577,7 +577,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(i, a_datetime.timezone());
+      EXPECT_DOUBLE_EQ(i, a_datetime.timezone_offset());
     }
   }
 
@@ -589,7 +589,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(-i, a_datetime.timezone());
+      EXPECT_DOUBLE_EQ(-i, a_datetime.timezone_offset());
     }
   }
 
@@ -643,7 +643,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_datetime_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(4.5, a_datetime.timezone());
+    EXPECT_DOUBLE_EQ(4.5, a_datetime.timezone_offset());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_3) {
@@ -652,7 +652,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_datetime_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(4.25, a_datetime.timezone());
+    EXPECT_DOUBLE_EQ(4.25, a_datetime.timezone_offset());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_4) {
@@ -670,7 +670,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_datetime_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(-4.5, a_datetime.timezone());
+    EXPECT_DOUBLE_EQ(-4.5, a_datetime.timezone_offset());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_6) {
@@ -679,7 +679,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_datetime_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(-4.75, a_datetime.timezone());
+    EXPECT_DOUBLE_EQ(-4.75, a_datetime.timezone_offset());
   }
 
   TEST(DateTime, LetsGetBiblical_1) {
@@ -745,8 +745,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(0.5, a_datetime.toJulianDateWiki()); // rounds to day
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki()));
 
     std::stringstream out;
     out << another_datetime;
@@ -763,8 +762,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(0.5, a_datetime.toJulianDateWiki()); // TODO off by a year -364.5
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki()));
 
     std::stringstream out;
     out << another_datetime;
@@ -781,8 +779,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(0.5, a_datetime.toJulianDateWiki()); // ok
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki()));
 
     std::stringstream out;
     out << another_datetime;
@@ -798,8 +795,7 @@ namespace {
     EXPECT_NEAR(a_datetime.s_LilianDate + 10, a_datetime.toJulianDateWiki(), 0.5);
     // Does not account for 10 day "gap" in calendar change.
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki()));
 
     std::stringstream out;
     out << another_datetime;
@@ -814,8 +810,7 @@ namespace {
     EXPECT_NEAR(a_datetime.s_LilianDate, a_datetime.toJulianDateWiki(), 0.5);
     // toJulianDateWiki() rounds to nearest day
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki()));
 
     std::stringstream out;
     out << another_datetime;
@@ -833,8 +828,7 @@ namespace {
     EXPECT_NEAR(Coords::DateTime::s_ModifiedJulianDate, a_datetime.toJulianDateWiki(), 0.5);
    // toJulianDateWiki() rounds to nearest day
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki()));
 
     std::stringstream out;
     out << another_datetime;
@@ -849,8 +843,7 @@ namespace {
     EXPECT_NEAR(Coords::DateTime::s_ModifiedJulianDate, a_datetime.toJulianDateWiki(), 0.5);
    // toJulianDateNRC() rounds to nearest day
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateWiki());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateNRC(a_datetime.toJulianDateWiki()));
 
     std::stringstream out;
     out << another_datetime;
@@ -866,8 +859,7 @@ namespace {
     EXPECT_NEAR(Coords::DateTime::s_TruncatedJulianDate, a_datetime.toJulianDateWiki(), 0.5);
    // toJulianDateWiki() rounds to nearest day
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki()));
 
     std::stringstream out;
     out << another_datetime;
@@ -884,8 +876,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(2451544.5, a_datetime.toJulianDateWiki());
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki()));
 
     std::stringstream out;
     out << another_datetime;
@@ -901,8 +892,7 @@ namespace {
     EXPECT_NEAR(2456293.5208333335, a_datetime.toJulianDateWiki(), 0.500001);
     // toJulianDateWiki() rounds to nearest day. Does not start at noon.
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki()));
 
     std::stringstream out;
     out << another_datetime;
@@ -917,8 +907,7 @@ namespace {
     EXPECT_NEAR(2457000.5, a_datetime.toJulianDateWiki(), 0.5);
     // rounds to nearest day
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateWiki(a_datetime.toJulianDateWiki()));
 
     std::stringstream out;
     out << another_datetime;
@@ -938,8 +927,7 @@ namespace {
 
     // TODO Does not account for year 0?
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -958,8 +946,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(0.5, a_datetime.toJulianDateNRC()); // ok
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -976,8 +963,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(0.5, a_datetime.toJulianDateNRC()); // TODO Actual -37.5
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -993,8 +979,7 @@ namespace {
     EXPECT_NEAR(a_datetime.s_LilianDate + 10, a_datetime.toJulianDateNRC(), 0.5);
     // does not account for 10 day "gap" in calendar change.
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1009,8 +994,7 @@ namespace {
     EXPECT_NEAR(a_datetime.s_LilianDate, a_datetime.toJulianDateNRC(), 0.5);
     // toJulianDateNRC() rounds to nearest day
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1025,8 +1009,7 @@ namespace {
     EXPECT_NEAR(Coords::DateTime::s_ModifiedJulianDate, a_datetime.toJulianDateWiki(), 0.5);
    // toJulianDateNRC() rounds to nearest day
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1043,8 +1026,7 @@ namespace {
     EXPECT_NEAR(Coords::DateTime::s_ModifiedJulianDate, a_datetime.toJulianDateNRC(), 0.5);
    // toJulianDateNRC() rounds to nearest day
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1059,8 +1041,7 @@ namespace {
     EXPECT_NEAR(Coords::DateTime::s_TruncatedJulianDate, a_datetime.toJulianDateNRC(), 0.5);
    // toJulianDateNRC() rounds to nearest day
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1077,8 +1058,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(2451544.5, a_datetime.toJulianDateNRC());
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1094,8 +1074,7 @@ namespace {
     EXPECT_NEAR(2456293.5208333335, a_datetime.toJulianDateNRC(), 0.500001);
     // toJulianDateNRC() rounds to nearest day. Does not start at noon.
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1110,8 +1089,7 @@ namespace {
     EXPECT_NEAR(2457000.5, a_datetime.toJulianDateNRC(), 0.5);
     // toJulianDateNRC() rounds to nearest day
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDateNRC(a_datetime.toJulianDateNRC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1130,8 +1108,7 @@ namespace {
     EXPECT_DOUBLE_EQ(-Coords::DateTime::s_ModifiedJulianDate, a_datetime.toModifiedJulianDateAPC());
     // TODO asAPCJulianDate() differs from IMCCE on noon vs. midnight on this date?
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+    Coords::DateTime another_datetime(a_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1148,8 +1125,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(-Coords::DateTime::s_ModifiedJulianDate - 365, a_datetime.toModifiedJulianDateAPC());
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+    Coords::DateTime another_datetime(a_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1166,8 +1142,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(-Coords::DateTime::s_ModifiedJulianDate, a_datetime.toModifiedJulianDateAPC()); // Actual - 403
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+    Coords::DateTime another_datetime(a_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1183,8 +1158,7 @@ namespace {
     EXPECT_DOUBLE_EQ(a_datetime.s_LilianDate - Coords::DateTime::s_ModifiedJulianDate - 1, // rounding
 		     a_datetime.toModifiedJulianDateAPC());
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+    Coords::DateTime another_datetime(a_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1199,8 +1173,7 @@ namespace {
     EXPECT_DOUBLE_EQ(a_datetime.s_LilianDate - Coords::DateTime::s_ModifiedJulianDate,
 		     a_datetime.toModifiedJulianDateAPC());
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+    Coords::DateTime another_datetime(a_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1215,8 +1188,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(-0.5, a_datetime.toModifiedJulianDateAPC());
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+    Coords::DateTime another_datetime(a_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1230,8 +1202,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(0, a_datetime.toModifiedJulianDateAPC());
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+    Coords::DateTime another_datetime(a_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1246,8 +1217,7 @@ namespace {
     EXPECT_DOUBLE_EQ(Coords::DateTime::s_TruncatedJulianDate - Coords::DateTime::s_ModifiedJulianDate,
 		     a_datetime.toModifiedJulianDateAPC());
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+    Coords::DateTime another_datetime(a_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1263,8 +1233,7 @@ namespace {
     EXPECT_DOUBLE_EQ(2451544.5 - Coords::DateTime::s_ModifiedJulianDate,
 		     a_datetime.toModifiedJulianDateAPC());
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+    Coords::DateTime another_datetime(a_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1281,8 +1250,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(51544.541666666664, a_datetime.toModifiedJulianDateAPC());
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+    Coords::DateTime another_datetime(a_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1297,8 +1265,7 @@ namespace {
     EXPECT_NEAR(2456293.5208333335 - Coords::DateTime::s_ModifiedJulianDate,
 		a_datetime.toModifiedJulianDateAPC(), 0.000000001); // very near
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+    Coords::DateTime another_datetime(a_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1312,8 +1279,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(2457000.5 - Coords::DateTime::s_ModifiedJulianDate, a_datetime.toModifiedJulianDateAPC());
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC());
+    Coords::DateTime another_datetime(a_datetime.fromModifiedJulianDateAPC(a_datetime.toModifiedJulianDateAPC()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1370,8 +1336,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(0.0, a_datetime.toJulianDate());
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDate(a_datetime.toJulianDate());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDate(a_datetime.toJulianDate()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1386,8 +1351,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(2457000.5, a_datetime.toJulianDate());
 
-    Coords::DateTime another_datetime;
-    another_datetime.fromJulianDate(a_datetime.toJulianDate());
+    Coords::DateTime another_datetime(a_datetime.fromJulianDate(a_datetime.toJulianDate()));
 
     std::stringstream out;
     out << another_datetime;
@@ -1801,7 +1765,7 @@ namespace {
 
 
 
-  
+
   // ------------------------------------
   // ----- timezone date arithmetic -----
   // ------------------------------------
@@ -1816,9 +1780,9 @@ namespace {
     Coords::DateTime another_datetime;
 
     another_datetime.fromJulianDate(a_datetime.toJulianDate());
-    another_datetime.timezone(a_datetime.timezone());
+    another_datetime.timezone(a_datetime.timezone_offset());
 
-    another_datetime += a_datetime.timezone() * 1.0/24; // to center plot at noon
+    another_datetime += a_datetime.timezone_offset() * 1.0/24; // to center plot at noon
 
     another_datetime += 1.0/24;
     another_datetime += 1.0/24;
@@ -1840,7 +1804,7 @@ namespace {
     Coords::DateTime another_datetime;
 
     another_datetime.fromJulianDate(a_datetime.toJulianDate());
-    another_datetime.timezone(a_datetime.timezone());
+    another_datetime.timezone(a_datetime.timezone_offset());
 
     another_datetime += 1.0/24;
     another_datetime += 1.0/24;
@@ -1862,7 +1826,7 @@ namespace {
     Coords::DateTime another_datetime;
 
     another_datetime.fromJulianDate(a_datetime.toJulianDate());
-    another_datetime.timezone(a_datetime.timezone());
+    another_datetime.timezone(a_datetime.timezone_offset());
 
     another_datetime += 1.0/24;
     another_datetime += 1.0/24;
@@ -1884,7 +1848,7 @@ namespace {
     Coords::DateTime another_datetime;
 
     another_datetime.fromJulianDate(a_datetime.toJulianDate());
-    another_datetime.timezone(a_datetime.timezone());
+    another_datetime.timezone(a_datetime.timezone_offset());
 
     another_datetime += 1.0/24;
     another_datetime += 1.0/24;
@@ -1907,7 +1871,7 @@ namespace {
     Coords::DateTime another_datetime;
 
     another_datetime.fromJulianDate(a_datetime.toJulianDate());
-    another_datetime.timezone(a_datetime.timezone());
+    another_datetime.timezone(a_datetime.timezone_offset());
 
     another_datetime -= 1.0/24;
     another_datetime -= 1.0/24;
@@ -1931,7 +1895,7 @@ namespace {
     Coords::DateTime another_datetime;
 
     another_datetime.fromJulianDate(a_datetime.toJulianDate());
-    another_datetime.timezone(a_datetime.timezone());
+    another_datetime.timezone(a_datetime.timezone_offset());
 
     another_datetime -= 1.0/24;
     another_datetime -= 1.0/24;
@@ -1954,7 +1918,7 @@ namespace {
     Coords::DateTime another_datetime;
 
     another_datetime.fromJulianDate(a_datetime.toJulianDate());
-    another_datetime.timezone(a_datetime.timezone());
+    another_datetime.timezone(a_datetime.timezone_offset());
 
     another_datetime -= 1.0/24;
     another_datetime -= 1.0/24;
@@ -1977,7 +1941,7 @@ namespace {
     Coords::DateTime another_datetime;
 
     another_datetime.fromJulianDate(a_datetime.toJulianDate());
-    another_datetime.timezone(a_datetime.timezone());
+    another_datetime.timezone(a_datetime.timezone_offset());
 
     another_datetime -= 1.0/24;
     another_datetime -= 1.0/24;
@@ -2002,7 +1966,7 @@ namespace {
     Coords::DateTime another_datetime;
 
     another_datetime.fromJulianDate(a_datetime.toJulianDate());
-    another_datetime.timezone(a_datetime.timezone());
+    another_datetime.timezone(a_datetime.timezone_offset());
 
     another_datetime -= 1.0/24;
     another_datetime -= 1.0/24;
@@ -2520,11 +2484,12 @@ namespace {
 
     EXPECT_DOUBLE_EQ(2458739, moscow_datetime.toJulianDate());
 
+    Coords::DateTime foo(berlin_datetime.inTimezone("+03:00")); // to timezone +03:00
 
-    berlin_datetime.timezone(3); // to timezone +03:00
+    // berlin_datetime.timezone(3); // to timezone +03:00
 
     std::stringstream out;
-    out << berlin_datetime;
+    out << foo;
 
     EXPECT_STREQ("2019-09-12T09:00:00+03:00", out.str().c_str());
 
