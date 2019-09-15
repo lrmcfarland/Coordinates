@@ -354,6 +354,7 @@ class TestDateTime(unittest.TestCase):
         """Test set time zone method"""
         a = coords.datetime('2019-11-10T07:30:00')
         b = a.inTimezone('-8')
+        self.assertEqual(-8, b.offset())
         self.assertEqual('2019-11-09T23:30:00-0800', str(b))
 
         return
@@ -362,7 +363,9 @@ class TestDateTime(unittest.TestCase):
     def test_inTimezone_2(self):
         """Test set time zone method"""
         a = coords.datetime('2019-11-10T07:30:00+0530')
+        self.assertEqual(5.5, a.offset())
         b = a.inTimezone('08:00')
+        self.assertEqual(8, b.offset())
         self.assertEqual('2019-11-10T10:00:00+08:00', str(b))
 
         return

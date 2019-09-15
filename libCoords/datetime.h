@@ -210,7 +210,7 @@ namespace Coords {
 
     const TimeZone& timezone() const {return m_timezone;}
 
-    const double& timezone_offset() const {return m_timezone.offset();} // hmmm
+    double   offset() const {return m_timezone.offset();} // copy for boost
 
     DateTime inTimeZone(const Coords::TimeZone& a_new_timezone) const;
     DateTime inTimezone(const std::string& a_new_timezone) const { // z for boost

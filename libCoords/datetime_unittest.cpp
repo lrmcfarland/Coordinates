@@ -282,7 +282,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timezone_offset());
+      EXPECT_DOUBLE_EQ(0, a_datetime.offset());
     }
   }
 
@@ -319,7 +319,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timezone_offset());
+      EXPECT_DOUBLE_EQ(0, a_datetime.offset());
     }
   }
 
@@ -332,7 +332,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timezone_offset());
+      EXPECT_DOUBLE_EQ(0, a_datetime.offset());
     }
   }
 
@@ -510,7 +510,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timezone_offset());
+      EXPECT_DOUBLE_EQ(0, a_datetime.offset());
     }
   }
 
@@ -536,7 +536,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timezone_offset());
+      EXPECT_DOUBLE_EQ(0, a_datetime.offset());
     }
   }
 
@@ -564,7 +564,7 @@ namespace {
       result << a_datetime_string.str() << ":00"; // TODO make idempotent
       EXPECT_STREQ(result.str().c_str(), out.str().c_str());
 
-      EXPECT_DOUBLE_EQ(0, a_datetime.timezone_offset());
+      EXPECT_DOUBLE_EQ(0, a_datetime.offset());
     }
   }
 
@@ -578,7 +578,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(0, a_datetime.timezone_offset());
+      EXPECT_DOUBLE_EQ(0, a_datetime.offset());
     }
   }
 
@@ -613,7 +613,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(i, a_datetime.timezone_offset());
+      EXPECT_DOUBLE_EQ(i, a_datetime.offset());
     }
   }
 
@@ -625,7 +625,7 @@ namespace {
       std::stringstream out;
       out << a_datetime;
       EXPECT_STREQ(a_datetime_string.str().c_str(), out.str().c_str());
-      EXPECT_DOUBLE_EQ(-i, a_datetime.timezone_offset());
+      EXPECT_DOUBLE_EQ(-i, a_datetime.offset());
     }
   }
 
@@ -679,7 +679,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_datetime_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(4.5, a_datetime.timezone_offset());
+    EXPECT_DOUBLE_EQ(4.5, a_datetime.offset());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_3) {
@@ -688,7 +688,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_datetime_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(4.25, a_datetime.timezone_offset());
+    EXPECT_DOUBLE_EQ(4.25, a_datetime.offset());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_4) {
@@ -706,7 +706,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_datetime_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(-4.5, a_datetime.timezone_offset());
+    EXPECT_DOUBLE_EQ(-4.5, a_datetime.offset());
   }
 
   TEST(DateTime, GoodTimeZoneConstructor_6) {
@@ -715,7 +715,7 @@ namespace {
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ(a_datetime_string.c_str(), out.str().c_str());
-    EXPECT_DOUBLE_EQ(-4.75, a_datetime.timezone_offset());
+    EXPECT_DOUBLE_EQ(-4.75, a_datetime.offset());
   }
 
   TEST(DateTime, LetsGetBiblical_1) {
@@ -732,7 +732,7 @@ namespace {
   // ----------------------------------
 
   TEST(DateTime, time_element_accessor_1) {
-    std::string a_datetime_string("2016-04-02T12:30:05.4");
+    std::string a_datetime_string("2016-04-02T12:30:05.4-08:00");
 
     Coords::DateTime a_datetime(a_datetime_string);
 
@@ -742,6 +742,39 @@ namespace {
     EXPECT_EQ(12, a_datetime.hour());
     EXPECT_EQ(30, a_datetime.minute());
     EXPECT_DOUBLE_EQ(5.4, a_datetime.second());
+    EXPECT_DOUBLE_EQ(-8, a_datetime.offset());
+
+  }
+
+
+  TEST(DateTime, time_element_accessor_default) {
+    std::string a_datetime_string("1916-02-29T02:12");
+
+    Coords::DateTime a_datetime(a_datetime_string);
+
+    EXPECT_EQ(1916, a_datetime.year());
+    EXPECT_EQ(02, a_datetime.month());
+    EXPECT_EQ(29, a_datetime.day());
+    EXPECT_EQ(02, a_datetime.hour());
+    EXPECT_EQ(12, a_datetime.minute());
+    EXPECT_DOUBLE_EQ(0, a_datetime.second());
+    EXPECT_DOUBLE_EQ(0, a_datetime.offset());
+
+  }
+
+
+  TEST(DateTime, time_element_accessor_z) {
+    std::string a_datetime_string("1916-02-29T02:12:00Z");
+
+    Coords::DateTime a_datetime(a_datetime_string);
+
+    EXPECT_EQ(1916, a_datetime.year());
+    EXPECT_EQ(02, a_datetime.month());
+    EXPECT_EQ(29, a_datetime.day());
+    EXPECT_EQ(02, a_datetime.hour());
+    EXPECT_EQ(12, a_datetime.minute());
+    EXPECT_DOUBLE_EQ(0, a_datetime.second());
+    EXPECT_DOUBLE_EQ(0, a_datetime.offset());
 
   }
 
@@ -1796,7 +1829,7 @@ namespace {
     Coords::DateTime a_datetime(a_datetime_string);
 
 
-    a_datetime += a_datetime.timezone_offset()/24; // to center plot at noon
+    a_datetime += a_datetime.offset()/24; // to center plot at noon
 
     a_datetime += 1.0/24;
     a_datetime += 1.0/24;

@@ -3772,33 +3772,6 @@ PyObject* datetime_repr(PyObject* self) {
 }
 
 
-// ----------------------
-// ----- inTimezone -----
-// ----------------------
-
-
-static PyObject* datetime_inTimezone(PyObject* a_datetime, PyObject* a_timezone, void* closure) {
-
-  char* tz_ptr;
-  if (!PyArg_ParseTuple(a_timezone, "s", &tz_ptr)) {
-    PyErr_SetString(sCoordsException, "timezone not string");
-    return NULL;
-  }
-
-  datetime* result_datetime(NULL);
-  new_datetimeType(&result_datetime);
-
-  if (result_datetime == NULL) {
-    PyErr_SetString(sCoordsException, "add failed to create coord.datetime");
-    return NULL;
-  }
-
-  result_datetime->m_datetime = ((datetime*)a_datetime)->m_datetime.inTimezone(tz_ptr);
-
-  return (PyObject*) result_datetime;
-}
-
-
 // -------------------------------
 // ----- getters and setters -----
 // -------------------------------
@@ -3912,10 +3885,10 @@ static PyObject* datetime_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
 // ----- methods -----
 // -------------------
 
+// ----- Julian Date -----
+
 static PyObject* datetime_toJulianDate(PyObject* a_datetime) {
-
   return PyFloat_FromDouble(((datetime*)a_datetime)->m_datetime.toJulianDate());
-
 }
 
 
@@ -3938,17 +3911,46 @@ static PyObject* datetime_fromJulianDate(PyObject* o1, PyObject* o2) {
   return (PyObject*) result_datetime;
 }
 
+// ----- inTimezone -----
+
+static PyObject* datetime_offset(PyObject* a_datetime) {
+  return PyFloat_FromDouble(((datetime*)a_datetime)->m_datetime.offset());
+}
+
+static PyObject* datetime_inTimezone(PyObject* a_datetime, PyObject* a_timezone, void* closure) {
+
+  char* tz_ptr;
+  if (!PyArg_ParseTuple(a_timezone, "s", &tz_ptr)) {
+    PyErr_SetString(sCoordsException, "timezone not string");
+    return NULL;
+  }
+
+  datetime* result_datetime(NULL);
+  new_datetimeType(&result_datetime);
+
+  if (result_datetime == NULL) {
+    PyErr_SetString(sCoordsException, "add failed to create coord.datetime");
+    return NULL;
+  }
+
+  result_datetime->m_datetime = ((datetime*)a_datetime)->m_datetime.inTimezone(tz_ptr);
+
+  return (PyObject*) result_datetime;
+}
+
 // --------------------------
 // ----- Python structs -----
 // --------------------------
 
 PyDoc_STRVAR(datetime_toJulianDate__doc__, "Returns the Julian date of the datetime object");
 PyDoc_STRVAR(datetime_fromJulianDate__doc__, "Returns a datetime object at the Julian date");
+PyDoc_STRVAR(datetime_offset__doc__, "Returns the timezone offset of the datetime object");
 PyDoc_STRVAR(datetime_inTimezone__doc__, "Returns a datetime object in the requested timezone");
 
 static PyMethodDef datetime_methods[] = {
   {"toJulianDate", (PyCFunction) datetime_toJulianDate, METH_VARARGS, datetime_toJulianDate__doc__},
   {"fromJulianDate", (PyCFunction) datetime_fromJulianDate, METH_VARARGS, datetime_fromJulianDate__doc__},
+  {"offset", (PyCFunction) datetime_offset, METH_VARARGS, datetime_offset__doc__},
   {"inTimezone", (PyCFunction) datetime_inTimezone, METH_VARARGS, datetime_inTimezone__doc__},
   {NULL}  /* Sentinel */
 };

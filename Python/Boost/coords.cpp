@@ -320,6 +320,7 @@ BOOST_PYTHON_MODULE(coords) {
     .def("toJulianDate", &Coords::DateTime::toJulianDate)
     .def("fromJulianDate", &Coords::DateTime::fromJulianDate, fromJulianDate_overloads())
 
+    .def("offset", &Coords::DateTime::offset)
     .def("inTimezone", &Coords::DateTime::inTimezone, inTimezone_overloads())
 
     // TODO other Julian Date methods, default timezone, Wiki, NRC, APC
