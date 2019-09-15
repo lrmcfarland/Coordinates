@@ -36,9 +36,62 @@
 
 namespace Coords {
 
-  // ====================
-  // ===== DateTime =====
-  // ====================
+  // --------------------
+  // ----- TimeZone -----
+  // --------------------
+
+  class TimeZone {
+
+  public:
+
+    static const std::string s_format;
+
+#if BOOST_REGEX
+    static const boost::regex s_regex;
+#else
+    static const std::regex s_regex;
+#endif
+
+    void throwError(const std::string& a_timezone, const std::string msg);
+
+    const bool& isLocal() const {return m_is_local;}
+    const bool& isZulu() const {return m_is_zulu;}
+    const std::string& hours() const {return m_hours;}
+    const std::string& minutes() const {return m_minutes;}
+    const bool& hasColon() const {return m_has_colon;}
+
+    // ----- constructors -----
+
+    explicit TimeZone(const std::string& a_timezone="00:00");
+    explicit TimeZone(const double& a_timezone);
+
+    ~TimeZone() {};
+
+    TimeZone(const TimeZone& a);
+    TimeZone& operator=(const TimeZone& rhs);
+
+    // accessors
+
+    const double& offset() const {return m_offset;}
+
+
+  private:
+
+    std::string m_sign;
+    std::string m_hours;
+    std::string m_minutes;
+
+    bool m_has_colon; // for operator<<() idempotence
+    bool m_is_local;
+    bool m_is_zulu;
+
+    double m_offset; // timezone as double, e.g. 5:30 > 5.5
+
+  };
+
+  // --------------------
+  // ----- DateTime -----
+  // --------------------
 
   class DateTime {
 
@@ -47,9 +100,9 @@ namespace Coords {
     static const std::string s_ISO8601_format;
 
 #if BOOST_REGEX
-    static const boost::regex  s_ISO8601_rx;
+    static const boost::regex s_ISO8601_regex;
 #else
-    static const std::regex  s_ISO8601_rx;
+    static const std::regex s_ISO8601_regex;
 #endif
 
     static const long int s_gDateNRC; // used in NRC Julian Date calculations.
@@ -61,10 +114,6 @@ namespace Coords {
 
     static const double   s_resolution; // for rounding seconds
 
-    static void adjustForTimezone(int& a_year, int& a_month, int& a_day,
-				  int& a_hour, int& a_minute, double& a_second,
-				  const double& a_timezone);
-
     // ----- constructors -----
 
     explicit DateTime(const std::string& an_iso8601_time);
@@ -75,16 +124,55 @@ namespace Coords {
 		      const int& a_hour = 0,
 		      const int& a_minute = 0,
 		      const double& a_second = 0,
-		      const double& a_timezone = 0)
-      : m_year(a_year), m_month(a_month), m_day(a_day),
-      m_hour(a_hour), m_minute(a_minute), m_second(a_second),
-      m_is_zulu(false), m_has_timezone_colon(false), m_timezone(a_timezone), m_is_leap_year(false)
+		      const std::string& a_timezone="")
+      : m_year(a_year),
+      m_month(a_month),
+      m_day(a_day),
+      m_hour(a_hour),
+      m_minute(a_minute),
+      m_second(a_second),
+      m_timezone(a_timezone)
       {isValid();};
+
+    explicit DateTime(const int& a_year,
+		      const int& a_month,
+		      const int& a_day,
+		      const int& a_hour,
+		      const int& a_minute,
+		      const double& a_second,
+		      const double& a_timezone)
+      : m_year(a_year),
+      m_month(a_month),
+      m_day(a_day),
+      m_hour(a_hour),
+      m_minute(a_minute),
+      m_second(a_second),
+      m_timezone(a_timezone)
+      {isValid();};
+
+    explicit DateTime(const int& a_year,
+		      const int& a_month,
+		      const int& a_day,
+		      const int& a_hour,
+		      const int& a_minute,
+		      const double& a_second,
+		      const Coords::TimeZone& a_timezone)
+      : m_year(a_year),
+      m_month(a_month),
+      m_day(a_day),
+      m_hour(a_hour),
+      m_minute(a_minute),
+      m_second(a_second),
+      m_timezone(a_timezone)
+      {isValid();};
+
 
     ~DateTime() {};
 
     DateTime(const DateTime& a);
     DateTime& operator=(const DateTime& rhs);
+
+    // TODO fromJulianDate? DateTime(const double& a_jdate);
 
     // ----- accessors -----
 
@@ -112,15 +200,7 @@ namespace Coords {
     const double& second() const {return m_second;}
     double     getSecond() const {return m_second;} // for boost python wrappers
 
-    const bool& isZulu() const {return m_is_zulu;}
-    const std::string& timezoneHH() const {return m_timezone_hh;}
-    const std::string& timezoneMM() const {return m_timezone_mm;}
-    const bool& hasTimezoneColon() const {return m_has_timezone_colon;}
-    double timezone() const {return m_timezone;} // copy of timezone for non-const python wrappers
-    void timezone(const double& a_timezone); // changes timezone and hour (day, month, year if needed) to keep UT same
-
-    double getTimezone() {return timezone();} // for boost python wrappers
-    void setTimezone(const double& a_timezone) {return timezone(a_timezone);} // for boost python wrappers
+    const bool& isLeapYear() const {return m_is_leap_year;}
 
     // helpers for Python manual wrappers
     const double& LilianDate() const {return s_LilianDate;}
@@ -128,7 +208,17 @@ namespace Coords {
     const double& TruncatedJulianDate() const {return s_TruncatedJulianDate;}
     const double& J2000() const {return s_J2000;}
 
-    double UT() const {return degrees2seconds(hour() + timezone(), minute(), second())/3600.0;}
+    const TimeZone& timezone() const {return m_timezone;}
+
+    double   offset() const {return m_timezone.offset();} // copy for boost
+
+    DateTime inTimeZone(const Coords::TimeZone& a_new_timezone) const;
+
+    DateTime inTimezone(const std::string& a_new_timezone) const { // z for boost
+      return inTimeZone(Coords::TimeZone(a_new_timezone));}
+
+    DateTime inTimezoneOffset(const double& a_new_timezone) const { // z for boost
+      return inTimeZone(Coords::TimeZone(a_new_timezone));}
 
 
     // ----- in-place operators -----
@@ -138,24 +228,26 @@ namespace Coords {
 
     // ----- Julian date methods -----
 
-    double toJulianDate() const {return toModifiedJulianDateAPC() + s_ModifiedJulianDate;}
-    void   fromJulianDate(const double& jdays, const double& a_timezone=0) {
-      fromModifiedJulianDateAPC(jdays - s_ModifiedJulianDate, a_timezone);
-    }
+    double   toJulianDate() const {return toModifiedJulianDateAPC() + s_ModifiedJulianDate;}
+
+    DateTime fromJulianDate(const double& jdays) const {
+      return fromModifiedJulianDateAPC(jdays - s_ModifiedJulianDate);} // TODO static method?
 
 
-    double toJulianDateWiki() const;
-    void   fromJulianDateWiki(const double& jdays);
+    double   toJulianDateWiki() const;
+    DateTime fromJulianDateWiki(const double& jdays) const; // TODO static method?
 
-    double toJulianDateNRC() const;
-    void   fromJulianDateNRC(const double& jdays);
 
-    double toModifiedJulianDateAPC() const;
-    void   fromModifiedJulianDateAPC(const double& jdays, const double& a_timezone=0);
+    double   toJulianDateNRC() const;
+    DateTime fromJulianDateNRC(const double& jdays) const; // TODO static method?
+
+
+    double   toModifiedJulianDateAPC() const;
+    DateTime fromModifiedJulianDateAPC(const double& jdays) const; // TODO static method?
+
 
 
     // TODO J1950, J2000
-
 
 
   private:
@@ -167,33 +259,41 @@ namespace Coords {
     int m_minute;
     double m_second;
 
-    bool m_is_zulu;
-    std::string m_timezone_hh;
-    std::string m_timezone_mm;
-    bool m_has_timezone_colon; // for operator<<() idempotence
-
-    double m_timezone;
-
     bool m_is_leap_year;
+
+    TimeZone m_timezone;
 
   };
 
 
 
-  // ---------------------
-  // ----- operators -----
-  // ---------------------
+  // +++++++++++++++++++++
+  // +++++ operators +++++
+  // +++++++++++++++++++++
 
   DateTime operator+(const DateTime& lhs, const double& rhs);
   DateTime operator+(const double& lhs, const DateTime& rhs);
 
   DateTime operator-(const DateTime& lhs, const double& rhs);
-  double operator-(const DateTime& lhs, const DateTime& rhs);
+  DateTime operator-(const double& lhs, const DateTime& rhs);
 
 
-  // -------------------------------
-  // ----- output operator<<() -----
-  // -------------------------------
+  double operator-(const DateTime& lhs, const DateTime& rhs); // difference in days
+
+
+  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+  // <<<<< output operator<<() <<<<<
+  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+  void TimeZone2String(const TimeZone& a_timezone, std::stringstream& a_string);
+
+  // inline for boost. Use hpp instead?
+  inline std::ostream& operator<< (std::ostream& os, const Coords::TimeZone& a_timezone) {
+    std::stringstream out;
+    Coords::TimeZone2String(a_timezone, out);
+    return os << out.str();
+  }
+
 
   void DateTime2String(const DateTime& a_datetime, std::stringstream& a_string);
 

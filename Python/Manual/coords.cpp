@@ -180,9 +180,7 @@ static char sMonthStr[] = "month";
 static char sDayStr[]   = "day";
 static char sHourStr[]  = "hour";
 static char sTimeZoneStr[]  = "timezone";
-static char sUTStr[]  = "UT";
 
-static char sJulianDateStr[]  = "JulianDate";
 static char sLilianDateStr[]  = "LilianDate";
 static char sModifiedJulianDateStr[]  = "ModifiedJulianDate";
 static char sTruncatedJulianDateStr[]  = "TruncatedJulianDate";
@@ -3658,6 +3656,8 @@ static PyObject* datetime_new(PyTypeObject* type, PyObject* args, PyObject* kwds
 
 static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
 
+  // TODO ISO8601 only?
+
   static char* kwlist[] = {sYearStr, sMonthStr, sDayStr, sHourStr, sMinuteStr, sSecondStr, sTimeZoneStr, NULL};
 
   int    year(1970);  // default value
@@ -3735,7 +3735,7 @@ static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
 
   try {
 
-    Coords::DateTime a_datetime(year, month, day, hour, minute, second, timezone);
+    Coords::DateTime a_datetime(year, month, day, hour, minute, second, timezone); // TODO timezone as string?
     self->m_datetime = a_datetime;
 
   } catch (Coords::Error err) {
@@ -3771,63 +3771,11 @@ PyObject* datetime_repr(PyObject* self) {
   return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
+
 // -------------------------------
 // ----- getters and setters -----
 // -------------------------------
 
-// ----- Julian Date -----
-
-static PyObject* datetime_getJulianDate(datetime* self, void* closure) {
-  return PyFloat_FromDouble(self->m_datetime.toJulianDate());
-}
-
-static int datetime_setJulianDate(datetime* self, PyObject* degrees, void* closure) {
-
-  if (degrees == NULL) {
-    PyErr_SetString(sCoordsException, "can not delete Julian Date");
-    return -1;
-  }
-
-  if (!PyFloat_Check(degrees) && !COORDS_INT_CHECK(degrees)) {
-    PyErr_SetString(sCoordsException, "Julian Date must be float or int");
-    return -1;
-  }
-
-  self->m_datetime.fromJulianDate(PyFloat_AsDouble(degrees));
-
-  return 0;
-}
-
-
-// TODO boost different from manual accssors
-
-// ----- time zone -----
-static PyObject* datetime_getTimeZone(datetime* self, void* closure) {
-  return PyFloat_FromDouble(self->m_datetime.timezone());
-}
-
-static int datetime_setTimeZone(datetime* self, PyObject* a_timezone, void* closure) {
-
-  if (a_timezone == NULL) {
-    PyErr_SetString(sCoordsException, "can not delete timezone");
-    return -1;
-  }
-
-  if (!PyFloat_Check(a_timezone) && !COORDS_INT_CHECK(a_timezone)) {
-    PyErr_SetString(sCoordsException, "timezone must be a float or int");
-    return -1;
-  }
-
-  self->m_datetime.timezone(PyFloat_AsDouble(a_timezone));
-
-  return 0;
-}
-
-
-// ----- UT -----
-static PyObject* datetime_getUT(datetime* self, void* closure) {
-  return PyFloat_FromDouble(self->m_datetime.UT());
-}
 
 // ----- Lilian Date -----
 static PyObject* datetime_getLilianDate(datetime* self, void* closure) {
@@ -3937,34 +3885,99 @@ static PyObject* datetime_nb_inplace_subtract(PyObject* o1, PyObject* o2) {
 // ----- methods -----
 // -------------------
 
+// ----- Julian Date -----
+
+static PyObject* datetime_toJulianDate(PyObject* a_datetime) {
+  return PyFloat_FromDouble(((datetime*)a_datetime)->m_datetime.toJulianDate());
+}
+
+
 static PyObject* datetime_fromJulianDate(PyObject* o1, PyObject* o2) {
 
   double jdate(0);
   if (!PyArg_ParseTuple(o2, "d", &jdate))
     return NULL;
 
-  ((datetime*)o1)->m_datetime.fromJulianDate(jdate);
+  datetime* result_datetime(NULL);
+  new_datetimeType(&result_datetime);
 
-  Py_INCREF(Py_None);
-  return Py_None;
+  if (result_datetime == NULL) {
+    PyErr_SetString(sCoordsException, "add failed to create coord.datetime");
+    return NULL;
+  }
+
+  result_datetime->m_datetime = ((datetime*)o1)->m_datetime.fromJulianDate(jdate);
+
+  return (PyObject*) result_datetime;
 }
+
+// ----- inTimezone -----
+
+static PyObject* datetime_offset(PyObject* a_datetime) {
+  return PyFloat_FromDouble(((datetime*)a_datetime)->m_datetime.offset());
+}
+
+static PyObject* datetime_inTimezone(PyObject* a_datetime, PyObject* a_timezone, void* closure) {
+
+  char* tz_ptr;
+  if (!PyArg_ParseTuple(a_timezone, "s", &tz_ptr)) {
+    PyErr_SetString(sCoordsException, "timezone is not a string");
+    return NULL;
+  }
+
+  datetime* result_datetime(NULL);
+  new_datetimeType(&result_datetime);
+
+  if (result_datetime == NULL) {
+    PyErr_SetString(sCoordsException, "add failed to create coord.datetime");
+    return NULL;
+  }
+
+  result_datetime->m_datetime = ((datetime*)a_datetime)->m_datetime.inTimezone(tz_ptr);
+
+  return (PyObject*) result_datetime;
+}
+
+
+static PyObject* datetime_inTimezoneOffset(PyObject* a_datetime, PyObject* an_offset, void* closure) {
+
+  double tz_offset(0);
+
+  if (!PyArg_ParseTuple(an_offset, "d", &tz_offset)) {
+    PyErr_SetString(sCoordsException, "timezone offset is not a double");
+    return NULL;
+  }
+
+  datetime* result_datetime(NULL);
+  new_datetimeType(&result_datetime);
+
+  if (result_datetime == NULL) {
+    PyErr_SetString(sCoordsException, "add failed to create coord.datetime");
+    return NULL;
+  }
+
+  result_datetime->m_datetime = ((datetime*)a_datetime)->m_datetime.inTimezoneOffset(tz_offset);
+
+  return (PyObject*) result_datetime;
+}
+
 
 // --------------------------
 // ----- Python structs -----
 // --------------------------
 
 PyDoc_STRVAR(datetime_toJulianDate__doc__, "Returns the Julian date of the datetime object");
-PyDoc_STRVAR(datetime_fromJulianDate__doc__, "Sets the Julian date of the datetime object");
-PyDoc_STRVAR(datetime_get_timezone__doc__, "Returns the time zone of the datetime object");
-PyDoc_STRVAR(datetime_set_timezone__doc__, "Sets the time zone of the datetime object");
-PyDoc_STRVAR(datetime_UT__doc__, "Returns universal time of the datetime object");
+PyDoc_STRVAR(datetime_fromJulianDate__doc__, "Returns a datetime object at the Julian date");
+PyDoc_STRVAR(datetime_offset__doc__, "Returns the timezone offset of the datetime object");
+PyDoc_STRVAR(datetime_inTimezone__doc__, "Returns a datetime object in the requested timezone as a string, e.g. -08:00");
+PyDoc_STRVAR(datetime_inTimezoneOffset__doc__, "Returns a datetime object in the requested timezone offset as a double, e.g. 5.5");
 
 static PyMethodDef datetime_methods[] = {
-  {"toJulianDate", (PyCFunction) datetime_getJulianDate, METH_VARARGS, datetime_toJulianDate__doc__},
+  {"toJulianDate", (PyCFunction) datetime_toJulianDate, METH_VARARGS, datetime_toJulianDate__doc__},
   {"fromJulianDate", (PyCFunction) datetime_fromJulianDate, METH_VARARGS, datetime_fromJulianDate__doc__},
-  {"getTimezone", (PyCFunction) datetime_getTimeZone, METH_VARARGS, datetime_get_timezone__doc__},
-  {"setTimezone", (PyCFunction) datetime_setTimeZone, METH_VARARGS, datetime_set_timezone__doc__},
-  {"UT", (PyCFunction) datetime_getUT, METH_VARARGS, datetime_UT__doc__},
+  {"offset", (PyCFunction) datetime_offset, METH_VARARGS, datetime_offset__doc__},
+  {"inTimezone", (PyCFunction) datetime_inTimezone, METH_VARARGS, datetime_inTimezone__doc__},
+  {"inTimezoneOffset", (PyCFunction) datetime_inTimezoneOffset, METH_VARARGS, datetime_inTimezoneOffset__doc__},
   {NULL}  /* Sentinel */
 };
 
@@ -3974,9 +3987,6 @@ static PyMemberDef datetime_members[] = {
 };
 
 static PyGetSetDef datetime_getseters[] = {
-  {sJulianDateStr, (getter)datetime_getJulianDate, (setter)datetime_setJulianDate, sJulianDateStr, NULL},
-  {sTimeZoneStr, (getter)datetime_getTimeZone, (setter)datetime_setTimeZone, sTimeZoneStr, NULL},
-  {sUTStr, (getter)datetime_getUT, NULL, sUTStr, NULL},
   {sLilianDateStr, (getter)datetime_getLilianDate, NULL, sLilianDateStr, NULL},
   {sModifiedJulianDateStr, (getter)datetime_getModifiedJulianDate, NULL, sModifiedJulianDateStr, NULL},
   {sTruncatedJulianDateStr, (getter)datetime_getTruncatedJulianDate, NULL, sTruncatedJulianDateStr, NULL},
@@ -4135,13 +4145,13 @@ PyTypeObject datetimeType = {
 // ----- implement forward declarations -----
 // ------------------------------------------
 
-static void new_datetimeType(datetime** an_angle) {
-  *an_angle = PyObject_New(datetime, &datetimeType);
+static void new_datetimeType(datetime** a_datetime) {
+  *a_datetime = PyObject_New(datetime, &datetimeType);
 }
 
-static int is_datetimeType(PyObject* an_angle) {
+static int is_datetimeType(PyObject* a_datetime) {
   //wrapper for type check
-  return PyObject_TypeCheck(an_angle, &datetimeType);
+  return PyObject_TypeCheck(a_datetime, &datetimeType);
 }
 
 

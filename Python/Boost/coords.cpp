@@ -34,10 +34,10 @@ void (Coords::spherical::*setR)(const double&) = &Coords::spherical::r;
 void (Coords::spherical::*setTheta)(const Coords::angle&) = &Coords::spherical::theta;
 void (Coords::spherical::*setPhi)(const Coords::angle&) = &Coords::spherical::phi;
 
-void (Coords::DateTime::*setTimezone)(const double&) = &Coords::DateTime::setTimezone;
 
-
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(fromJulianDate_overloads, Coords::DateTime::fromJulianDate, 1, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(fromJulianDate_overloads, Coords::DateTime::fromJulianDate, 1, 1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(inTimezone_overloads, Coords::DateTime::inTimezone, 1, 1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(inTimezoneOffset_overloads, Coords::DateTime::inTimezoneOffset, 1, 1)
 
 
 BOOST_PYTHON_MODULE(coords) {
@@ -295,7 +295,7 @@ BOOST_PYTHON_MODULE(coords) {
     .def(init<int, int, int, int>()) // year, month, day, hour
     .def(init<int, int, int, int, int>()) // year, month, day, hour, minute
     .def(init<int, int, int, int, int, double>()) // year, month, day, hour, minute, second
-    .def(init<int, int, int, int, int, double, double>()) // year, month, day, hour, minute, second, time zone
+    .def(init<int, int, int, int, int, double, std::string>()) // year, month, day, hour, minute, second, time zone
 
     .def(init<Coords::DateTime>()) // copy
 
@@ -318,17 +318,12 @@ BOOST_PYTHON_MODULE(coords) {
     .def(self - Coords::DateTime())
 
 
-    // other methods
-    .def("getTimezone", &Coords::DateTime::getTimezone)
-    .def("setTimezone", &Coords::DateTime::setTimezone)
-    .add_property("timezone", &Coords::DateTime::getTimezone, &Coords::DateTime::setTimezone)
-
-
-
-    .def("UT", &Coords::DateTime::UT)
-
     .def("toJulianDate", &Coords::DateTime::toJulianDate)
     .def("fromJulianDate", &Coords::DateTime::fromJulianDate, fromJulianDate_overloads())
+
+    .def("offset", &Coords::DateTime::offset)
+    .def("inTimezone", &Coords::DateTime::inTimezone, inTimezone_overloads())
+    .def("inTimezoneOffset", &Coords::DateTime::inTimezoneOffset, inTimezoneOffset_overloads())
 
     // TODO other Julian Date methods, default timezone, Wiki, NRC, APC
 

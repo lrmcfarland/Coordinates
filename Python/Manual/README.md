@@ -141,3 +141,46 @@ Type "help", "copyright", "credits" or "license" for more information.
 <spherical><r>11.3235</r><theta>61.4649</theta><phi>123.282</phi></spherical>
 
 ```
+
+## Troubleshooting
+
+I was getting a segmentation violation when running on python3 that
+was not happening in python 2.7.  The problem was not using * magic
+
+```
+   -        self.assertRaises(coords.Error, lambda a: coords.datetime(a), (1962, 25, 66, 14, 30, 25))
+   +        self.assertRaises(coords.Error, lambda a: coords.datetime(*a), (1962, 25, 66, 14, 30, 25))
+
+```
+
+
+The key to finding it was to use the "-X
+[faulthandler](https://docs.python.org/3/library/faulthandler.html)"
+option
+
+```
+
+(aai.starbug) [lrm@lrmz-iMac Manual (standard-timezone-v5)]$ . ./setenv.sh; python -q -X faulthandler ./test_datetime.py
+# coords.so: ./build/lib.macosx-10.13-x86_64-3.7/coords.cpython-37m-darwin.so
+# PYTHONPATH :./build/lib.macosx-10.13-x86_64-3.7:./build/lib.macosx-10.13-x86_64-3.7:./build/lib.macosx-10.13-x86_64-3.7:./build/lib.macosx-10.13-x86_64-3.7:./build/lib.macosx-10.13-x86_64-3.7
+..................................Fatal Python error: Segmentation fault
+
+Current thread 0x000000010a8395c0 (most recent call first):
+  File "./test_datetime.py", line 156 in <lambda>
+  File "/Users/lrm/.pyenv/versions/3.7.0/lib/python3.7/unittest/case.py", line 178 in handle
+  File "/Users/lrm/.pyenv/versions/3.7.0/lib/python3.7/unittest/case.py", line 743 in assertRaises
+  File "./test_datetime.py", line 156 in test_year_month_day_hour_minute_second_constructor_exception
+  File "/Users/lrm/.pyenv/versions/3.7.0/lib/python3.7/unittest/case.py", line 615 in run
+  File "/Users/lrm/.pyenv/versions/3.7.0/lib/python3.7/unittest/case.py", line 663 in __call__
+  File "/Users/lrm/.pyenv/versions/3.7.0/lib/python3.7/unittest/suite.py", line 122 in run
+  File "/Users/lrm/.pyenv/versions/3.7.0/lib/python3.7/unittest/suite.py", line 84 in __call__
+  File "/Users/lrm/.pyenv/versions/3.7.0/lib/python3.7/unittest/suite.py", line 122 in run
+  File "/Users/lrm/.pyenv/versions/3.7.0/lib/python3.7/unittest/suite.py", line 84 in __call__
+  File "/Users/lrm/.pyenv/versions/3.7.0/lib/python3.7/unittest/runner.py", line 176 in run
+  File "/Users/lrm/.pyenv/versions/3.7.0/lib/python3.7/unittest/main.py", line 271 in runTests
+  File "/Users/lrm/.pyenv/versions/3.7.0/lib/python3.7/unittest/main.py", line 101 in __init__
+  File "./test_datetime.py", line 362 in <module>
+Segmentation fault: 11
+
+
+```
