@@ -3921,7 +3921,7 @@ static PyObject* datetime_inTimezone(PyObject* a_datetime, PyObject* a_timezone,
 
   char* tz_ptr;
   if (!PyArg_ParseTuple(a_timezone, "s", &tz_ptr)) {
-    PyErr_SetString(sCoordsException, "timezone not string");
+    PyErr_SetString(sCoordsException, "timezone is not a string");
     return NULL;
   }
 
@@ -3938,6 +3938,30 @@ static PyObject* datetime_inTimezone(PyObject* a_datetime, PyObject* a_timezone,
   return (PyObject*) result_datetime;
 }
 
+
+static PyObject* datetime_inTimezoneOffset(PyObject* a_datetime, PyObject* an_offset, void* closure) {
+
+  double tz_offset(0);
+
+  if (!PyArg_ParseTuple(an_offset, "d", &tz_offset)) {
+    PyErr_SetString(sCoordsException, "timezone offset is not a double");
+    return NULL;
+  }
+
+  datetime* result_datetime(NULL);
+  new_datetimeType(&result_datetime);
+
+  if (result_datetime == NULL) {
+    PyErr_SetString(sCoordsException, "add failed to create coord.datetime");
+    return NULL;
+  }
+
+  result_datetime->m_datetime = ((datetime*)a_datetime)->m_datetime.inTimezoneOffset(tz_offset);
+
+  return (PyObject*) result_datetime;
+}
+
+
 // --------------------------
 // ----- Python structs -----
 // --------------------------
@@ -3945,13 +3969,15 @@ static PyObject* datetime_inTimezone(PyObject* a_datetime, PyObject* a_timezone,
 PyDoc_STRVAR(datetime_toJulianDate__doc__, "Returns the Julian date of the datetime object");
 PyDoc_STRVAR(datetime_fromJulianDate__doc__, "Returns a datetime object at the Julian date");
 PyDoc_STRVAR(datetime_offset__doc__, "Returns the timezone offset of the datetime object");
-PyDoc_STRVAR(datetime_inTimezone__doc__, "Returns a datetime object in the requested timezone");
+PyDoc_STRVAR(datetime_inTimezone__doc__, "Returns a datetime object in the requested timezone as a string, e.g. -08:00");
+PyDoc_STRVAR(datetime_inTimezoneOffset__doc__, "Returns a datetime object in the requested timezone offset as a double, e.g. 5.5");
 
 static PyMethodDef datetime_methods[] = {
   {"toJulianDate", (PyCFunction) datetime_toJulianDate, METH_VARARGS, datetime_toJulianDate__doc__},
   {"fromJulianDate", (PyCFunction) datetime_fromJulianDate, METH_VARARGS, datetime_fromJulianDate__doc__},
   {"offset", (PyCFunction) datetime_offset, METH_VARARGS, datetime_offset__doc__},
   {"inTimezone", (PyCFunction) datetime_inTimezone, METH_VARARGS, datetime_inTimezone__doc__},
+  {"inTimezoneOffset", (PyCFunction) datetime_inTimezoneOffset, METH_VARARGS, datetime_inTimezoneOffset__doc__},
   {NULL}  /* Sentinel */
 };
 

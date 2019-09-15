@@ -2018,20 +2018,38 @@ namespace {
   // ----- inTimezone shifts that change months -----
 
 
-  TEST(DateTime, set_timezone_2015jun01_tz4_a) {
+  TEST(DateTime, set_timezone_2015jun01_tzn4_a) {
 
-    // timezone -4 month change
+    // timezone -4 as int month change
 
     std::string a_datetime_string("2015-06-01T02:00:00");
     Coords::DateTime a_datetime(a_datetime_string);
     EXPECT_DOUBLE_EQ(2457174.5833333335, a_datetime.toJulianDate());
 
-    Coords::DateTime a_new_datetime(a_datetime.inTimezone("-4"));
+    Coords::DateTime a_new_datetime(a_datetime.inTimezoneOffset(-4));
 
     std::stringstream out;
     out << a_new_datetime;
 
     EXPECT_STREQ("2015-05-31T22:00:00-0400", out.str().c_str());
+
+  }
+
+
+  TEST(DateTime, set_timezone_2015jun01_t55z_a) {
+
+    // timezone 5.5 as double month change
+
+    std::string a_datetime_string("2015-06-01T02:00:00");
+    Coords::DateTime a_datetime(a_datetime_string);
+    EXPECT_DOUBLE_EQ(2457174.5833333335, a_datetime.toJulianDate());
+
+    Coords::DateTime a_new_datetime(a_datetime.inTimezoneOffset(5.5));
+
+    std::stringstream out;
+    out << a_new_datetime;
+
+    EXPECT_STREQ("2015-06-01T07:30:00+0530", out.str().c_str());
 
   }
 
@@ -2079,14 +2097,14 @@ namespace {
     std::string a_datetime_string("2015-07-01T04:15:00+0300");
     Coords::DateTime a_datetime(a_datetime_string);
 
-    Coords::DateTime a_new_datetime(a_datetime.inTimeZone(Coords::TimeZone("-08:00")));
+    Coords::DateTime a_new_datetime(a_datetime.inTimeZone(Coords::TimeZone(-8)));
 
     EXPECT_DOUBLE_EQ(a_datetime.toJulianDate(), a_new_datetime.toJulianDate());
 
     std::stringstream out;
     out << a_new_datetime;
 
-    EXPECT_STREQ("2015-06-30T17:15:00-08:00", out.str().c_str());
+    EXPECT_STREQ("2015-06-30T17:15:00-0800", out.str().c_str());
 
   }
 
@@ -2619,6 +2637,23 @@ namespace {
   }
 
 
+  TEST(DateTime, ouroboros_1) {
+
+    // output == input
+
+    std::string a_datetime_string("2019-09-15T06:30:00-08:00");
+    Coords::DateTime a_datetime(a_datetime_string);
+
+    std::stringstream out;
+    out << a_datetime;
+
+    EXPECT_STREQ(a_datetime_string.c_str(), out.str().c_str());
+
+    Coords::DateTime b_datetime(out.str());
+
+    EXPECT_DOUBLE_EQ(a_datetime.toJulianDate(), b_datetime.toJulianDate());
+
+  }
 
 
 

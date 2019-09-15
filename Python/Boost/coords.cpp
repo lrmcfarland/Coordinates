@@ -37,6 +37,7 @@ void (Coords::spherical::*setPhi)(const Coords::angle&) = &Coords::spherical::ph
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(fromJulianDate_overloads, Coords::DateTime::fromJulianDate, 1, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(inTimezone_overloads, Coords::DateTime::inTimezone, 1, 1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(inTimezoneOffset_overloads, Coords::DateTime::inTimezoneOffset, 1, 1)
 
 
 BOOST_PYTHON_MODULE(coords) {
@@ -322,6 +323,7 @@ BOOST_PYTHON_MODULE(coords) {
 
     .def("offset", &Coords::DateTime::offset)
     .def("inTimezone", &Coords::DateTime::inTimezone, inTimezone_overloads())
+    .def("inTimezoneOffset", &Coords::DateTime::inTimezoneOffset, inTimezoneOffset_overloads())
 
     // TODO other Julian Date methods, default timezone, Wiki, NRC, APC
 

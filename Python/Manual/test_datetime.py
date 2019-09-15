@@ -371,6 +371,26 @@ class TestDateTime(unittest.TestCase):
         return
 
 
+    def test_inTimezoneOffset_1(self):
+        """Test set time zone method"""
+        a = coords.datetime('2017-10-05T07:30:00-05:00')
+        self.assertEqual(-5.0, a.offset())
+        b = a.inTimezoneOffset(-8.0)
+        self.assertEqual(-8.0, b.offset())
+        self.assertEqual('2017-10-05T04:30:00-0800', str(b))
+
+        return
+
+    def test_inTimezoneOffset_2(self):
+        """Test set time zone method"""
+        a = coords.datetime('1999-12-31T08:30:00-0800')
+        self.assertEqual(-8, a.offset())
+        b = a.inTimezoneOffset(8.0)
+        self.assertEqual(8, b.offset())
+        self.assertEqual('2000-01-01T00:30:00+0800', str(b))
+
+        return
+
 
 if __name__ == '__main__':
     random.seed(time.time())

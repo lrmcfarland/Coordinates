@@ -358,6 +358,18 @@ class TestDateTime(unittest.TestCase):
         return
 
 
+    def test_inTimezoneOffset_b(self):
+        """Test inTimezone shift 5:50 to -8 """
+
+        a = coords.datetime('2019-10-08T02:30:00+0530')
+
+        b = a.inTimezoneOffset(-8)
+
+        self.assertEqual('2019-10-07T13:00:00-0800', str(b))
+
+        return
+
+
 
 if __name__ == '__main__':
     random.seed(time.time())
