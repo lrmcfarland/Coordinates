@@ -203,15 +203,14 @@ static int is_datetimeType(PyObject* a_datetime);
 // ----- utilities -----
 // ---------------------
 
-// helper functions for parsing numeric arguments. Allows arg to be
-// double or int.
+// helper functions for parsing numeric arguments.
 
 int parse_int_arg(PyObject* arg, int& val) {
 
   if (arg) {
 
-    if (PyFloat_Check(arg) || COORDS_INT_CHECK(arg)) {
-      val = PyFloat_AsDouble(arg);
+    if (COORDS_INT_CHECK(arg)) {
+      val = PyLong_AsLong(arg);
       return 0;
 
     } else if (COORDS_STR_CHECK(arg)) {
@@ -219,7 +218,7 @@ int parse_int_arg(PyObject* arg, int& val) {
       return -1;
 
     } else {
-      PyErr_SetString(sCoordsException, "arg must be an int or float");
+      PyErr_SetString(sCoordsException, "arg must be an int");
       return -1;
     }
 
@@ -417,12 +416,9 @@ static int Angle_setRA(Angle* self, PyObject* RA, void* closure) {
 static PyObject* normalize(PyObject* o1, PyObject* o2) {
 
   if (!is_AngleType(o1)) {
-    // TODO coords.Error?
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
   }
-
-  // TODO kwlist?
 
   double begin(0);
   double end(0);
@@ -440,7 +436,6 @@ static PyObject* normalize(PyObject* o1, PyObject* o2) {
 static PyObject* complement(PyObject* o1) {
 
   if (!is_AngleType(o1)) {
-    // TODO coords.Error?
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
   }
@@ -490,7 +485,6 @@ static PyObject* Angle_nb_add(PyObject* o1, PyObject* o2) {
     result_angle->m_angle = the_sum;
 
   } else if (!is_AngleType(o1) || !is_AngleType(o2) ) {
-    // TODO coords.Error?
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
   }
@@ -525,7 +519,6 @@ static PyObject* Angle_nb_subtract(PyObject* o1, PyObject* o2) {
     result_angle->m_angle = the_difference;
 
   } else if (!is_AngleType(o1) || !is_AngleType(o2) ) {
-    // TODO coords.Error?
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
   }
@@ -585,7 +578,6 @@ static PyObject* Angle_nb_multiply(PyObject* o1, PyObject* o2) {
     result_angle->m_angle = the_difference;
 
   } else {
-    // TODO coords.Error?
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
   }
@@ -1115,7 +1107,7 @@ PyObject* Latitude_str(PyObject* self) {
   return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
-// TODO a different repr? for constructor?
+
 PyObject* Latitude_repr(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
@@ -2868,7 +2860,7 @@ PyObject* rotator_str(PyObject* self) {
   return COORDS_STR_FROM_STR(result.str().c_str());
 }
 
-// TODO a different repr? for constructor?
+
 PyObject* rotator_repr(PyObject* self) {
   std::stringstream result;
   result.precision(sPrintPrecision);
@@ -3656,8 +3648,6 @@ static PyObject* datetime_new(PyTypeObject* type, PyObject* args, PyObject* kwds
 
 static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
 
-  // TODO ISO8601 only?
-
   static char* kwlist[] = {sYearStr, sMonthStr, sDayStr, sHourStr, sMinuteStr, sSecondStr, sTimeZoneStr, NULL};
 
   int    year(1970);  // default value
@@ -3667,6 +3657,7 @@ static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
   int    minute(0);   // default value
   double second(0);   // default value
   double timezone(0); // default value
+  double jdate(0);    // default value
 
   PyObject* arg0(NULL);
   PyObject* arg1(NULL);
@@ -3676,74 +3667,321 @@ static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
   PyObject* arg5(NULL);
   PyObject* arg6(NULL);
 
+
   if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOOOOO", kwlist, &arg0, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6))
     return -1;
 
-  if (arg0) {
+
+  if (!arg0) {
+    Coords::DateTime a_datetime(year, month, day, hour, minute, second, timezone);
+    self->m_datetime = a_datetime;
+    return 0;
+  }
+
+
+  else if (arg0 and !arg1) {
 
     if (COORDS_STR_CHECK(arg0)) {
 
       // ISO-8601 string constructor
-      try {
 
+      try {
 	Coords::DateTime a_datetime(COORDS_STR_AS_STR(arg0));
 	self->m_datetime = a_datetime;
-
+	return 0;
       } catch (Coords::Error err) {
 	PyErr_SetString(sCoordsException, err.what());
 	return -1;
       }
 
-      return 0;
+    } else if (PyFloat_Check(arg0)) {
+
+      // jdate double constructor
+
+      if (parse_double_arg(arg0, jdate)) {
+	PyErr_SetString(sCoordsException, "unsupported datetime arg0 jdate type");
+	return -1;
+      }
+
+      try {
+	Coords::DateTime a_datetime(jdate);
+	self->m_datetime = a_datetime;
+	return 0;
+      } catch (Coords::Error err) {
+	PyErr_SetString(sCoordsException, err.what());
+	return -1;
+      }
+
+
+    } else if (COORDS_INT_CHECK(arg0)) {
+
+      // int constructor
+
+      if (parse_int_arg(arg0, year)) {
+	PyErr_SetString(sCoordsException, "unsupported datetime arg0 year type");
+	return -1;
+      }
+
+      try {
+	Coords::DateTime a_datetime(year);
+	self->m_datetime = a_datetime;
+	return 0;
+      } catch (Coords::Error err) {
+	PyErr_SetString(sCoordsException, err.what());
+	return -1;
+      }
+
 
     } else if (is_datetimeType(arg0)) {
 
       // copy constrctor
+
       self->m_datetime = ((datetime*)arg0)->m_datetime;
       return 0;
 
-    } else if (PyFloat_Check(arg0) || COORDS_INT_CHECK(arg0)) {
-      year = PyFloat_AsDouble(arg0);
-
     } else {
 
-      PyErr_SetString(sCoordsException, "arg0 must be a datetime, int or float");
+      PyErr_SetString(sCoordsException, "unsupported datetime arg0 year type");
+      return -1;
+
+    }
+
+  } // end if (arg0 and !arg1)
+
+
+  else if (arg0 and arg1 and !arg2) {
+
+    if (parse_int_arg(arg0, year)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg0 year type");
       return -1;
     }
 
-  }
-
-  if (parse_int_arg(arg1, month))
+    if (parse_int_arg(arg1, month)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg1 month type");
       return -1;
+    }
 
-  if (parse_int_arg(arg2, day))
+    try {
+      Coords::DateTime a_datetime(year, month);
+      self->m_datetime = a_datetime;
+      return 0;
+    } catch (Coords::Error err) {
+      PyErr_SetString(sCoordsException, err.what());
       return -1;
+    }
 
-  if (parse_int_arg(arg3, hour))
+  } // end if (arg0 and arg1 and !arg2)
+
+
+  else if (arg0 and arg1 and arg2 and !arg3) {
+
+    if (parse_int_arg(arg0, year)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg0 year type");
       return -1;
+    }
 
-  if (parse_int_arg(arg4, minute))
+    if (parse_int_arg(arg1, month)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg1 month type");
       return -1;
+    }
 
-  if (parse_double_arg(arg5, second))
+    if (parse_int_arg(arg2, day)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg2 day type");
       return -1;
+    }
 
-  if (parse_double_arg(arg6, timezone))
+    try {
+      Coords::DateTime a_datetime(year, month, day);
+      self->m_datetime = a_datetime;
+      return 0;
+    } catch (Coords::Error err) {
+      PyErr_SetString(sCoordsException, err.what());
       return -1;
+    }
 
-  // create datetime
+  } // end if (arg0 and arg1 and arg2 and !arg3)
 
-  try {
 
-    Coords::DateTime a_datetime(year, month, day, hour, minute, second, timezone); // TODO timezone as string?
-    self->m_datetime = a_datetime;
+  else if (arg0 and arg1 and arg2 and arg3 and !arg4) {
 
-  } catch (Coords::Error err) {
-    PyErr_SetString(sCoordsException, err.what());
+    if (parse_int_arg(arg0, year)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg0 year type");
+      return -1;
+    }
+
+    if (parse_int_arg(arg1, month)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg1 month type");
+      return -1;
+    }
+
+    if (parse_int_arg(arg2, day)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg2 day type");
+      return -1;
+    }
+
+    if (parse_int_arg(arg3, hour)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg3 hour type");
+      return -1;
+    }
+
+    try {
+      Coords::DateTime a_datetime(year, month, day, hour);
+      self->m_datetime = a_datetime;
+      return 0;
+    } catch (Coords::Error err) {
+      PyErr_SetString(sCoordsException, err.what());
+      return -1;
+    }
+
+  } // end if (arg0 and arg1 and arg2 and arg3 and !arg4)
+
+
+  else if (arg0 and arg1 and arg2 and arg3 and arg4 and !arg5) {
+
+    if (parse_int_arg(arg0, year)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg0 year type");
+      return -1;
+    }
+
+    if (parse_int_arg(arg1, month)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg1 month type");
+      return -1;
+    }
+
+    if (parse_int_arg(arg2, day)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg2 day type");
+      return -1;
+    }
+
+    if (parse_int_arg(arg3, hour)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg3 hour type");
+      return -1;
+    }
+
+    if (parse_int_arg(arg4, minute)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg4 minute type");
+      return -1;
+    }
+
+    try {
+      Coords::DateTime a_datetime(year, month, day, hour, minute);
+      self->m_datetime = a_datetime;
+      return 0;
+    } catch (Coords::Error err) {
+      PyErr_SetString(sCoordsException, err.what());
+      return -1;
+    }
+
+  } // end if (arg0 and arg1 and arg2 and arg3 and arg4 and !arg5)
+
+
+  else if (arg0 and arg1 and arg2 and arg3 and arg4 and arg5 and !arg6) {
+
+    if (parse_int_arg(arg0, year)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg0 year type");
+      return -1;
+    }
+
+    if (parse_int_arg(arg1, month)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg1 month type");
+      return -1;
+    }
+
+    if (parse_int_arg(arg2, day)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg2 day type");
+      return -1;
+    }
+
+    if (parse_int_arg(arg3, hour)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg3 hour type");
+      return -1;
+    }
+
+    if (parse_int_arg(arg4, minute)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg4 minute type");
+      return -1;
+    }
+
+    if (parse_double_arg(arg5, second)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg5 second type");
+      return -1;
+    }
+
+    try {
+      Coords::DateTime a_datetime(year, month, day, hour, minute, second);
+      self->m_datetime = a_datetime;
+      return 0;
+    } catch (Coords::Error err) {
+      PyErr_SetString(sCoordsException, err.what());
+      return -1;
+    }
+
+  } // end if (arg0 and arg1 and arg2 and arg3 and arg4 and arg5 and !arg6)
+
+
+  else if (arg0 and arg1 and arg2 and arg3 and arg4 and arg5 and arg6) {
+
+    if (parse_int_arg(arg0, year)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg0 year type");
+      return -1;
+    }
+
+    if (parse_int_arg(arg1, month)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg1 month type");
+      return -1;
+    }
+
+    if (parse_int_arg(arg2, day)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg2 day type");
+      return -1;
+    }
+
+    if (parse_int_arg(arg3, hour)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg3 hour type");
+      return -1;
+    }
+
+    if (parse_int_arg(arg4, minute)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg4 minute type");
+      return -1;
+    }
+
+    if (parse_double_arg(arg5, second)) {
+      PyErr_SetString(sCoordsException, "unsupported datetime arg5 second type");
+      return -1;
+    }
+
+    try {
+
+      if (COORDS_STR_CHECK(arg6)) {
+	Coords::DateTime a_datetime(year, month, day, hour, minute, second, COORDS_STR_AS_STR(arg6));
+	self->m_datetime = a_datetime;
+	return 0;
+
+      } else {
+
+	if (parse_double_arg(arg6, timezone)) {
+	  PyErr_SetString(sCoordsException, "unsupported datetime arg6 timezone type");
+	  return -1;
+	}
+
+	Coords::DateTime a_datetime(year, month, day, hour, minute, second, timezone);
+	self->m_datetime = a_datetime;
+	return 0;
+
+      }
+
+    } catch (Coords::Error err) {
+      PyErr_SetString(sCoordsException, err.what());
+      return -1;
+    }
+
+  } // end if (arg0 and arg1 and arg2 and arg3 and arg4 and arg5 and !arg6)
+
+  else {
+    PyErr_SetString(sCoordsException, "unsupported datetime construction");
     return -1;
   }
-
-  return 0;
 
 }
 

@@ -289,6 +289,7 @@ BOOST_PYTHON_MODULE(coords) {
     .def(init<std::string>()) // default
 
     .def(init<>()) // default
+    .def(init<double>()) // jdate
     .def(init<int>()) // year
     .def(init<int, int>()) // year, month
     .def(init<int, int, int>()) // year, month, day
