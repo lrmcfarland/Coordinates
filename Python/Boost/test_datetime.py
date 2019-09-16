@@ -29,10 +29,80 @@ class TestDateTime(unittest.TestCase):
         return
 
 
-    def test_string_constructor(self):
-        """Test string constructor"""
+    def test_string_constructor_0(self):
+        """Test integer constructor"""
+        a_date_string = '1962-07-10T07:30:00'
+        a = coords.datetime(1962, 07, 10, 7, 30)
+        self.assertEqual(a_date_string, str(a))
+
+        return
+
+
+    def test_string_constructor_1(self):
+        """Test string constructor with timezone"""
         a_date_string = '1962-07-10T07:30:00-05:00'
         a = coords.datetime(a_date_string)
+        self.assertEqual(a_date_string, str(a))
+
+        return
+
+
+    def test_int_constructor_1(self):
+        """Test integer constructor with 2 terms"""
+        a_date_string = '1962-01-01T00:00:00'
+        a = coords.datetime(1962)
+        self.assertEqual(a_date_string, str(a))
+
+        return
+
+    def test_int_constructor_2(self):
+        """Test integer constructor with 2 terms"""
+        a_date_string = '1962-07-01T00:00:00'
+        a = coords.datetime(1962, 07)
+        self.assertEqual(a_date_string, str(a))
+
+        return
+
+
+    def test_int_constructor_3(self):
+        """Test integer constructor with 3 terms"""
+        a_date_string = '1962-07-10T00:00:00'
+        a = coords.datetime(1962, 07, 10)
+        self.assertEqual(a_date_string, str(a))
+
+        return
+
+
+    def test_int_constructor_4(self):
+        """Test integer constructor with 4 terms"""
+        a_date_string = '1962-07-10T08:00:00'
+        a = coords.datetime(1962, 07, 10, 8)
+        self.assertEqual(a_date_string, str(a))
+
+        return
+
+
+    def test_int_constructor_5(self):
+        """Test integer constructor with 5 terms"""
+        a_date_string = '1962-07-10T07:40:00'
+        a = coords.datetime(1962, 07, 10, 7, 40)
+        self.assertEqual(a_date_string, str(a))
+
+        return
+
+    def test_int_constructor_6(self):
+        """Test integer constructor with 6 terms"""
+        a_date_string = '1962-07-10T07:30:1.5'
+        a = coords.datetime(1962, 07, 10, 7, 30, 1.5)
+        self.assertEqual(a_date_string, str(a))
+
+        return
+
+
+    def test_int_constructor_7(self):
+        """Test integer constructor with 7 terms"""
+        a_date_string = '1962-07-10T07:30:00-0500'
+        a = coords.datetime(1962, 07, 10, 7, 30, 00, -5)
         self.assertEqual(a_date_string, str(a))
 
         return

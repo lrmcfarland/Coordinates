@@ -295,6 +295,7 @@ BOOST_PYTHON_MODULE(coords) {
     .def(init<int, int, int, int>()) // year, month, day, hour
     .def(init<int, int, int, int, int>()) // year, month, day, hour, minute
     .def(init<int, int, int, int, int, double>()) // year, month, day, hour, minute, second
+    .def(init<int, int, int, int, int, double, double>()) // year, month, day, hour, minute, second, time zone
     .def(init<int, int, int, int, int, double, std::string>()) // year, month, day, hour, minute, second, time zone
 
     .def(init<Coords::DateTime>()) // copy
