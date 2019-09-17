@@ -52,6 +52,7 @@ namespace Coords {
     static const std::regex s_regex;
 #endif
 
+    void isValid(const double& an_offset);
     void throwError(const std::string& a_timezone, const std::string msg);
 
     const bool& isLocal() const {return m_is_local;}
@@ -64,6 +65,7 @@ namespace Coords {
 
     explicit TimeZone(const std::string& a_timezone="00:00");
     explicit TimeZone(const double& a_timezone);
+    explicit TimeZone(const int& a_timezone);
 
     ~TimeZone() {};
 
@@ -117,6 +119,8 @@ namespace Coords {
     // ----- constructors -----
 
     explicit DateTime(const std::string& an_iso8601_time);
+
+    explicit DateTime(const double& a_jdate);
 
     explicit DateTime(const int& a_year = 1970, // Unix epoch
 		      const int& a_month = 1,

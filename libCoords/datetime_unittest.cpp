@@ -73,11 +73,49 @@ namespace {
     EXPECT_STREQ("1970-01-01T00:00:00", out.str().c_str());
   }
 
+  TEST(DateTime, ParameterConstructorWithTimeZone_as_string_1) {
+    Coords::DateTime a_datetime("2014-12-08T13:30:00+05:00");
+    std::stringstream out;
+    out << a_datetime;
+    EXPECT_STREQ("2014-12-08T13:30:00+05:00", out.str().c_str());
+  }
+
+
+  TEST(DateTime, ParameterConstructorWithTimeZone_as_string_2) {
+    Coords::DateTime a_datetime("2014-12-08T13:30:00+0530");
+    std::stringstream out;
+    out << a_datetime;
+    EXPECT_STREQ("2014-12-08T13:30:00+0530", out.str().c_str());
+  }
+
+
+  TEST(DateTime, ParameterConstructorWithTimeZone_as_jdate_1) {
+    Coords::DateTime a_datetime(2458743.32308);
+    std::stringstream out;
+    out << a_datetime;
+    EXPECT_STREQ("2019-09-16T19:45:14.112", out.str().c_str());
+  }
+
+
   TEST(DateTime, ParameterConstructorWithTimeZone_pos1) {
     Coords::DateTime a_datetime(2014, 12, 8, 13, 30, 00, "5");
     std::stringstream out;
     out << a_datetime;
     EXPECT_STREQ("2014-12-08T13:30:00+0500", out.str().c_str());
+  }
+
+  TEST(DateTime, ParameterConstructorWithTimeZone_pos_int) {
+    Coords::DateTime a_datetime(2014, 12, 8, 13, 30, 00, 5);
+    std::stringstream out;
+    out << a_datetime;
+    EXPECT_STREQ("2014-12-08T13:30:00+0500", out.str().c_str());
+  }
+
+  TEST(DateTime, ParameterConstructorWithTimeZone_pos_double) {
+    Coords::DateTime a_datetime(2014, 12, 8, 13, 30, 00, 5.5);
+    std::stringstream out;
+    out << a_datetime;
+    EXPECT_STREQ("2014-12-08T13:30:00+0530", out.str().c_str());
   }
 
   TEST(DateTime, ParameterConstructorWithTimeZone_pos2) {
@@ -110,6 +148,9 @@ namespace {
     EXPECT_STREQ("2019-09-14T09:15:10.333-1200", out.str().c_str());
 
   }
+
+
+  // data out of range
 
 
   TEST(DateTime, ParameterConstructorWithBadMonth_1) {
@@ -219,7 +260,7 @@ namespace {
       Coords::DateTime a_datetime(2014, 2, 4, 13, 30, 1.5, "12:01");
     } catch (Coords::Error& err) {
       std::stringstream emsg;
-      emsg << "12:01: time zone out of range.";
+      emsg << "12.0167: time zone out of range.";
       EXPECT_STREQ(err.what(), emsg.str().c_str());
     }
   }

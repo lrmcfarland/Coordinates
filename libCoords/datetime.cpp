@@ -102,8 +102,7 @@ Coords::TimeZone::TimeZone(const std::string& a_timezone)
 
   }
 
-  if (m_offset < -12 || m_offset > 12)
-    throwError(a_timezone, "time zone out of range.");
+  isValid(m_offset);
 
 }
 
@@ -114,11 +113,19 @@ Coords::TimeZone::TimeZone(const double& a_timezone)
     m_is_zulu(false),
     m_offset(a_timezone)
 {
-  if (a_timezone < -12 || a_timezone > 12) {
-    std::stringstream emsg;
-    emsg << a_timezone;
-    throwError(emsg.str(), "time zone out of range.");
-  }
+  isValid(m_offset);
+
+  if (a_timezone == 0)
+    m_is_zulu = true;
+}
+
+Coords::TimeZone::TimeZone(const int& a_timezone)
+  : m_has_colon(false),
+    m_is_local(false),
+    m_is_zulu(false),
+    m_offset(a_timezone)
+{
+  isValid(m_offset);
 
   if (a_timezone == 0)
     m_is_zulu = true;
@@ -151,6 +158,15 @@ Coords::TimeZone& Coords::TimeZone::operator=(const Coords::TimeZone& rhs) {
   return *this;
 }
 
+void Coords::TimeZone::isValid(const double& an_offset) {
+
+  if (an_offset < -12 || an_offset > 12) {
+    std::stringstream emsg;
+    emsg << an_offset;
+    throwError(emsg.str(), "time zone out of range.");
+  }
+
+}
 
 void Coords::TimeZone::throwError(const std::string& a_timezone, const std::string msg) {
   std::stringstream emsg;
@@ -205,7 +221,7 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
   m_hour(0),
   m_minute(0),
   m_second(0),
-  m_timezone("")
+  m_timezone(0)
 {
 
 
@@ -248,6 +264,23 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
 
   isValid(an_iso8601_time);
 }
+
+Coords::DateTime::DateTime(const double& a_jdate)
+  : m_year(1970),
+  m_month(1),
+  m_day(1),
+  m_hour(0),
+  m_minute(0),
+  m_second(0),
+  m_timezone(0)
+{
+  *this = this->fromJulianDate(a_jdate);
+
+  std::stringstream emsg;
+  emsg << "jdate: " << a_jdate;
+  isValid(emsg.str());
+}
+
 
 void Coords::DateTime::throwError(const std::string& a_datetime, const std::string msg) {
   std::stringstream emsg;
