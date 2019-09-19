@@ -85,19 +85,19 @@ Coords::TimeZone::TimeZone(const std::string& a_timezone)
 
   } else {
 
-    m_sign = timezone_match[1];
-    m_hours = timezone_match[2];
-    m_minutes = timezone_match[4];
+    // m_sign = timezone_match[1];
+    // m_hours = timezone_match[2];
+    // m_minutes = timezone_match[4];
 
-    m_offset = Coords::stod(m_hours);
+    m_offset = Coords::stod(timezone_match[2]);
 
     if (timezone_match[3] == ":")
       m_has_colon = true;
 
-    if (m_minutes != "")
-      m_offset += Coords::stod(m_minutes)/60.0;
+    if (timezone_match[4] != "")
+      m_offset += Coords::stod(timezone_match[4])/60.0;
 
-    if (m_sign == "-")
+    if (timezone_match[1] == "-")
       m_offset *= -1;
 
   }
@@ -135,9 +135,6 @@ Coords::TimeZone::TimeZone(const int& a_timezone)
 // ----- copy constructor -----
 
 Coords::TimeZone::TimeZone(const Coords::TimeZone& a) {
-  m_sign = a.m_sign;
-  m_hours = a.m_hours;
-  m_minutes = a.m_minutes;
   m_has_colon = a.m_has_colon;
   m_is_local = a.m_is_local;
   m_is_zulu = a.m_is_zulu;
@@ -148,9 +145,6 @@ Coords::TimeZone::TimeZone(const Coords::TimeZone& a) {
 
 Coords::TimeZone& Coords::TimeZone::operator=(const Coords::TimeZone& rhs) {
   if (this == &rhs) return *this;
-  m_sign = rhs.m_sign;
-  m_hours = rhs.m_hours;
-  m_minutes = rhs.m_minutes;
   m_has_colon = rhs.m_has_colon;
   m_is_local = rhs.m_is_local;
   m_is_zulu = rhs.m_is_zulu;
@@ -731,14 +725,14 @@ void Coords::TimeZone2String(const Coords::TimeZone& a_timezone, std::stringstre
 
     if (a_timezone.offset() < 0) {
 
-      minutes = (a_timezone.offset() - hours)*-60.0;
+      minutes = -60.0 * (a_timezone.offset() - hours);
 
       a_string << "-";
       a_string << std::setw(2) << std::setfill('0') << -hours;
 
     } else {
 
-      minutes = (a_timezone.offset() - hours)*60.0;
+      minutes = 60.0 * (a_timezone.offset() - hours);
 
       a_string << "+";
       a_string << std::setw(2) << std::setfill('0') << hours;
