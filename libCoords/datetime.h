@@ -57,8 +57,6 @@ namespace Coords {
 
     const bool& isLocal() const {return m_is_local;}
     const bool& isZulu() const {return m_is_zulu;}
-    const std::string& hours() const {return m_hours;}
-    const std::string& minutes() const {return m_minutes;}
     const bool& hasColon() const {return m_has_colon;}
 
     // ----- constructors -----
@@ -78,10 +76,6 @@ namespace Coords {
 
 
   private:
-
-    std::string m_sign;
-    std::string m_hours;
-    std::string m_minutes;
 
     bool m_has_colon; // for operator<<() idempotence
     bool m_is_local;

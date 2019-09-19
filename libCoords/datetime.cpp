@@ -40,7 +40,7 @@
 // ----- TimeZone -----
 // --------------------
 
-const std::string Coords::TimeZone::s_format("Z|(\\+|-){0,1}(0[0-9]|1[012]|[0-9])(\\:){0,1}([0-5]\\d){0,1}");
+const std::string Coords::TimeZone::s_format("z|Z|(\\+|-){0,1}(0[0-9]|1[012]|[0-9])(\\:){0,1}([0-5]\\d){0,1}");
 
 #if BOOST_REGEX
 const boost::regex Coords::TimeZone::s_regex(Coords::TimeZone::s_format);
@@ -70,7 +70,7 @@ Coords::TimeZone::TimeZone(const std::string& a_timezone)
 #endif
     std::stringstream emsg;
     emsg << a_timezone
-	 << " unsupported timezone format: [Z|(+|-)hh[:mm]] for -12 < hh < 12";
+	 << " unsupported timezone format: [z|Z|[+|-]hh[[:]mm]] for -12 < hh < 12";
     throw Coords::Error(emsg.str());
   }
 
@@ -79,25 +79,25 @@ Coords::TimeZone::TimeZone(const std::string& a_timezone)
     std::cout << "timezone_match[" << i << "]" << timezone_match[i] << std::endl;
 #endif
 
-  if (timezone_match[0] == "Z") {
+  if (timezone_match[0] == "z" or timezone_match[0] == "Z") {
     m_is_zulu = true;
     m_offset = 0;
 
   } else {
 
-    m_sign = timezone_match[1];
-    m_hours = timezone_match[2];
-    m_minutes = timezone_match[4];
+    // m_sign = timezone_match[1];
+    // m_hours = timezone_match[2];
+    // m_minutes = timezone_match[4];
 
-    m_offset = Coords::stod(m_hours);
+    m_offset = Coords::stod(timezone_match[2]);
 
     if (timezone_match[3] == ":")
       m_has_colon = true;
 
-    if (m_minutes != "")
-      m_offset += Coords::stod(m_minutes)/60.0;
+    if (timezone_match[4] != "")
+      m_offset += Coords::stod(timezone_match[4])/60.0;
 
-    if (m_sign == "-")
+    if (timezone_match[1] == "-")
       m_offset *= -1;
 
   }
@@ -135,9 +135,6 @@ Coords::TimeZone::TimeZone(const int& a_timezone)
 // ----- copy constructor -----
 
 Coords::TimeZone::TimeZone(const Coords::TimeZone& a) {
-  m_sign = a.m_sign;
-  m_hours = a.m_hours;
-  m_minutes = a.m_minutes;
   m_has_colon = a.m_has_colon;
   m_is_local = a.m_is_local;
   m_is_zulu = a.m_is_zulu;
@@ -148,9 +145,6 @@ Coords::TimeZone::TimeZone(const Coords::TimeZone& a) {
 
 Coords::TimeZone& Coords::TimeZone::operator=(const Coords::TimeZone& rhs) {
   if (this == &rhs) return *this;
-  m_sign = rhs.m_sign;
-  m_hours = rhs.m_hours;
-  m_minutes = rhs.m_minutes;
   m_has_colon = rhs.m_has_colon;
   m_is_local = rhs.m_is_local;
   m_is_zulu = rhs.m_is_zulu;
@@ -195,11 +189,11 @@ const std::string Coords::DateTime::s_ISO8601_format(
 	   "([01]\\d|2[0-3])" // hour
 	   ":"
 	   "([0-5]\\d)" // minute
-	   "(:"
+	   ":"
 	   "([0-5]\\d(\\.\\d*){0,1})" // second
-	   "([Z\\+-]{0,1}[\\d:]*){0,1}" // time zone
-	   "){0,1}"
+	   "([zZ\\+-]{0,1}[\\d:]*){0,1}" // time zone
 						     );
+
 
 #if BOOST_REGEX
 const boost::regex Coords::DateTime::s_ISO8601_regex(Coords::DateTime::s_ISO8601_format);
@@ -233,13 +227,12 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
   if (!std::regex_match(an_iso8601_time, iso8601_match, s_ISO8601_regex)) {
 #endif
     std::stringstream emsg;
-    emsg << an_iso8601_time
-	 << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][Z|(+|-)hh[:mm]]";
+    emsg << an_iso8601_time << " not in limited ISO-8601 format: year-mm-ddThh:mm:ss[.s*][z|Z|[+|-]hh[[:]mm]]";
     throw Coords::Error(emsg.str());
   }
 
 #if DEBUG_REGEX
-  for (int i = 0; i < 12; ++i)
+  for (int i = 0; i < 15; ++i)
     std::cout << "iso8601_match[" << i << "]" << iso8601_match[i] << std::endl;
 #endif
 
@@ -258,9 +251,9 @@ Coords::DateTime::DateTime(const std::string& an_iso8601_time)
 
   m_hour = Coords::stoi(iso8601_match[5]);
   m_minute = Coords::stoi(iso8601_match[6]);
-  m_second = Coords::stod(iso8601_match[8]);
+  m_second = Coords::stod(iso8601_match[7]);
 
-  m_timezone = TimeZone(iso8601_match[10]);
+  m_timezone = TimeZone(iso8601_match[9]);
 
   isValid(an_iso8601_time);
 }
@@ -731,14 +724,14 @@ void Coords::TimeZone2String(const Coords::TimeZone& a_timezone, std::stringstre
 
     if (a_timezone.offset() < 0) {
 
-      minutes = (a_timezone.offset() - hours)*-60.0;
+      minutes = -60.0 * (a_timezone.offset() - hours);
 
       a_string << "-";
       a_string << std::setw(2) << std::setfill('0') << -hours;
 
     } else {
 
-      minutes = (a_timezone.offset() - hours)*60.0;
+      minutes = 60.0 * (a_timezone.offset() - hours);
 
       a_string << "+";
       a_string << std::setw(2) << std::setfill('0') << hours;
@@ -789,7 +782,7 @@ void Coords::DateTime2String(const Coords::DateTime& a_datetime, std::stringstre
 	   << "T"
 	   << std::setw(2) << std::setfill('0') << a_hour << ":"
 	   << std::setw(2) << std::setfill('0') << a_minute << ":"
-	   << std::setw(2) << std::setfill('0') << a_second
+	   << std::setw(2) << std::setfill('0') << std::setw(4) << std::fixed << std::setprecision(1) << a_second
 	   << a_datetime.timezone();
 
 }

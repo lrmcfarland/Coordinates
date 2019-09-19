@@ -191,3 +191,22 @@ the break point and --gtest_filter with the GTEST name
     (lldb) ^D
 
 ```
+
+Setting break points
+
+```
+
+
+$ lldb datetime_unittest
+
+
+(lldb) run --gtest_filter=DateTime.set_timezone_zulu_1
+
+(lldb) b Coords::DateTime::toModifiedJulianDateAPC
+
+(lldb) run --gtest_filter=DateTime.set_timezone_zulu_1
+
+(lldb) b datetime_unittest.cpp:2411
+
+
+```

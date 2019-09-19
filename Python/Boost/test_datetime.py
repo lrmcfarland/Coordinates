@@ -27,13 +27,13 @@ class TestDateTime(unittest.TestCase):
     def test_default_constructor(self):
         """Test default constructor"""
         a = coords.datetime()
-        self.assertEqual('1970-01-01T00:00:00', str(a))
+        self.assertEqual('1970-01-01T00:00:00.0', str(a))
 
         return
 
     def test_jdate_constructor_0(self):
         """Test jdate constructor"""
-        a_datetime_string = '2019-09-16T19:45:14.112'
+        a_datetime_string = '2019-09-16T19:45:14.1'
         a = coords.datetime(2458743.32308)
         self.assertEqual(a_datetime_string, str(a))
 
@@ -42,7 +42,7 @@ class TestDateTime(unittest.TestCase):
 
     def test_string_constructor_0(self):
         """Test string no timezone constructor"""
-        a_datetime_string = '1962-07-10T07:30:00'
+        a_datetime_string = '1962-07-10T07:30:00.0'
         a = coords.datetime(a_datetime_string)
         self.assertEqual(a_datetime_string, str(a))
 
@@ -51,7 +51,7 @@ class TestDateTime(unittest.TestCase):
 
     def test_string_constructor_1(self):
         """Test string with timezone constructor"""
-        a_datetime_string = '1962-07-10T07:30:00-05:00'
+        a_datetime_string = '1962-07-10T07:30:00.0-05:00'
         a = coords.datetime(a_datetime_string)
         self.assertEqual(a_datetime_string, str(a))
 
@@ -60,7 +60,7 @@ class TestDateTime(unittest.TestCase):
 
     def test_int_constructor_1(self):
         """Test integer constructor with 1 term"""
-        a_datetime_string = '1962-01-01T00:00:00'
+        a_datetime_string = '1962-01-01T00:00:00.0'
         a = coords.datetime(1962)
         self.assertEqual(a_datetime_string, str(a))
 
@@ -68,7 +68,7 @@ class TestDateTime(unittest.TestCase):
 
     def test_int_constructor_2(self):
         """Test integer constructor with 2 terms"""
-        a_datetime_string = '1962-07-01T00:00:00'
+        a_datetime_string = '1962-07-01T00:00:00.0'
         a = coords.datetime(1962, 7)
         self.assertEqual(a_datetime_string, str(a))
 
@@ -77,7 +77,7 @@ class TestDateTime(unittest.TestCase):
 
     def test_int_constructor_3(self):
         """Test integer constructor with 3 terms"""
-        a_datetime_string = '1962-07-10T00:00:00'
+        a_datetime_string = '1962-07-10T00:00:00.0'
         a = coords.datetime(1962, 7, 10)
         self.assertEqual(a_datetime_string, str(a))
 
@@ -86,7 +86,7 @@ class TestDateTime(unittest.TestCase):
 
     def test_int_constructor_4(self):
         """Test integer constructor with 4 terms"""
-        a_datetime_string = '1962-07-10T08:00:00'
+        a_datetime_string = '1962-07-10T08:00:00.0'
         a = coords.datetime(1962, 7, 10, 8)
         self.assertEqual(a_datetime_string, str(a))
 
@@ -95,7 +95,7 @@ class TestDateTime(unittest.TestCase):
 
     def test_int_constructor_5(self):
         """Test integer constructor with 5 terms"""
-        a_datetime_string = '1962-07-10T07:40:00'
+        a_datetime_string = '1962-07-10T07:40:00.0'
         a = coords.datetime(1962, 7, 10, 7, 40)
         self.assertEqual(a_datetime_string, str(a))
 
@@ -103,7 +103,7 @@ class TestDateTime(unittest.TestCase):
 
     def test_int_constructor_6(self):
         """Test integer constructor with 6 terms"""
-        a_datetime_string = '1962-07-10T07:30:1.5'
+        a_datetime_string = '1962-07-10T07:30:01.5'
         a = coords.datetime(1962, 7, 10, 7, 30, 1.5)
         self.assertEqual(a_datetime_string, str(a))
 
@@ -112,7 +112,7 @@ class TestDateTime(unittest.TestCase):
 
     def test_int_constructor_7(self):
         """Test integer constructor with 7 terms"""
-        a_datetime_string = '1962-07-10T07:30:00-0500'
+        a_datetime_string = '1962-07-10T07:30:00.0-0500'
         a = coords.datetime(1962, 7, 10, 7, 30, 00, -5)
         self.assertEqual(a_datetime_string, str(a))
 
@@ -121,7 +121,7 @@ class TestDateTime(unittest.TestCase):
 
     def test_int_constructor_8(self):
         """Test integer constructor with 7 terms"""
-        a_datetime_string = '1962-07-10T07:30:00-0530'
+        a_datetime_string = '1962-07-10T07:30:00.0-0530'
         a = coords.datetime(1962, 7, 10, 7, 30, 00, -5.5)
         self.assertEqual(a_datetime_string, str(a))
 
@@ -130,7 +130,7 @@ class TestDateTime(unittest.TestCase):
 
     def test_int_constructor_9(self):
         """Test integer constructor with 7 terms"""
-        a_datetime_string = '1962-07-10T07:30:00+05:30'
+        a_datetime_string = '1962-07-10T07:30:00.0+05:30'
         a = coords.datetime(1962, 7, 10, 7, 30, 00, "+05:30")
         self.assertEqual(a_datetime_string, str(a))
 
@@ -139,7 +139,7 @@ class TestDateTime(unittest.TestCase):
 
     def test_int_constructor_10(self):
         """Test integer constructor with 7 terms"""
-        a_datetime_string = '1962-07-10T07:30:00+05:30'
+        a_datetime_string = '1962-07-10T07:30:00.0+05:30'
         a = coords.datetime(1962, 7, 10, 7, 30, 00, "5:30")
         self.assertEqual(a_datetime_string, str(a))
 
@@ -249,7 +249,7 @@ class TestDateTime(unittest.TestCase):
 
     def test_to_julian_date(self):
         """Test to Julian date"""
-        a_datetime_string = '1858-11-17T00:00:00'
+        a_datetime_string = '1858-11-17T00:00:00.0'
         a = coords.datetime(a_datetime_string)
         self.assertEqual(coords.datetime.ModifiedJulianDate, a.toJulianDate())
 
@@ -274,7 +274,7 @@ class TestDateTime(unittest.TestCase):
         a_datetime_string = '1962-07-10T07:30:00+05:00'
         a = coords.datetime(a_datetime_string)
         a += 365
-        self.assertEqual('1963-07-10T07:30:00+05:00', str(a))
+        self.assertEqual('1963-07-10T07:30:00.0+05:00', str(a))
 
         return
 
@@ -285,7 +285,7 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime(a_datetime_string)
         b = coords.datetime
         b = 365 + a
-        self.assertEqual('1963-07-10T07:30:00-06:00', str(b))
+        self.assertEqual('1963-07-10T07:30:00.0-06:00', str(b))
 
         return
 
@@ -295,7 +295,7 @@ class TestDateTime(unittest.TestCase):
         a_datetime_string = '2016-05-08T07:30:00'
         a = coords.datetime(a_datetime_string)
         a += 1.0/24
-        self.assertEqual('2016-05-08T08:30:00', str(a))
+        self.assertEqual('2016-05-08T08:30:00.0', str(a))
 
         return
 
@@ -305,7 +305,7 @@ class TestDateTime(unittest.TestCase):
         a_datetime_string = '2016-12-31T23:30:00'
         a = coords.datetime(a_datetime_string)
         a += 1.0/24
-        self.assertEqual('2017-01-01T00:30:00', str(a))
+        self.assertEqual('2017-01-01T00:30:00.0', str(a))
 
         return
 
@@ -318,7 +318,7 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime(a_datetime_string)
         b = a + 1.0/24
 
-        self.assertEqual('2016-05-08T08:30:00', str(b))
+        self.assertEqual('2016-05-08T08:30:00.0', str(b))
 
         return
 
@@ -331,7 +331,7 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime(a_datetime_string)
         b = a + 1.0/24
 
-        self.assertEqual('2016-05-09T00:30:00', str(b))
+        self.assertEqual('2016-05-09T00:30:00.0', str(b))
 
         return
 
@@ -344,7 +344,7 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime(a_datetime_string)
         b = a + 1.0/24
 
-        self.assertEqual('2017-01-01T00:30:00', str(b))
+        self.assertEqual('2017-01-01T00:30:00.0', str(b))
 
         return
 
@@ -354,7 +354,7 @@ class TestDateTime(unittest.TestCase):
         a_datetime_string = '1962-07-10T07:30:00+05:00'
         a = coords.datetime(a_datetime_string)
         a -= 365
-        self.assertEqual('1961-07-10T07:30:00+05:00', str(a))
+        self.assertEqual('1961-07-10T07:30:00.0+05:00', str(a))
 
         return
 
@@ -364,7 +364,7 @@ class TestDateTime(unittest.TestCase):
         a_datetime_string = '2016-05-08T07:30:00'
         a = coords.datetime(a_datetime_string)
         a -= 1.0/24
-        self.assertEqual('2016-05-08T06:30:00', str(a))
+        self.assertEqual('2016-05-08T06:30:00.0', str(a))
 
         return
 
@@ -374,7 +374,7 @@ class TestDateTime(unittest.TestCase):
         a_datetime_string = '2016-05-08T00:30:00'
         a = coords.datetime(a_datetime_string)
         a -= 1.0/24
-        self.assertEqual('2016-05-07T23:30:00', str(a))
+        self.assertEqual('2016-05-07T23:30:00.0', str(a))
 
         return
 
@@ -384,7 +384,7 @@ class TestDateTime(unittest.TestCase):
         a_datetime_string = '2016-01-01T00:30:00'
         a = coords.datetime(a_datetime_string)
         a -= 1.0/24
-        self.assertEqual('2015-12-31T23:30:00', str(a))
+        self.assertEqual('2015-12-31T23:30:00.0', str(a))
 
         return
 
@@ -424,7 +424,7 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime(a_datetime_string)
         b = a - 1.0/24
 
-        self.assertEqual('2016-05-08T06:30:00', str(b))
+        self.assertEqual('2016-05-08T06:30:00.0', str(b))
 
         return
 
@@ -437,7 +437,7 @@ class TestDateTime(unittest.TestCase):
         a = coords.datetime(a_datetime_string)
         b = a - 1.0/24
 
-        self.assertEqual('2016-05-07T23:30:00', str(b))
+        self.assertEqual('2016-05-07T23:30:00.0', str(b))
 
         return
 
@@ -452,7 +452,7 @@ class TestDateTime(unittest.TestCase):
 
         b = a.inTimezone("02:00")
 
-        self.assertEqual('2019-10-08T03:30:00+02:00', str(b))
+        self.assertEqual('2019-10-08T03:30:00.0+02:00', str(b))
 
         return
 
@@ -464,7 +464,7 @@ class TestDateTime(unittest.TestCase):
 
         b = a.inTimezone("-8")
 
-        self.assertEqual('2019-10-07T13:00:00-0800', str(b))
+        self.assertEqual('2019-10-07T13:00:00.0-0800', str(b))
 
         return
 
@@ -476,7 +476,7 @@ class TestDateTime(unittest.TestCase):
 
         b = a.inTimezoneOffset(-8)
 
-        self.assertEqual('2019-10-07T13:00:00-0800', str(b))
+        self.assertEqual('2019-10-07T13:00:00.0-0800', str(b))
 
         return
 
