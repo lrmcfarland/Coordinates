@@ -184,3 +184,135 @@ Segmentation fault: 11
 
 
 ```
+
+I also used the method described [here](https://stackoverflow.com/questions/2663841/python-tracing-a-segmentation-fault)
+
+Set the trace function in top of test code, test_datetime.py in this example.
+
+```
+
+import sys
+
+def trace(frame, event, arg):
+    print "%s, %s:%d" % (event, frame.f_code.co_filename, frame.f_lineno)
+    return trace
+cd ..
+sys.settrace(trace)
+
+```
+
+Output will show
+
+```
+
+
+OK (skipped=1)
+. ./setenv.sh; python ./test_datetime.py 
+# coords.so: ./build/lib.macosx-10.14-x86_64-2.7/coords.so
+# PYTHONPATH :./build/lib.macosx-10.14-x86_64-2.7:./build/lib.macosx-10.14-x86_64-2.7:./build/lib.macosx-10.14-x86_64-2.7:./build/lib.macosx-10.14-x86_64-2.7
+call, ./test_datetime.py:31
+line, ./test_datetime.py:31
+line, ./test_datetime.py:33
+line, ./test_datetime.py:46
+line, ./test_datetime.py:53
+
+
+
+line, /Users/rmcfarland/.pyenv/versions/2.7.16/lib/python2.7/unittest/case.py:318
+line, /Users/rmcfarland/.pyenv/versions/2.7.16/lib/python2.7/unittest/case.py:319
+line, /Users/rmcfarland/.pyenv/versions/2.7.16/lib/python2.7/unittest/case.py:320
+call, ./test_datetime.py:33
+line, ./test_datetime.py:37
+line, ./test_datetime.py:39
+return, ./test_datetime.py:39
+line, /Users/rmcfarland/.pyenv/versions/2.7.16/lib/python2.7/unittest/case.py:328
+line, /Users/rmcfarland/.pyenv/versions/2.7.16/lib/python2.7/unittest/case.py:329
+call, ./test_datetime.py:229
+line, ./test_datetime.py:231
+/bin/sh: line 1:  4701 Segmentation fault: 11  python ./test_datetime.py
+
+
+
+```
+
+
+I also turned on printing with in coords.cpp using [this example](https://pythonextensionpatterns.readthedocs.io/en/latest/parsing_arguments.html).
+In the code I could print the arg value to standard out. Debugging it old school.
+
+
+```
+ai-py27) [rmcfarland@VSN00249 Manual (polydatetime)]$ git diff
+diff --git a/Python/Manual/coords.cpp b/Python/Manual/coords.cpp
+index 03341c6..55a4f23 100644
+--- a/Python/Manual/coords.cpp
++++ b/Python/Manual/coords.cpp
+@@ -3683,7 +3683,26 @@ static int datetime_init(datetime* self, PyObject* args, PyObject* kwds) {
+     return -1;
+ 
+ 
+-  if (arg0) {
++  // TODO rm
++  PyObject_Print(args, stdout, 0); // TODO rm
++  fprintf(stdout, "aaaaaaa \n"); // TODO rm
++
++  if (arg0 == NULL) {
++
++    PyObject_Print(arg0, stdout, 0); // TODO rm
++    fprintf(stdout, "arg0 == NULL \n"); // TODO rm
++
++    // default needed for python 2.7 but not 3
++    Coords::DateTime a_datetime(year, month, day, hour, minute, second, timezone);
++    self->m_datetime = a_datetime;
++    return 0;
++  }
++
++
++  if (arg0 and !arg1) {
++
++    PyObject_Print(arg0, stdout, 0); // TODO rm
++    fprintf(stdout, "arg0 and !arg1 \n"); // TODO rm
+ 
+```
+
+The output looked like this
+
+```
+
+. ./setenv.sh; python ./test_datetime.py 
+# coords.so: ./build/lib.macosx-10.14-x86_64-2.7/coords.so
+# PYTHONPATH :./build/lib.macosx-10.14-x86_64-2.7:./build/lib.macosx-10.14-x86_64-2.7:./build/lib.macosx-10.14-x86_64-2.7:./build/lib.macosx-10.14-x86_64-2.7
+('1962-07-10T07:30:00-05:00',)aaaaaaa 
+'1962-07-10T07:30:00-05:00'ccccccc 
+('1963-07-10T07:30:00-05:00',)aaaaaaa 
+'1963-07-10T07:30:00-05:00'ccccccc 
+.('1962-07-10T07:30:00+05:00',)aaaaaaa 
+'1962-07-10T07:30:00+05:00'ccccccc 
+('1963-07-10T07:30:00+05:00',)aaaaaaa 
+'1963-07-10T07:30:00+05:00'ccccccc 
+.('1962-07-10T07:30:00-06:00',)aaaaaaa 
+'1962-07-10T07:30:00-06:00'ccccccc 
+.('1962-07-10T07:30:00+05:00',)aaaaaaa 
+'1962-07-10T07:30:00+05:00'ccccccc 
+.()aaaaaaa 
+<nil>bbbbbb 
+.('1900-01-01T00:00:00-08:00',)aaaaaaa 
+'1900-01-01T00:00:00-08:00'ccccccc 
+.()aaaaaaa 
+<nil>bbbbbb 
+.('2017-10-05T07:30:00-05:00',)aaaaaaa 
+'2017-10-05T07:30:00-05:00'ccccccc 
+.('1999-12-31T08:30:00-0800',)aaaaaaa 
+'1999-12-31T08:30:00-0800'ccccccc 
+.('2019-11-10T07:30:00',)aaaaaaa 
+'2019-11-10T07:30:00'ccccccc 
+.('2019-11-10T07:30:00+0530',)aaaaaaa 
+'2019-11-10T07:30:00+0530'ccccccc 
+.(1962,)aaaaaaa 
+1962ccccccc 
+F(1962, 7, 10, 7, 30, 0, '5:30')aaaaaaa 
+F(1962, 7)aaaaaaa 
+/bin/sh: line 1: 22305 Segmentation fault: 11  python ./test_datetime.py
+make: *** [test_datetime] Error 139
+
+
+```
