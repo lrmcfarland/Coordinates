@@ -487,11 +487,18 @@ namespace {
 
   // operator<<
 
-  TEST(angle, operatorStdOut) {
+  TEST(angle, operatorStdOut1) {
     Coords::angle a(44, 32, 15.4);
     std::stringstream out;
     out << a;
     EXPECT_STREQ("44:32:15.4", out.str().c_str());
+  }
+
+  TEST(angle, operatorStdOut2) {
+    Coords::angle a(44, 32, 5.35);
+    std::stringstream out;
+    out << a;
+    EXPECT_STREQ("44:32:05.4", out.str().c_str());
   }
 
 
@@ -501,14 +508,14 @@ namespace {
     Coords::angle a(360);
     std::stringstream out;
     out << a;
-    EXPECT_STREQ("360:00:00", out.str().c_str());
+    EXPECT_STREQ("360:00:00.0", out.str().c_str());
   }
 
   TEST(angle, Stdout361) {
     Coords::angle a(361);
     std::stringstream out;
     out << a;
-    EXPECT_STREQ("361:00:00", out.str().c_str());
+    EXPECT_STREQ("361:00:00.0", out.str().c_str());
   }
 
   TEST(angle, RoundingIssuesBeyond360) {
@@ -516,7 +523,7 @@ namespace {
     Coords::angle a(45+360);
     std::stringstream out;
     out << a;
-    EXPECT_STREQ("405:00:00", out.str().c_str());
+    EXPECT_STREQ("405:00:00.0", out.str().c_str());
   }
 
   // ---------------------
@@ -619,12 +626,12 @@ namespace {
   // opeartor<<()
 
   TEST(angle, output_dms) {
-    Coords::angle a(12, 34, 56);
+    Coords::angle a(12, 34, 56.78);
 
     std::stringstream out;
     Coords::degrees2DMSString(a.degrees(), out);
 
-    EXPECT_STREQ("12* 34' 56\"", out.str().c_str());
+    EXPECT_STREQ("12* 34' 56.78\"", out.str().c_str());
   }
 
   TEST(angle, output_hms) {
@@ -633,7 +640,7 @@ namespace {
     std::stringstream out;
     Coords::degrees2HMSString(a.degrees(), out);
 
-    EXPECT_STREQ("02:04:06", out.str().c_str());
+    EXPECT_STREQ("02:04:06.0", out.str().c_str());
   }
 
 

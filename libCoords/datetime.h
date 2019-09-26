@@ -170,8 +170,6 @@ namespace Coords {
     DateTime(const DateTime& a);
     DateTime& operator=(const DateTime& rhs);
 
-    // TODO fromJulianDate? DateTime(const double& a_jdate);
-
     // ----- accessors -----
 
     void isValid(const std::string& an_iso8601_time = "");
