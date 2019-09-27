@@ -45,30 +45,56 @@ namespace {
     EXPECT_DOUBLE_EQ(45, a);
   }
 
-  TEST(angle, Degree2RightAscension180) {
-    double a = Coords::angle::deg2RA(180);
-    EXPECT_DOUBLE_EQ(12, a);
+
+
+  // Right Ascension
+
+  TEST(angle, Degree2RightAscension90) {
+    double a = Coords::angle::deg2RA(90);
+    EXPECT_DOUBLE_EQ(6.0, a);
+  }
+
+  TEST(angle, Degree2RightAscension_n90) {
+    double a = Coords::angle::deg2RA(-90);
+    EXPECT_DOUBLE_EQ(18.0, a);
   }
 
   TEST(angle, Degree2RightAscension360) {
     double a = Coords::angle::deg2RA(360);
-    EXPECT_DOUBLE_EQ(24, a);
+    EXPECT_DOUBLE_EQ(0, a);
   }
 
+  // TODO 24.333?
   TEST(angle, Degree2RightAscension365) {
     double a = Coords::angle::deg2RA(365);
-    EXPECT_DOUBLE_EQ(24.333333333333332, a);
+    EXPECT_DOUBLE_EQ(0.33333333333333331, a);
+  }
+
+
+
+  TEST(angle, RightAscension2Degrees6) {
+    double a = Coords::angle::RA2deg(6);
+    EXPECT_DOUBLE_EQ(90, a);
   }
 
   TEST(angle, RightAscension2Degrees12) {
     double a = Coords::angle::RA2deg(12);
-    EXPECT_DOUBLE_EQ(180, a);
+    EXPECT_DOUBLE_EQ(-180, a);
+  }
+
+  TEST(angle, RightAscension2Degrees18) {
+    double a = Coords::angle::RA2deg(18);
+    EXPECT_DOUBLE_EQ(-90, a);
   }
 
   TEST(angle, RightAscension2Degrees24) {
     double a = Coords::angle::RA2deg(24);
-    EXPECT_DOUBLE_EQ(360, a);
+    EXPECT_DOUBLE_EQ(0.0, a);
   }
+
+
+
+
 
   // constructors (and implicitly radians() accessor)
 
