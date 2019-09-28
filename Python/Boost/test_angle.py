@@ -254,8 +254,17 @@ class TestAngle(unittest.TestCase):
 
     # accessors
 
-    def test_accessors_1(self):
-        """Test value accessors 1"""
+    def test_accessors_0(self):
+        """Test value accessors 0"""
+        an_angle = coords.angle()
+        an_angle.degrees = 0
+        self.assertEqual(0, an_angle.degrees)
+        self.assertEqual(0.0, an_angle.radians)
+        self.assertEqual(0.0, an_angle.RA)
+        return
+
+    def test_accessors_90(self):
+        """Test value accessors 90"""
         an_angle = coords.angle()
         an_angle.degrees = 90
         self.assertEqual(90, an_angle.degrees)
@@ -264,8 +273,48 @@ class TestAngle(unittest.TestCase):
         return
 
 
+    def test_accessors_180(self):
+        """Test value accessors 180"""
+        an_angle = coords.angle()
+        an_angle.degrees = 180
+        self.assertEqual(180, an_angle.degrees)
+        self.assertEqual(math.pi, an_angle.radians)
+        self.assertEqual(12.0, an_angle.RA)
+        return
+
+
+    def test_accessors_270(self):
+        """Test value accessors 270"""
+        an_angle = coords.angle()
+        an_angle.degrees = 270
+        self.assertEqual(270, an_angle.degrees)
+        self.assertEqual(3.0*math.pi/2.0, an_angle.radians)
+        self.assertEqual(18.0, an_angle.RA)
+        return
+
+
+    def test_accessors_360(self):
+        """Test value accessors 360"""
+        an_angle = coords.angle()
+        an_angle.degrees = 360
+        self.assertEqual(360, an_angle.degrees)
+        self.assertEqual(2.0*math.pi, an_angle.radians)
+        self.assertEqual(0.0, an_angle.RA)
+        return
+
+
+    def test_accessors_n90(self):
+        """Test radians accessor negative"""
+        an_angle = coords.angle()
+        an_angle.radians = -math.pi/2.0
+        self.assertEqual(-90, an_angle.degrees)
+        self.assertEqual(-math.pi/2.0, an_angle.radians)
+        self.assertEqual(18.0, an_angle.RA)
+        return
+
+
     @unittest.skip('TODO Boost.Python.ArgumentError')
-    def test_accessors_2a(self):
+    def test_accessors_err1(self):
         """Test radians accessor exception"""
         try:
             an_angle = coords.angle()
