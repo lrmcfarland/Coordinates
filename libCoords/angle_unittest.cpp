@@ -45,30 +45,56 @@ namespace {
     EXPECT_DOUBLE_EQ(45, a);
   }
 
-  TEST(angle, Degree2RightAscension180) {
-    double a = Coords::angle::deg2RA(180);
-    EXPECT_DOUBLE_EQ(12, a);
+
+
+  // Right Ascension
+
+  TEST(angle, Degree2RightAscension90) {
+    double a = Coords::angle::deg2RA(90);
+    EXPECT_DOUBLE_EQ(6.0, a);
+  }
+
+  TEST(angle, Degree2RightAscension_n90) {
+    double a = Coords::angle::deg2RA(-90);
+    EXPECT_DOUBLE_EQ(18.0, a);
   }
 
   TEST(angle, Degree2RightAscension360) {
     double a = Coords::angle::deg2RA(360);
-    EXPECT_DOUBLE_EQ(24, a);
+    EXPECT_DOUBLE_EQ(0, a);
   }
 
+  // TODO 24.333?
   TEST(angle, Degree2RightAscension365) {
     double a = Coords::angle::deg2RA(365);
-    EXPECT_DOUBLE_EQ(24.333333333333332, a);
+    EXPECT_DOUBLE_EQ(0.33333333333333331, a);
+  }
+
+
+
+  TEST(angle, RightAscension2Degrees6) {
+    double a = Coords::angle::RA2deg(6);
+    EXPECT_DOUBLE_EQ(90, a);
   }
 
   TEST(angle, RightAscension2Degrees12) {
     double a = Coords::angle::RA2deg(12);
-    EXPECT_DOUBLE_EQ(180, a);
+    EXPECT_DOUBLE_EQ(-180, a);
+  }
+
+  TEST(angle, RightAscension2Degrees18) {
+    double a = Coords::angle::RA2deg(18);
+    EXPECT_DOUBLE_EQ(-90, a);
   }
 
   TEST(angle, RightAscension2Degrees24) {
     double a = Coords::angle::RA2deg(24);
-    EXPECT_DOUBLE_EQ(360, a);
+    EXPECT_DOUBLE_EQ(0.0, a);
   }
+
+
+
+
 
   // constructors (and implicitly radians() accessor)
 
@@ -487,11 +513,18 @@ namespace {
 
   // operator<<
 
-  TEST(angle, operatorStdOut) {
+  TEST(angle, operatorStdOut1) {
     Coords::angle a(44, 32, 15.4);
     std::stringstream out;
     out << a;
     EXPECT_STREQ("44:32:15.4", out.str().c_str());
+  }
+
+  TEST(angle, operatorStdOut2) {
+    Coords::angle a(44, 32, 5.35);
+    std::stringstream out;
+    out << a;
+    EXPECT_STREQ("44:32:05.4", out.str().c_str());
   }
 
 
@@ -501,14 +534,14 @@ namespace {
     Coords::angle a(360);
     std::stringstream out;
     out << a;
-    EXPECT_STREQ("360:00:00", out.str().c_str());
+    EXPECT_STREQ("360:00:00.0", out.str().c_str());
   }
 
   TEST(angle, Stdout361) {
     Coords::angle a(361);
     std::stringstream out;
     out << a;
-    EXPECT_STREQ("361:00:00", out.str().c_str());
+    EXPECT_STREQ("361:00:00.0", out.str().c_str());
   }
 
   TEST(angle, RoundingIssuesBeyond360) {
@@ -516,7 +549,7 @@ namespace {
     Coords::angle a(45+360);
     std::stringstream out;
     out << a;
-    EXPECT_STREQ("405:00:00", out.str().c_str());
+    EXPECT_STREQ("405:00:00.0", out.str().c_str());
   }
 
   // ---------------------
@@ -619,12 +652,12 @@ namespace {
   // opeartor<<()
 
   TEST(angle, output_dms) {
-    Coords::angle a(12, 34, 56);
+    Coords::angle a(12, 34, 56.78);
 
     std::stringstream out;
     Coords::degrees2DMSString(a.degrees(), out);
 
-    EXPECT_STREQ("12* 34' 56\"", out.str().c_str());
+    EXPECT_STREQ("12* 34' 56.78\"", out.str().c_str());
   }
 
   TEST(angle, output_hms) {
@@ -633,7 +666,7 @@ namespace {
     std::stringstream out;
     Coords::degrees2HMSString(a.degrees(), out);
 
-    EXPECT_STREQ("02:04:06", out.str().c_str());
+    EXPECT_STREQ("02:04:06.0", out.str().c_str());
   }
 
 

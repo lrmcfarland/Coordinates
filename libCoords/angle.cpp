@@ -28,6 +28,29 @@
 // ===== angle =====
 // =================
 
+// ----- static methods -----
+
+double Coords::angle::deg2RA(const double& deg) {
+
+  Coords::angle temp(deg);
+
+  temp.normalize(-180, 180);
+
+  if (temp.degrees() < 0)
+    return 24.0 + temp.degrees()/15.0;
+  else
+    return temp.degrees()/15.0;
+
+}
+
+
+double Coords::angle::RA2deg(const double& ra) {
+  Coords::angle temp(ra*15.0);
+  temp.normalize(-180, 180);
+  return temp.degrees();
+}
+
+
 // ----- constructors -----
 
 Coords::angle::angle(const double& a_deg,

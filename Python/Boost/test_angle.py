@@ -530,7 +530,7 @@ class TestAngle(unittest.TestCase):
     def test_str(self):
         """Test str"""
         an_angle = coords.angle()
-        a_str = '00:00:00'
+        a_str = '00:00:00.0'
         self.assertEqual(a_str, str(an_angle))
         return
 

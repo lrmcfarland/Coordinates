@@ -47,8 +47,9 @@ namespace Coords {
     static double deg2rad(const double& deg) {return deg*M_PI/180.0;}
     static double rad2deg(const double& rad) {return rad*180.0/M_PI;}
 
-    static double deg2RA(const double& deg)  {return deg*24.0/360.0;} // Right Ascension
-    static double RA2deg(const double& ra)   {return ra*360.0/24.0;}
+    // Right Ascension
+    static double deg2RA(const double& deg);
+    static double RA2deg(const double& ra);
 
     // ----- ctor and dtor -----
 
